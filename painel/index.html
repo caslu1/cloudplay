@@ -282,7 +282,7 @@
   .hist-chart { width: 100%; overflow: hidden; }
   .hist-tip { position: absolute; z-index: 3; width: 150px; padding: 9px 12px; border-radius: 10px; background: #2a2a30; border: 1px solid var(--line2); box-shadow: 0 10px 30px rgba(0, 0, 0, .5); pointer-events: none; }
   .hist-tip b { display: block; font-size: 14px; } .hist-tip span { font-size: 12.5px; color: var(--muted); }
-  .see-all { display: inline-block; margin-top: 6px; color: var(--muted); font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; }
+  .see-all { display: block; margin-top: 6px; color: var(--muted); font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; }
   .stats.stats-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .cn-list { display: grid; gap: 6px; margin-top: 12px; }
   .cn { display: grid; grid-template-columns: 10px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel2); }
@@ -384,6 +384,17 @@
   .dot-on { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); margin-right: 6px; vertical-align: 1px; }
   .bottom-nav { display: none; }
   .top-logo, .gen-open, .gen-close, .code-cards { display: none; }
+  /* Computers: the new-code form stays closed and opens as a window over the page. */
+  @media (min-width: 721px) {
+    .gen-open { display: inline-flex; height: 42px; padding: 0 20px; margin-bottom: 16px; }
+    .gen-card { display: none; }
+    .gen-card.open { display: block; position: fixed; z-index: 60; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(1000px, calc(100vw - 48px));
+      max-height: calc(100vh - 48px); overflow: auto; margin: 0; box-shadow: 0 30px 120px rgba(0, 0, 0, .7); }
+    .gen-card .card-head { padding-right: 44px; }
+    .gen-close { display: inline-flex; position: absolute; top: 16px; right: 16px; }
+    .gen-backdrop { display: none; position: fixed; inset: 0; z-index: 59; background: rgba(0, 0, 0, .6); }
+    body.gen-visible .gen-backdrop { display: block; }
+  }
   @media (max-width: 720px) {
     .top-logo { display: block; height: 30px; width: auto; }
     .topbar .crumb { display: none; }
@@ -563,6 +574,7 @@
   <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></symbol>
   <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8.6 19z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.6-2-1-1 .9a5 5 0 0 1-2.8-2.8l.9-1-1-2z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
   <symbol id="i-renew" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.6-4.5M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.5M20 19v-4h-4"/></symbol>
 </svg>
 
@@ -672,7 +684,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v17</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v18</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -696,18 +708,17 @@
         <div class="stat"><span>Addons ativos</span><b id="sAddons">0</b></div>
       </div>
       <div class="two">
-        <div class="card">
-          <div class="card-head">
-            <div><h2>Pedidos mais recentes</h2><p class="sub">Pendentes, do mais pedido para o menos pedido.</p></div>
-            <a href="#pedidos"><button class="ghost small">Ver todos</button></a>
-          </div>
-          <div id="recentReq"></div>
-        </div>
+        <div class="card hist-card">
+        <div class="hist-head"><div class="hist-ic"><svg class="i"><use href="#i-chart"/></svg></div>
+          <div><h2>Clientes ativos</h2><p class="sub" style="margin:0">Últimos 30 dias</p></div></div>
+        <div id="histChart" class="hist-chart"></div>
+        <div id="histTip" class="hist-tip hidden"></div>
+      </div>
         <div class="card">
           <h2>Atalhos</h2>
           <p class="sub">O que você mais faz no painel.</p>
           <div class="quick">
-            <a href="#codigos"><svg class="i"><use href="#i-key"/></svg><div>Gerar códigos<small>Para novos clientes</small></div></a>
+            <a href="#codigos" id="quickGen"><svg class="i"><use href="#i-key"/></svg><div>Gerar códigos<small>Para novos clientes</small></div></a>
             <a href="#addons"><svg class="i"><use href="#i-puzzle"/></svg><div>Addons padrão<small>Instalados em todos os aparelhos</small></div></a>
             <a href="#streamings"><svg class="i"><use href="#i-tv"/></svg><div>Streamings<small>O que aparece no app</small></div></a>
           </div>
@@ -724,9 +735,10 @@
         <div class="stat"><span>Livres</span><b id="cFree">0</b></div>
       </div>
 
-      <button type="button" id="genOpen" class="gen-open"><svg class="i"><use href="#i-plus"/></svg>Novo código</button>
+      <button type="button" id="genOpen" class="gen-open"><svg class="i"><use href="#i-plus"/></svg>Gerar código</button>
+      <div id="genBackdrop" class="gen-backdrop"></div>
       <div id="genCard" class="card gen-card">
-        <button type="button" id="genClose" class="icon gen-close" title="Fechar" aria-label="Fechar"><svg class="i"><use href="#i-down"/></svg></button>
+        <button type="button" id="genClose" class="icon gen-close" title="Fechar" aria-label="Fechar"><svg class="i"><use href="#i-x"/></svg></button>
         <div class="card-head">
           <div><h2>Novo código</h2><p class="sub">6 dígitos. Escolha a validade em dias ou uma data de vencimento.</p></div>
           <div id="gType" class="seg accent">
@@ -787,12 +799,6 @@
         </div>
       </div>
 
-      <div class="card hist-card">
-        <div class="hist-head"><div class="hist-ic"><svg class="i"><use href="#i-chart"/></svg></div>
-          <div><h2>Clientes ativos</h2><p class="sub" style="margin:0">Últimos 30 dias</p></div></div>
-        <div id="histChart" class="hist-chart"></div>
-        <div id="histTip" class="hist-tip hidden"></div>
-      </div>
       <div class="card">
         <div class="list-head">
           <div><h2>Todos os códigos</h2><p class="sub" style="margin:0">Veja quando cada código foi ativado, bloqueie, libere aparelhos ou exclua.</p></div>
@@ -1367,7 +1373,7 @@
     });
     box.replaceChildren(svg);
   }
-  window.addEventListener("resize", () => { if (location.hash === "#codigos") drawActiveHistory(); });
+  window.addEventListener("resize", () => { if (["", "#inicio"].includes(location.hash)) drawActiveHistory(); });
 
   // ── Conectados: every device of every code, online ones first ──
   function renderConnected() {
@@ -1510,9 +1516,12 @@
   }
   seg("gType", updateSummary); seg("gDays", updateSummary); seg("gStart", updateSummary); seg("filter", render);
   const setGen = (open) => { $("genCard").classList.toggle("open", open); document.body.classList.toggle("gen-visible", open);
-    if (open) $("genCard").scrollIntoView({ behavior: "smooth", block: "start" }); };
+    if (open && window.innerWidth <= 720) $("genCard").scrollIntoView({ behavior: "smooth", block: "start" }); };
+  $("genBackdrop").addEventListener("click", () => setGen(false));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("genCard").classList.contains("open")) setGen(false); });
   $("genOpen").addEventListener("click", () => { $("gDate").min = todaySP(); setGen(true); });
   $("genClose").addEventListener("click", () => setGen(false));
+  $("quickGen").addEventListener("click", () => setTimeout(() => { $("gDate").min = todaySP(); setGen(true); }, 50));
   $("gDate").addEventListener("input", updateSummary);
   $("gDate").min = todaySP();
   updateSummary();
@@ -1890,19 +1899,13 @@
   async function loadPendingSummary() {
     const { data, error } = await sb.from("content_requests").select("*").eq("status", "pending")
       .order("request_count", { ascending: false }).order("last_requested_at", { ascending: false });
-    if (error) { $("recentReq").replaceChildren(el("p", { class: "empty" }, "Rode o arquivo app_settings.sql no Supabase para usar os pedidos.")); return; }
+    if (error) return;
     const list = data || [];
     $("sPending").textContent = list.length;
     $("navPending").textContent = list.length;
     $("navPending").classList.toggle("hidden", list.length === 0);
     $("bnPending").textContent = list.length;
     $("bnPending").classList.toggle("hidden", list.length === 0);
-    $("recentReq").replaceChildren(...(list.length ? list.slice(0, 5).map((r) => el("div", { class: "mini" },
-      posterOf(r) ? el("img", { src: posterOf(r), alt: "" }) : el("div", { class: "noposter" }),
-      el("div", { class: "t" }, el("b", {}, r.title + (r.year ? " (" + r.year + ")" : "")),
-        el("span", { class: "muted" }, (r.media_type === "movie" ? "Filme" : "Série") + " · " + fmt(r.last_requested_at))),
-      el("span", { class: "count" }, r.request_count + (r.request_count === 1 ? " pedido" : " pedidos"))))
-      : [el("p", { class: "empty" }, "Nenhum pedido pendente.")]));
   }
   async function setReq(r, status) {
     const { error } = await sb.from("content_requests").update({ status }).eq("id", r.id);
@@ -1997,7 +2000,7 @@
       s.classList.toggle("hidden", !on);
       if (on) { $("pageTitle").textContent = s.dataset.title; document.title = s.dataset.title + " · CloudPlay"; }
       if (on && page === "uso" && !$("app").classList.contains("hidden")) setTimeout(loadUsage, 0);
-      if (on && page === "codigos") setTimeout(drawActiveHistory, 0);
+      if (on && page === "inicio") setTimeout(drawActiveHistory, 0);
       if (on && page === "conectados" && !$("app").classList.contains("hidden")) setTimeout(loadPeaks, 0);
     });
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.page === page));
