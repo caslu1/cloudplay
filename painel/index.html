@@ -246,6 +246,16 @@
   .msg-head b { font-size: 13px; }
   .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: #1f1b22; border: 1px solid var(--line2); color: var(--text);
     padding: 10px 16px; border-radius: 10px; font-weight: 500; font-size: 13.5px; opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s; z-index: 50; box-shadow: 0 8px 30px #0008; }
+  dialog.renew { width: min(440px, calc(100vw - 32px)); padding: 22px; border-radius: 14px; border: 1px solid var(--line2); background: var(--panel); color: var(--text); }
+  dialog.renew::backdrop { background: rgba(0, 0, 0, .62); }
+  dialog.renew .seg { display: flex; margin: 14px 0 4px; }
+  dialog.renew .seg button { flex: 1 1 auto; }
+  dialog.renew .rn-who { color: var(--muted); font-size: 13px; margin: 2px 0 0; }
+  dialog.renew .rn-now, dialog.renew .rn-new { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 9px; background: var(--field); border: 1px solid var(--line); margin-top: 10px; font-size: 13px; }
+  dialog.renew .rn-new { border-color: rgba(255, 61, 138, .35); background: var(--brand-soft); }
+  dialog.renew .rn-new b { color: #ffd1e3; }
+  dialog.renew .rn-extra { margin-top: 12px; }
+  dialog.renew .rn-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   table.codes { table-layout: fixed; }
   table.codes td { vertical-align: middle; }
@@ -350,7 +360,7 @@
     .cc-devs div { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
     .cc-devs span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .cc-devs .link { background: none; border: 0; height: auto; padding: 0; color: var(--brand); font-weight: 600; font-size: 13px; }
-    .cc-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 8px; margin-top: 4px; }
+    .cc-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto auto; gap: 6px; margin-top: 4px; }
     .cc-actions .primary { height: 40px; font-size: 13px; padding: 0 10px; min-width: 0; overflow: hidden; }
     .cc { min-width: 0; }
     .list-head { flex-wrap: nowrap; align-items: flex-start; }
@@ -483,6 +493,7 @@
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
   <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></symbol>
+  <symbol id="i-renew" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.6-4.5M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.5M20 19v-4h-4"/></symbol>
 </svg>
 
 <section id="setup" class="center hidden">
@@ -534,6 +545,28 @@
   </aside>
   <div id="backdrop" class="backdrop"></div>
   <div id="toast" class="toast"></div>
+  <dialog id="renewDlg" class="renew">
+    <form id="renewForm" method="dialog">
+      <h2>Renovar código <span id="rnCode" class="code"></span></h2>
+      <p id="rnWho" class="rn-who"></p>
+      <div id="rnPeriod" class="seg accent">
+        <button type="button" data-v="m1" class="on">1 mês</button><button type="button" data-v="m3">3 meses</button>
+        <button type="button" data-v="m6">6 meses</button><button type="button" data-v="m12">12 meses</button>
+        <button type="button" data-v="days">Dias</button><button type="button" data-v="date"><svg class="i"><use href="#i-calendar"/></svg>Data</button>
+      </div>
+      <div id="rnDaysRow" class="rn-extra hidden"><label for="rnDays">Quantos dias</label><input id="rnDays" type="number" min="1" max="3650" value="15"></div>
+      <div id="rnDateRow" class="rn-extra hidden"><label for="rnDate">Vence no dia</label><input id="rnDate" type="date"></div>
+      <div class="rn-now"><span>Vencimento atual</span><b id="rnNow"></b></div>
+      <div id="rnNewBox" class="rn-new"><span>Novo vencimento</span><b id="rnNew"></b></div>
+      <span class="hint">O tempo é somado ao que falta. Se já venceu, conta a partir de hoje. Vale até as 23:59 do dia.</span>
+      <p id="rnMsg" class="msg"></p>
+      <div class="rn-actions">
+        <button type="button" class="ghost" id="rnCancel">Cancelar</button>
+        <button type="button" class="ghost hidden" id="rnCopy"><svg class="i"><use href="#i-msg"/></svg>Copiar mensagem</button>
+        <button type="submit" id="rnSave"><svg class="i"><use href="#i-renew"/></svg>Renovar</button>
+      </div>
+    </form>
+  </dialog>
   <nav class="bottom-nav" aria-label="Menu">
     <a href="#inicio" data-page="inicio"><svg class="i"><use href="#i-home"/></svg><span>Início</span></a>
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
@@ -547,7 +580,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v8</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v9</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -944,6 +977,7 @@
         el("td", { "data-label": "", class: "td-act" }, el("div", { class: "actions" },
           iconBtn("copy", "Copiar código", (e) => copy(c.code, e.currentTarget, "Código copiado")),
           iconBtn("msg", "Copiar mensagem para o cliente", (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada")),
+          iconBtn("renew", "Renovar", () => openRenew(c)),
           iconBtn(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
           iconBtn("trash", "Excluir", () => removeCode(c), "bad")))));
 
@@ -962,7 +996,8 @@
           el("span", {}, isOnline(d) ? el("i", { class: "dot-on" }) : "", (d.device_name || "Aparelho") + " · " + (isOnline(d) ? "online agora" : ago(d.last_seen))),
           el("button", { class: "link", onclick: () => removeDevice(c, d) }, "Liberar")))) : "",
         el("div", { class: "cc-actions" },
-          el("button", { class: "primary", onclick: (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada") }, icon("msg"), "Copiar mensagem"),
+          el("button", { class: "primary", onclick: (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada") }, icon("msg"), "Mensagem"),
+          iconBtn("renew", "Renovar", () => openRenew(c)),
           iconBtn("copy", "Copiar código", (e) => copy(c.code, e.currentTarget, "Código copiado")),
           iconBtn(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
           iconBtn("trash", "Excluir", () => removeCode(c), "bad"))));
@@ -970,6 +1005,76 @@
   }
 
   const todaySP = () => new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
+  const daySP = (d) => new Date(d).toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
+
+  // ── Renew a customer's code ──
+  let renewing = null;
+  function renewedMessage(c) {
+    return "🔄 CLOUDPLAY – ACESSO RENOVADO\n\n" +
+      "🎬 Obrigado por continuar com o CloudPlay! Seu acesso foi renovado.\n\n" +
+      "🔑 Código de acesso: " + c.code + "\n" +
+      "📅 Novo vencimento: " + fmtDay(c.expires_on) + "\n\n" +
+      "📲 É só continuar usando o aplicativo normalmente!";
+  }
+  // Same rule as renew_access_code: months/days on top of what is left (or today), last day 23:59.
+  function renewTarget(c) {
+    const v = $("rnPeriod").dataset.value;
+    if (v === "date") return $("rnDate").value || null;
+    const base = c.expires_at && new Date(c.expires_at) > new Date() ? daySP(c.expires_at) : todaySP();
+    let [y, m, d] = base.split("-").map(Number);
+    if (v === "days") {
+      const n = parseInt($("rnDays").value, 10); if (!(n >= 1 && n <= 3650)) return null;
+      return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+    }
+    const months = parseInt(v.slice(1), 10); m += months; y += Math.floor((m - 1) / 12); m = (m - 1) % 12 + 1;
+    d = Math.min(d, new Date(Date.UTC(y, m, 0)).getUTCDate());
+    return y + "-" + String(m).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+  }
+  function updateRenew() {
+    const v = $("rnPeriod").dataset.value;
+    $("rnDaysRow").classList.toggle("hidden", v !== "days");
+    $("rnDateRow").classList.toggle("hidden", v !== "date");
+    const t = renewing && renewTarget(renewing);
+    $("rnNew").textContent = t ? fmtDay(t) : "—";
+  }
+  function openRenew(c) {
+    renewing = c;
+    $("rnCode").textContent = c.code; $("rnWho").textContent = c.note || "Sem nome";
+    $("rnNow").textContent = c.expires_at ? fmt(c.expires_at) + " · " + timeLeft(c.expires_at) : validityOf(c);
+    $("rnDate").min = todaySP(); $("rnDate").value = "";
+    $("rnMsg").textContent = ""; $("rnSave").disabled = false;
+    $("rnSave").classList.remove("hidden"); $("rnCopy").classList.add("hidden"); $("rnNewBox").classList.remove("hidden"); $("rnPeriod").classList.remove("hidden"); $("rnCancel").textContent = "Cancelar";
+    updateRenew(); $("renewDlg").showModal();
+  }
+  seg("rnPeriod", updateRenew);
+  ["rnDays", "rnDate"].forEach((id) => $(id).addEventListener("input", updateRenew));
+  $("rnCancel").addEventListener("click", () => $("renewDlg").close());
+  $("renewForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const c = renewing; if (!c) return;
+    const v = $("rnPeriod").dataset.value;
+    const target = renewTarget(c);
+    if (!target || target < todaySP()) { $("rnMsg").textContent = v === "date" ? "Escolha uma data a partir de hoje." : "Informe de 1 a 3650 dias."; return; }
+    $("rnSave").disabled = true; $("rnMsg").textContent = "";
+    const args = { p_id: c.id };
+    if (v === "date") args.p_until = target;
+    else if (v === "days") args.p_days = parseInt($("rnDays").value, 10);
+    else args.p_months = parseInt(v.slice(1), 10);
+    const { data, error } = await sb.rpc("renew_access_code", args);
+    $("rnSave").disabled = false;
+    if (error) {
+      $("rnMsg").textContent = /renew_access_code|function/i.test(error.message)
+        ? "Para renovar, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível renovar: " + error.message;
+      return;
+    }
+    const done = Object.assign({}, c, Array.isArray(data) ? data[0] : data);
+    renewing = done;
+    $("rnNow").textContent = fmtDay(done.expires_on) + " · renovado ✓";
+    $("rnSave").classList.add("hidden"); $("rnCopy").classList.remove("hidden"); $("rnNewBox").classList.add("hidden"); $("rnPeriod").classList.add("hidden"); $("rnDaysRow").classList.add("hidden"); $("rnDateRow").classList.add("hidden"); $("rnCancel").textContent = "Fechar";
+    toast("Código renovado até " + fmtDay(done.expires_on));
+    load(true);
+  });
+  $("rnCopy").addEventListener("click", (e) => renewing && copy(renewedMessage(renewing), e.currentTarget, "Mensagem copiada"));
   // A device is online when the app checked in during the last 5 minutes (it does every 2 while on screen).
   const ONLINE_MS = 5 * 60 * 1000;
   const isOnline = (d) => d.last_seen && Date.now() - new Date(d.last_seen) < ONLINE_MS;
