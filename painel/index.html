@@ -635,7 +635,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v13</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v14</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -710,9 +710,15 @@
                 <button type="button" data-v="date"><svg class="i"><use href="#i-calendar"/></svg>Escolher data</button>
               </div>
               <div id="dateRow" class="date-row hidden"><input id="gDate" type="date"><span class="hint" style="margin:0">Vale até as 23:59 desse dia, mesmo antes de ativar.</span></div>
+              </div>
+            <div id="startRow" class="full"><label>Começa a contar</label>
+              <div id="gStart" class="seg">
+                <button type="button" data-v="activate" class="on">Quando o cliente ativar</button>
+                <button type="button" data-v="now">Agora, ao gerar</button>
+              </div>
               <span id="daysHint" class="hint">A validade começa a contar quando o cliente ativa no aparelho.</span></div>
             <div class="full trial-only hidden"><div class="trial-note"><svg class="i"><use href="#i-clock"/></svg>
-              <div>O teste vale <b>24 horas</b> a partir da ativação, em <b>1 aparelho</b>. Depois disso o app pede um novo código.</div></div></div>
+              <div>O teste vale <b>24 horas</b> <span id="trialFrom">a partir da ativação</span>, em <b>1 aparelho</b>. Depois disso o app pede um novo código.</div></div></div>
             <div class="client-only"><label for="gDevices">Aparelhos por código</label>
               <div class="stepper"><button type="button" data-step="-1" data-for="gDevices">−</button>
                 <input id="gDevices" type="number" min="1" max="5" value="1"><button type="button" data-step="1" data-for="gDevices">+</button></div>
@@ -727,6 +733,7 @@
             <div class="summary">
               <div>Tipo<b id="sumType">Cliente</b></div>
               <div>Validade<b id="sumDays">30 dias</b></div>
+              <div id="sumStartRow">Começa<b id="sumStart">Ao ativar</b></div>
               <div>Aparelhos<b id="sumDevices">1</b></div>
               <div>Quantidade<b id="sumCount">1</b></div>
             </div>
@@ -1285,6 +1292,12 @@
   const DAY_LABEL = { "30": "30 dias", "90": "90 dias", "180": "6 meses", "365": "1 ano", "": "Sem validade", date: "Escolher data" };
   const fmtDay = (v) => v ? v.split("-").reverse().join("/") : "";
   function genType() { return $("gType").dataset.value || "client"; }
+  function startChoice() { return $("gStart").dataset.value || "activate"; }
+  // Today in São Paulo plus [n] days, as yyyy-mm-dd.
+  function addDaysSP(n) {
+    const [y, m, d] = todaySP().split("-").map(Number);
+    return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+  }
   function updateSummary() {
     const trial = genType() === "trial";
     document.querySelectorAll(".client-only").forEach((n) => n.classList.toggle("hidden", trial));
@@ -1293,14 +1306,24 @@
     $("sumType").textContent = trial ? "Teste" : "Cliente";
     const daysChoice = $("gDays").dataset.value ?? "30";
     $("dateRow").classList.toggle("hidden", daysChoice !== "date");
-    $("daysHint").classList.toggle("hidden", daysChoice === "date");
+    // "Sem validade" and a chosen date have nothing to count from.
+    const startApplies = trial || (daysChoice !== "date" && daysChoice !== "");
+    const now = startApplies && startChoice() === "now";
+    $("startRow").classList.toggle("hidden", !startApplies);
+    $("sumStartRow").classList.toggle("hidden", !startApplies);
+    $("sumStart").textContent = now ? "Agora" : "Ao ativar";
+    $("daysHint").textContent = now
+      ? (trial ? "As 24 horas começam agora, mesmo que o cliente ainda não tenha ativado."
+               : "Vence em " + fmtDay(addDaysSP(parseInt(daysChoice, 10))) + ", mesmo que o cliente ainda não tenha ativado.")
+      : "A validade começa a contar quando o cliente ativa no aparelho.";
+    $("trialFrom").textContent = now ? "a partir de agora" : "a partir da ativação";
     $("sumDays").textContent = trial ? "24 horas"
       : daysChoice === "date" ? ($("gDate").value ? "Até " + fmtDay($("gDate").value) : "Escolha a data") : DAY_LABEL[daysChoice];
     $("sumDevices").textContent = trial ? "1" : Math.min(5, Math.max(1, parseInt($("gDevices").value, 10) || 1));
     $("sumCount").textContent = count;
     $("genBtn").querySelector("span").textContent = (trial ? "Gerar teste" : "Gerar código") + (count > 1 ? "s" : "");
   }
-  seg("gType", updateSummary); seg("gDays", updateSummary); seg("filter", render);
+  seg("gType", updateSummary); seg("gDays", updateSummary); seg("gStart", updateSummary); seg("filter", render);
   const setGen = (open) => { $("genCard").classList.toggle("open", open); document.body.classList.toggle("gen-visible", open);
     if (open) $("genCard").scrollIntoView({ behavior: "smooth", block: "start" }); };
   $("genOpen").addEventListener("click", () => { $("gDate").min = todaySP(); setGen(true); });
@@ -1325,8 +1348,13 @@
       $("genMsg").textContent = "Escolha uma data de vencimento a partir de hoje."; return;
     }
     const devices = Math.min(5, Math.max(1, parseInt($("gDevices").value, 10) || 1));
+    const startNow = startChoice() === "now" && (trial || (days !== "" && days !== "date"));
     $("genBtn").disabled = true;
-    const { data, error } = trial
+    // "Agora, ao gerar": a client code gets its last day right away (today + the days, 23:59).
+    const res = !trial && startNow
+      ? await sb.rpc("generate_access_codes_until", { p_count: count, p_max_devices: devices, p_expires_on: addDaysSP(parseInt(days, 10)), p_note: $("gNote").value })
+      : null;
+    const { data, error } = res ? res : trial
       ? await sb.rpc("generate_trial_codes", { p_count: count, p_hours: 24, p_note: $("gNote").value })
       : byDate
       ? await sb.rpc("generate_access_codes_until", { p_count: count, p_max_devices: devices, p_expires_on: $("gDate").value, p_note: $("gNote").value })
@@ -1336,6 +1364,14 @@
           p_duration_days: days ? parseInt(days, 10) : null,
           p_note: $("gNote").value
         });
+    // A test starting now: its 24 hours are set on the codes just made.
+    if (!error && trial && startNow && data && data.length) {
+      const until = new Date(Date.now() + 24 * 3600 * 1000);
+      const patch = { expires_at: until.toISOString(), expires_on: daySP(until) };
+      const { error: te } = await sb.from("access_codes").update(patch).in("id", data.map((c) => c.id));
+      if (!te) data.forEach((c) => Object.assign(c, patch));
+      else toast("Os testes foram gerados, mas contam a partir da ativação: " + te.message);
+    }
     $("genBtn").disabled = false;
     if (error) {
       $("genMsg").textContent = trial && /generate_trial_codes|function/i.test(error.message)
