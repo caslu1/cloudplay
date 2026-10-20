@@ -273,6 +273,14 @@
   .sheet-item svg { width: 20px; height: 20px; color: var(--muted); }
   .sheet-item.bad, .sheet-item.bad svg { color: #ff8a8e; }
   .sheet-cancel { width: 100%; height: 46px; margin-top: 8px; }
+  .stats.stats-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .hist-card { position: relative; margin-bottom: 16px; }
+  .hist-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .hist-ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(255, 61, 138, .12); color: #ff8ab5; flex: none; }
+  .hist-ic svg { width: 20px; height: 20px; }
+  .hist-chart { width: 100%; overflow: hidden; }
+  .hist-tip { position: absolute; z-index: 3; width: 150px; padding: 9px 12px; border-radius: 10px; background: #2a2a30; border: 1px solid var(--line2); box-shadow: 0 10px 30px rgba(0, 0, 0, .5); pointer-events: none; }
+  .hist-tip b { display: block; font-size: 14px; } .hist-tip span { font-size: 12.5px; color: var(--muted); }
   .see-all { display: inline-block; margin-top: 6px; color: var(--muted); font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; }
   .stats.stats-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .cn-list { display: grid; gap: 6px; margin-top: 12px; }
@@ -286,6 +294,11 @@
   .cn .when.on { color: var(--ok); font-weight: 600; }
   @media (max-width: 720px) {
     .stats.stats-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stats.stats-4 { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stats.stats-4 .stat { padding: 11px 14px; }
+    .stats.stats-4 .stat b { font-size: 22px; }
+    .toolbar { position: relative; }
+    .seg.scroll { -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent); padding-right: 24px; }
     .cn { grid-template-columns: 10px minmax(0, 1fr) auto; gap: 10px; }
     .cn .c-dev, .cn .c-code { display: none; }
     .cn span.c-sub { display: block; }
@@ -658,7 +671,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v15</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v16</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -703,10 +716,11 @@
 
     <!-- Códigos -->
     <main class="page hidden" data-section="codigos" data-title="Códigos de acesso">
-      <div class="stats three">
-        <div class="stat"><span>Livres</span><b id="cFree">0</b></div>
+      <div class="stats stats-4">
+        <div class="stat"><span>Gerados hoje</span><b id="cToday">0</b></div>
+        <div class="stat"><span>Gerados no mês</span><b id="cMonth">0</b></div>
         <div class="stat"><span>Em uso</span><b id="cActive">0</b></div>
-        <div class="stat"><span>Testes ativos</span><b id="cTrial">0</b></div>
+        <div class="stat"><span>Livres</span><b id="cFree">0</b></div>
       </div>
 
       <button type="button" id="genOpen" class="gen-open"><svg class="i"><use href="#i-plus"/></svg>Novo código</button>
@@ -772,6 +786,12 @@
         </div>
       </div>
 
+      <div class="card hist-card">
+        <div class="hist-head"><div class="hist-ic"><svg class="i"><use href="#i-chart"/></svg></div>
+          <div><h2>Clientes ativos</h2><p class="sub" style="margin:0">Últimos 30 dias</p></div></div>
+        <div id="histChart" class="hist-chart"></div>
+        <div id="histTip" class="hist-tip hidden"></div>
+      </div>
       <div class="card">
         <div class="list-head">
           <div><h2>Todos os códigos</h2><p class="sub" style="margin:0">Veja quando cada código foi ativado, bloqueie, libere aparelhos ou exclua.</p></div>
@@ -1058,7 +1078,11 @@
     codes.forEach((c) => { const st = statusOf(c); counts[st]++; if (isTrial(c)) { counts.trial++; if (st === "active") trialActive++; } });
     $("sTotal").textContent = codes.length; $("sFree").textContent = counts.free;
     $("sActive").textContent = counts.active; $("sExpired").textContent = counts.expired + counts.revoked;
-    $("cFree").textContent = counts.free; $("cActive").textContent = counts.active; $("cTrial").textContent = trialActive;
+    $("cFree").textContent = counts.free; $("cActive").textContent = counts.active;
+    const today0 = todaySP(), month0 = today0.slice(0, 7);
+    $("cToday").textContent = codes.filter((c) => daySP(c.created_at) === today0).length;
+    $("cMonth").textContent = codes.filter((c) => daySP(c.created_at).slice(0, 7) === month0).length;
+    drawActiveHistory();
     document.querySelectorAll("#filter [data-n]").forEach((n) => n.textContent = counts[n.dataset.n] || 0);
     renderOnline();
     renderConnected();
@@ -1289,6 +1313,54 @@
     if (online.length > 12) shown.push(el("div", { class: "on-item" }, el("div", {}, el("b", {}, "+ " + (online.length - 12) + " aparelhos"))));
     $("onList").replaceChildren(...shown);
   }
+  // ── Active customers, last 30 days: codes already activated and not expired at the end of each day
+  // (São Paulo time). Blocked codes are left out, since when they were blocked is not stored.
+  function activeHistory() {
+    const days = [];
+    for (let i = 29; i >= 0; i--) {
+      const key = addDaysSP(-i);
+      const end = new Date(key + "T23:59:59-03:00");
+      const n = codes.filter((c) => !c.revoked && c.activated_at && new Date(c.activated_at) <= end &&
+        (!c.expires_at || new Date(c.expires_at) > end)).length;
+      days.push({ key, n });
+    }
+    return days;
+  }
+  function drawActiveHistory() {
+    const box = $("histChart"); if (!box || box.offsetParent === null) return;
+    const data = activeHistory();
+    const W = box.clientWidth || 600, H = 230, T = 30, B = 34, L = 6, R = 6;
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg"); svg.setAttribute("width", W); svg.setAttribute("height", H);
+    const mk = (tag, attrs, text) => { const e = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); if (text != null) e.textContent = text; svg.append(e); return e; };
+    // Phones show the last 14 days so every bar keeps its number.
+    const shown = W < 560 ? data.slice(-14) : data;
+    const max = Math.max(1, ...shown.map((d) => d.n));
+    const plotH = H - T - B, slot = (W - L - R) / shown.length, bw = Math.max(8, Math.min(26, slot - 6));
+    for (let g = 1; g <= 3; g++) { const y = T + plotH - plotH * g / 3; mk("line", { x1: L, x2: W - R, y1: y, y2: y, stroke: "#232326", "stroke-dasharray": "3 4" }); }
+    const tip = $("histTip");
+    shown.forEach((d, i) => {
+      const prev = i > 0 ? shown[i - 1].n : (data[data.length - shown.length - 1] || d).n;
+      const x = L + i * slot + (slot - bw) / 2, h = Math.max(2, d.n / max * (plotH - 18)), y = T + plotH - h;
+      mk("rect", { x, y, width: bw, height: h, rx: 4, fill: "rgba(255, 61, 138, .28)", stroke: "rgba(255, 111, 159, .75)", "stroke-width": 1.2 });
+      mk("text", { x: x + bw / 2, y: y - 14, "text-anchor": "middle", fill: "#d4d4d8", "font-size": 11, "font-weight": 600 }, d.n);
+      if (d.n !== prev) mk("text", { x: x + bw / 2, y: y - 3, "text-anchor": "middle", fill: d.n > prev ? "#3ccf8e" : "#f2555a", "font-size": 8 }, d.n > prev ? "▲" : "▼");
+      const every = shown.length > 15 ? 3 : 2;
+      if ((shown.length - 1 - i) % every === 0) mk("text", { x: x + bw / 2, y: H - 10, "text-anchor": "middle", fill: "#6b6b73", "font-size": 11 }, d.key.slice(8, 10) + "/" + d.key.slice(5, 7));
+      const hit = mk("rect", { x: L + i * slot, y: T - 20, width: slot, height: plotH + 20, fill: "transparent" });
+      const show = () => {
+        tip.replaceChildren(el("b", {}, d.key.slice(8, 10) + "/" + d.key.slice(5, 7)), el("span", {}, d.n + (d.n === 1 ? " cliente ativo" : " clientes ativos")));
+        tip.classList.remove("hidden");
+        const bx = box.getBoundingClientRect(), cx = x + bw / 2;
+        tip.style.left = Math.min(bx.width - 150, Math.max(0, cx - 75)) + "px"; tip.style.top = (y - 76 + box.offsetTop) + "px";
+      };
+      hit.addEventListener("mouseenter", show); hit.addEventListener("click", show);
+      hit.addEventListener("mouseleave", () => tip.classList.add("hidden"));
+    });
+    box.replaceChildren(svg);
+  }
+  window.addEventListener("resize", () => { if (location.hash === "#codigos") drawActiveHistory(); });
+
   // ── Conectados: every device of every code, online ones first ──
   function renderConnected() {
     const q = $("cnSearch").value.trim().toLowerCase();
@@ -1859,6 +1931,7 @@
       s.classList.toggle("hidden", !on);
       if (on) { $("pageTitle").textContent = s.dataset.title; document.title = s.dataset.title + " · CloudPlay"; }
       if (on && page === "uso" && !$("app").classList.contains("hidden")) setTimeout(loadUsage, 0);
+      if (on && page === "codigos") setTimeout(drawActiveHistory, 0);
     });
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.page === page));
     document.querySelectorAll(".bottom-nav a").forEach((a) => a.classList.toggle("active", a.dataset.page.split(" ").includes(page)));
