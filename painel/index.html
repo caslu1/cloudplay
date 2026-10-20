@@ -259,6 +259,20 @@
   .nav .pill.count-pill::before { content: none; }
   button.icon.wa { color: #25d366; }
   .msg.info { color: var(--muted); }
+  dialog.sheet { margin: auto auto 0; width: 100%; max-width: 520px; padding: 10px 14px calc(14px + env(safe-area-inset-bottom)); border: 1px solid var(--line2); border-bottom: 0;
+    border-radius: 18px 18px 0 0; background: var(--panel); color: var(--text); }
+  dialog.sheet::backdrop { background: rgba(0, 0, 0, .6); }
+  dialog.sheet[open] { animation: sheetUp .18s ease-out; }
+  @keyframes sheetUp { from { transform: translateY(30px); opacity: .4; } to { transform: none; opacity: 1; } }
+  .sheet-head { padding: 12px 6px 10px; border-bottom: 1px solid var(--line); margin-bottom: 6px; }
+  .sheet-head::before { content: ""; display: block; width: 40px; height: 4px; border-radius: 99px; background: var(--line2); margin: -4px auto 12px; }
+  .sheet-head b { display: block; font-size: 16px; } .sheet-head span { font-size: 13px; color: var(--muted); }
+  .sheet-items { display: grid; }
+  .sheet-item { justify-content: flex-start; gap: 14px; height: 52px; padding: 0 8px; border-radius: 10px; background: transparent; color: var(--text); font-size: 15px; font-weight: 500; border: 0; }
+  .sheet-item:hover { background: var(--panel2); }
+  .sheet-item svg { width: 20px; height: 20px; color: var(--muted); }
+  .sheet-item.bad, .sheet-item.bad svg { color: #ff8a8e; }
+  .sheet-cancel { width: 100%; height: 46px; margin-top: 8px; }
   .see-all { display: inline-block; margin-top: 6px; color: var(--muted); font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; }
   .stats.stats-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .cn-list { display: grid; gap: 6px; margin-top: 12px; }
@@ -588,11 +602,20 @@
   </aside>
   <div id="backdrop" class="backdrop"></div>
   <div id="toast" class="toast"></div>
+  <dialog id="actSheet" class="sheet">
+    <div class="sheet-head"><b id="shTitle"></b><span id="shSub"></span></div>
+    <div id="shItems" class="sheet-items"></div>
+    <button type="button" class="ghost sheet-cancel" id="shCancel">Cancelar</button>
+  </dialog>
   <dialog id="editDlg" class="renew">
     <form id="editForm" method="dialog">
       <h2>Editar cliente <span id="edCode" class="code"></span></h2>
       <div class="rn-extra"><label for="edNote">Nome do cliente</label><input id="edNote" maxlength="80" autocomplete="off" placeholder="Ex.: João · TV da sala"></div>
       <div class="rn-extra"><label for="edPhone">WhatsApp</label><input id="edPhone" type="tel" inputmode="tel" maxlength="20" autocomplete="off" placeholder="(11) 91234-5678"></div>
+      <div class="rn-extra"><label for="edDevices">Telas (aparelhos ao mesmo tempo)</label>
+        <div class="stepper"><button type="button" data-step="-1" data-for="edDevices">−</button>
+          <input id="edDevices" type="number" min="1" max="10" value="1"><button type="button" data-step="1" data-for="edDevices">+</button></div>
+        <span id="edDevHint" class="hint"></span></div>
       <p id="edMsg" class="msg"></p>
       <div class="rn-actions">
         <button type="button" class="ghost" id="edCancel">Cancelar</button>
@@ -635,7 +658,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v14</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v15</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -1078,10 +1101,6 @@
       const dueSub = c.expires_at ? timeLeft(c.expires_at) : (c.activated_at ? "" : (c.duration_days || isTrial(c) ? "conta após ativar" : ""));
       const onlineCount = devs.filter(isOnline).length;
       const row = (label, ...value) => el("div", { class: "cc-row" }, el("span", { class: "cc-lab" }, label), el("div", { class: "cc-val" }, ...value));
-      const more = el("div", { class: "cc-more hidden" },
-        el("button", { class: "ghost", onclick: (e) => copy(c.code, e.currentTarget, "Código copiado") }, icon("copy"), "Copiar código"),
-        el("button", { class: "ghost", onclick: () => toggleRevoke(c) }, icon(c.revoked ? "unlock" : "lock"), c.revoked ? "Desbloquear" : "Bloquear"),
-        el("button", { class: "danger", onclick: () => removeCode(c) }, icon("trash"), "Excluir"));
       const devList = devs.length ? el("div", { class: "cc-devs hidden" }, devs.map((d) => el("div", { class: "cc-dev-row" },
         el("span", {}, isOnline(d) ? el("i", { class: "dot-on" }) : "", (d.device_name || "Aparelho") + " · " + (isOnline(d) ? "online agora" : ago(d.last_seen))),
         el("button", { class: "link", onclick: () => removeDevice(c, d) }, "Liberar")))) : null;
@@ -1104,8 +1123,7 @@
             act("msg", "Copiar mensagem", "a-msg", (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada")),
             act("renew", "Renovar", "a-renew", () => openRenew(c)),
             act("edit", "Editar cliente", "a-edit", () => openEdit(c)),
-            act("menu", "Mais opções", "a-more", () => more.classList.toggle("hidden")))),
-        more));
+            act("menu", "Mais opções", "a-more", () => openSheet(c))))));
     });
   }
 
@@ -1135,18 +1153,47 @@
     editing = c;
     $("edCode").textContent = c.code;
     $("edNote").value = c.note || ""; $("edPhone").value = c.phone ? phoneLabel(c.phone) : "";
+    $("edDevices").value = c.max_devices; updateEdDevHint();
     $("edMsg").textContent = askPhone ? "Cadastre o WhatsApp do cliente para abrir a conversa." : "";
     $("edMsg").className = askPhone ? "msg info" : "msg";
     $("editDlg").showModal();
     setTimeout(() => (askPhone ? $("edPhone") : $("edNote")).focus(), 50);
   }
+  function updateEdDevHint() {
+    if (!editing) return;
+    const n = parseInt($("edDevices").value, 10) || 1, used = (editing.access_code_devices || []).length;
+    $("edDevHint").textContent = n < used ? "Este código está em " + used + " aparelhos. Libere " + (used - n) + " antes de diminuir."
+      : n > editing.max_devices ? "+" + (n - editing.max_devices) + " tela" + (n - editing.max_devices > 1 ? "s" : "") + " (antes: " + editing.max_devices + ")"
+      : "Em uso: " + used + " de " + n + ".";
+  }
+  $("edDevices").addEventListener("input", updateEdDevHint);
+  document.querySelectorAll('[data-for="edDevices"]').forEach((b) => b.addEventListener("click", updateEdDevHint));
   $("edCancel").addEventListener("click", () => $("editDlg").close());
+
+  // Phones: the ☰ of a code opens a list of its other options from the bottom of the screen.
+  function openSheet(c) {
+    $("shTitle").textContent = c.note || "Sem nome"; $("shSub").textContent = "Código " + c.code;
+    const item = (name, label, fn, cls) => el("button", { type: "button", class: "sheet-item" + (cls ? " " + cls : ""),
+      onclick: (e) => { $("actSheet").close(); fn(e); } }, icon(name), el("span", {}, label));
+    $("shItems").replaceChildren(
+      item("copy", "Copiar código", (e) => copy(c.code, null, "Código copiado")),
+      item("msg", "Copiar mensagem", () => copy(messageFor(c), null, "Mensagem copiada")),
+      item("tv", "Telas, nome e WhatsApp", () => openEdit(c)),
+      item(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
+      item("trash", "Excluir código", () => removeCode(c), "bad"));
+    $("actSheet").showModal();
+  }
+  $("shCancel").addEventListener("click", () => $("actSheet").close());
+  $("actSheet").addEventListener("click", (e) => { if (e.target === $("actSheet")) $("actSheet").close(); });
   $("editForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const raw = $("edPhone").value.trim();
     const phone = raw ? phoneDigits(raw) : null;
     if (raw && !phone) { $("edMsg").textContent = "Número inválido. Use DDD + número, ex.: (11) 91234-5678."; $("edMsg").className = "msg"; return; }
-    const { error } = await sb.from("access_codes").update({ note: $("edNote").value.trim() || null, phone }).eq("id", editing.id);
+    const maxDevices = Math.min(10, Math.max(1, parseInt($("edDevices").value, 10) || 1));
+    const used = (editing.access_code_devices || []).length;
+    if (maxDevices < used) { $("edMsg").className = "msg"; $("edMsg").textContent = "Libere aparelhos antes de diminuir as telas."; return; }
+    const { error } = await sb.from("access_codes").update({ note: $("edNote").value.trim() || null, phone, max_devices: maxDevices }).eq("id", editing.id);
     if (error) {
       $("edMsg").className = "msg";
       $("edMsg").textContent = /phone/i.test(error.message) ? "Para salvar o telefone, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível salvar: " + error.message;
