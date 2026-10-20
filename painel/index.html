@@ -257,6 +257,8 @@
   dialog.renew .rn-extra { margin-top: 12px; }
   dialog.renew .rn-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
   .nav .pill.count-pill::before { content: none; }
+  button.icon.wa { color: #25d366; }
+  .msg.info { color: var(--muted); }
   .see-all { display: inline-block; margin-top: 6px; color: var(--muted); font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; }
   .stats.stats-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .cn-list { display: grid; gap: 6px; margin-top: 12px; }
@@ -369,26 +371,40 @@
     .gen-card .card-head { padding-right: 40px; }
     table.codes, .codes-wrap thead { display: none !important; }
     .code-cards { display: grid; gap: 10px; }
-    .cc { background: var(--panel2); border: 1px solid var(--line2); border-radius: 12px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
-    .cc-top { display: flex; align-items: center; gap: 8px; }
-    .cc-top .code { font-size: 19px; letter-spacing: 2px; }
-    .cc-top .badge { margin-left: auto; }
-    .cc-client { font-weight: 600; font-size: 15px; margin-top: -4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .cc-facts { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--field); }
-    .cc-facts > div, .cc-dev summary { display: flex; align-items: center; gap: 8px; padding: 9px 12px; color: var(--muted); font-size: 13px; }
-    .cc-facts > * + * { border-top: 1px solid var(--line); }
-    .cc-facts svg { color: var(--faint); flex: none; }
-    .cc-dev summary { cursor: pointer; list-style: none; }
-    .cc-dev summary::-webkit-details-marker { display: none; }
-    .cc-dev summary::after { content: "›"; margin-left: auto; color: var(--faint); font-size: 16px; transition: transform .15s; }
-    .cc-dev[open] summary::after { transform: rotate(90deg); }
-    .cc-dev-row { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px 8px 36px; font-size: 13px; border-top: 1px dashed var(--line); }
+    .cc { position: relative; background: var(--panel2); border: 1px solid var(--line2); border-radius: 16px; padding: 18px 16px 14px; display: grid; gap: 0; min-width: 0; overflow: hidden; }
+    .cc-flag { position: absolute; top: 0; left: 0; padding: 3px 12px; border-radius: 0 0 10px 0; background: rgba(242, 85, 90, .16); color: #ff8a8e; font-size: 12px; font-weight: 600; }
+    .cc.trial .cc-head { margin-top: 8px; }
+    .cc-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .cc-av { width: 46px; height: 46px; border-radius: 50%; flex: none; display: grid; place-items: center; background: #1f2433; color: #8ea2ff; font-weight: 700; font-size: 16px; }
+    .cc-id { min-width: 0; flex: 1; }
+    .cc-id b { display: block; font-size: 16px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cc-id .code { display: block; font-size: 13px; color: var(--muted); letter-spacing: 1.5px; margin-top: 1px; }
+    .cc-st { flex: none; align-self: flex-start; padding: 5px 10px; border-radius: 7px; font-size: 11.5px; font-weight: 700; letter-spacing: .5px; }
+    .st-active { background: rgba(60, 207, 142, .14); color: #5fe0a5; }
+    .st-free { background: rgba(143, 163, 184, .14); color: #b9c6d4; }
+    .st-expired { background: rgba(242, 85, 90, .14); color: #ff8a8e; }
+    .st-revoked { background: rgba(242, 85, 90, .14); color: #ff8a8e; }
+    .cc-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+    .cc-lab, .cc-lab2 { font-size: 12px; font-weight: 700; letter-spacing: .6px; color: var(--muted); }
+    .cc-val { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; min-width: 0; }
+    .cc-val small { color: var(--faint); font-size: 12px; }
+    .chip { display: inline-block; padding: 6px 12px; border-radius: 8px; font-size: 13.5px; font-weight: 600; white-space: nowrap; }
+    .chip.st-free { color: var(--text); background: rgba(255, 255, 255, .06); }
+    .link-chip { height: auto; background: rgba(255, 255, 255, .06); color: var(--text); border: 1px solid var(--line2); }
+    .link-chip:hover { background: rgba(255, 255, 255, .1); }
+    .cc-phone { font-size: 14px; font-weight: 600; }
+    .cc-devs { display: grid; gap: 4px; margin: 0 0 8px; padding: 8px 10px; border-radius: 10px; background: var(--field); border: 1px solid var(--line); }
+    .cc-dev-row { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 3px 0; }
     .cc-dev-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .cc-dev-row .link { background: none; border: 0; height: auto; padding: 0; color: var(--muted); font-weight: 500; font-size: 13px; text-decoration: underline; text-underline-offset: 2px; }
-    .cc-actions { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 8px; }
-    .cc-actions .ghost { height: 40px; font-size: 13px; padding: 0 10px; min-width: 0; }
-    .cc-actions button.icon { width: 40px; height: 40px; background: var(--field); border-color: var(--line2); }
-    .cc-more { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .cc-acts { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .cc-lab2 { font-size: 14px; letter-spacing: 0; color: var(--text); font-weight: 600; }
+    .cc-icons { display: flex; gap: 4px; }
+    .act { width: 40px; height: 40px; padding: 0; border-radius: 10px; background: transparent; border: 0; }
+    .act:hover { background: rgba(255, 255, 255, .06); }
+    .act svg { width: 21px; height: 21px; }
+    .a-wa { color: #25d366; } .a-msg { color: #f5a524; } .a-renew { color: #6aa8ff; } .a-edit { color: var(--text); } .a-more { color: var(--muted); }
+    .cc-more { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
     .cc-more button { height: 38px; font-size: 12.5px; padding: 0 6px; }
   }
   @media (max-width: 1060px) { .gen { grid-template-columns: 1fr; } }
@@ -518,6 +534,7 @@
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
   <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8.6 19z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.6-2-1-1 .9a5 5 0 0 1-2.8-2.8l.9-1-1-2z"/></symbol>
   <symbol id="i-renew" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.6-4.5M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.5M20 19v-4h-4"/></symbol>
 </svg>
 
@@ -571,6 +588,18 @@
   </aside>
   <div id="backdrop" class="backdrop"></div>
   <div id="toast" class="toast"></div>
+  <dialog id="editDlg" class="renew">
+    <form id="editForm" method="dialog">
+      <h2>Editar cliente <span id="edCode" class="code"></span></h2>
+      <div class="rn-extra"><label for="edNote">Nome do cliente</label><input id="edNote" maxlength="80" autocomplete="off" placeholder="Ex.: João · TV da sala"></div>
+      <div class="rn-extra"><label for="edPhone">WhatsApp</label><input id="edPhone" type="tel" inputmode="tel" maxlength="20" autocomplete="off" placeholder="(11) 91234-5678"></div>
+      <p id="edMsg" class="msg"></p>
+      <div class="rn-actions">
+        <button type="button" class="ghost" id="edCancel">Cancelar</button>
+        <button type="submit">Salvar</button>
+      </div>
+    </form>
+  </dialog>
   <dialog id="renewDlg" class="renew">
     <form id="renewForm" method="dialog">
       <h2>Renovar código <span id="rnCode" class="code"></span></h2>
@@ -606,7 +635,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v12</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v13</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -671,6 +700,8 @@
           <div class="gen-fields">
             <div class="full"><label for="gNote">Cliente ou observação</label>
               <input id="gNote" placeholder="Ex.: João · TV da sala" maxlength="80" autocomplete="off"></div>
+            <div class="full"><label for="gPhone">WhatsApp do cliente <span style="color:var(--faint)">(opcional)</span></label>
+              <input id="gPhone" type="tel" inputmode="tel" placeholder="(11) 91234-5678" maxlength="20" autocomplete="off"></div>
             <div class="full client-only"><label>Validade</label>
               <div id="gDays" class="seg">
                 <button type="button" data-v="30" class="on">30 dias</button><button type="button" data-v="90">90 dias</button>
@@ -725,7 +756,7 @@
             <button type="button" data-v="expired">Vencidos<span class="n" data-n="expired"></span></button>
             <button type="button" data-v="revoked">Bloqueados<span class="n" data-n="revoked"></span></button>
           </div>
-          <div class="field-icon"><svg class="i"><use href="#i-search"/></svg><input id="search" placeholder="Buscar por código ou cliente" autocomplete="off"></div>
+          <div class="field-icon"><svg class="i"><use href="#i-search"/></svg><input id="search" placeholder="Buscar código, cliente ou telefone" autocomplete="off"></div>
         </div>
         <div class="table-wrap">
           <table class="codes">
@@ -1003,7 +1034,7 @@
     renderConnected();
 
     const list = codes.filter((c) => (!f || (f === "trial" ? isTrial(c) : statusOf(c) === f)) &&
-      (!q || c.code.includes(q) || (c.note || "").toLowerCase().includes(q)));
+      (!q || c.code.includes(q) || (c.note || "").toLowerCase().includes(q) || (c.phone || "").includes(q.replace(/\D/g, "") || "~")));
     const tbody = $("rows"); tbody.replaceChildren();
     const cards = $("codeCards"); cards.replaceChildren();
     $("empty").textContent = codes.length ? "Nenhum código com esse filtro." : "Nenhum código ainda.";
@@ -1022,49 +1053,100 @@
             el("span", { class: "small-line" }, c.activated_at ? "ativado " + fmtTime(c.activated_at) : isTrial(c) ? "conta após ativar" : c.duration_days ? "conta após ativar" : "nunca vence"));
       tbody.append(el("tr", {},
         el("td", { "data-label": "Código", class: "td-code" }, el("div", {}, el("span", { class: "code" }, c.code), isTrial(c) ? el("span", { class: "tag" }, "TESTE") : "")),
-        el("td", { "data-label": "Cliente", class: "td-client" }, el("div", {}, el("span", { class: "cell-main" }, c.note || "—"), el("span", { class: "small-line" }, "criado " + fmt(c.created_at)))),
+        el("td", { "data-label": "Cliente", class: "td-client" }, el("div", {}, el("span", { class: "cell-main" }, c.note || "—"), el("span", { class: "small-line" }, c.phone ? phoneLabel(c.phone) : "criado " + fmt(c.created_at)))),
         el("td", { "data-label": "Status", class: "td-status" }, el("span", { class: "badge b-" + st }, statusLabel[st])),
         el("td", { "data-label": "Validade", class: "td-valid" }, validity),
         el("td", { "data-label": "Aparelhos", class: "td-dev" }, el("div", {}, el("span", { class: "cell-main" }, devs.length + " de " + c.max_devices), devBox)),
         el("td", { "data-label": "", class: "td-act" }, el("div", { class: "actions" },
           iconBtn("copy", "Copiar código", (e) => copy(c.code, e.currentTarget, "Código copiado")),
+          iconBtn("wa", c.phone ? "Abrir WhatsApp do cliente" : "Cadastrar WhatsApp", () => openWhatsApp(c), c.phone ? "wa" : ""),
           iconBtn("msg", "Copiar mensagem para o cliente", (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada")),
           iconBtn("renew", "Renovar", () => openRenew(c)),
+          iconBtn("edit", "Editar cliente", () => openEdit(c)),
           iconBtn(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
           iconBtn("trash", "Excluir", () => removeCode(c), "bad")))));
 
-      // Phones: one tidy card per code. Line 1: code and status; line 2: customer; then the
-      // expiry and devices as two short facts; the devices list opens on tap; actions at the bottom.
-      const dueText = c.expires_at
-        ? "Vence " + (isTrial(c) ? fmtTime(c.expires_at) : fmt(c.expires_at)) + " · " + timeLeft(c.expires_at)
-        : validityOf(c) + (c.activated_at ? "" : (c.duration_days || isTrial(c) ? " · conta após ativar" : ""));
+      // Phones: one card per code, label on the left and value on the right, actions in a row.
+      const dueChip = c.expires_at ? (isTrial(c) ? fmtTime(c.expires_at) : fmt(c.expires_at)) : validityOf(c);
+      const dueSub = c.expires_at ? timeLeft(c.expires_at) : (c.activated_at ? "" : (c.duration_days || isTrial(c) ? "conta após ativar" : ""));
       const onlineCount = devs.filter(isOnline).length;
-      const devSummary = devs.length + " de " + c.max_devices + " aparelho" + (c.max_devices > 1 ? "s" : "") + (onlineCount ? " · " + onlineCount + " online" : "");
+      const row = (label, ...value) => el("div", { class: "cc-row" }, el("span", { class: "cc-lab" }, label), el("div", { class: "cc-val" }, ...value));
       const more = el("div", { class: "cc-more hidden" },
         el("button", { class: "ghost", onclick: (e) => copy(c.code, e.currentTarget, "Código copiado") }, icon("copy"), "Copiar código"),
         el("button", { class: "ghost", onclick: () => toggleRevoke(c) }, icon(c.revoked ? "unlock" : "lock"), c.revoked ? "Desbloquear" : "Bloquear"),
         el("button", { class: "danger", onclick: () => removeCode(c) }, icon("trash"), "Excluir"));
-      cards.append(el("div", { class: "cc" },
-        el("div", { class: "cc-top" }, el("span", { class: "code" }, c.code), isTrial(c) ? el("span", { class: "tag" }, "TESTE") : "",
-          el("span", { class: "badge b-" + st }, statusLabel[st])),
-        el("div", { class: "cc-client" }, c.note || "Sem nome"),
-        el("div", { class: "cc-facts" },
-          el("div", {}, icon("calendar"), el("span", {}, dueText)),
-          devs.length
-            ? el("details", { class: "cc-dev" }, el("summary", {}, icon("tv"), el("span", {}, devSummary)),
-                devs.map((d) => el("div", { class: "cc-dev-row" },
-                  el("span", {}, isOnline(d) ? el("i", { class: "dot-on" }) : "", (d.device_name || "Aparelho") + " · " + (isOnline(d) ? "online agora" : ago(d.last_seen))),
-                  el("button", { class: "link", onclick: () => removeDevice(c, d) }, "Liberar"))))
-            : el("div", {}, icon("tv"), el("span", {}, devSummary))),
-        el("div", { class: "cc-actions" },
-          el("button", { class: "ghost", onclick: (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada") }, icon("msg"), "Mensagem"),
-          el("button", { class: "ghost", onclick: () => openRenew(c) }, icon("renew"), "Renovar"),
-          iconBtn("menu", "Mais opções", () => more.classList.toggle("hidden"))),
+      const devList = devs.length ? el("div", { class: "cc-devs hidden" }, devs.map((d) => el("div", { class: "cc-dev-row" },
+        el("span", {}, isOnline(d) ? el("i", { class: "dot-on" }) : "", (d.device_name || "Aparelho") + " · " + (isOnline(d) ? "online agora" : ago(d.last_seen))),
+        el("button", { class: "link", onclick: () => removeDevice(c, d) }, "Liberar")))) : null;
+      const act = (name, title, cls, fn) => el("button", { class: "act " + cls, title, "aria-label": title, onclick: fn }, icon(name));
+      cards.append(el("div", { class: "cc" + (isTrial(c) ? " trial" : "") },
+        isTrial(c) ? el("span", { class: "cc-flag" }, "Teste") : "",
+        el("div", { class: "cc-head" },
+          el("div", { class: "cc-av" }, initials(c)),
+          el("div", { class: "cc-id" }, el("b", {}, c.note || "Sem nome"), el("span", { class: "code" }, c.code)),
+          el("span", { class: "cc-st st-" + st }, statusLabel[st].toUpperCase())),
+        row("VENCIMENTO", el("span", { class: "chip st-" + st }, dueChip), dueSub ? el("small", {}, dueSub) : ""),
+        row("APARELHOS", el("button", { class: "chip link-chip", onclick: () => devList && devList.classList.toggle("hidden") },
+          devs.length + " de " + c.max_devices + (onlineCount ? " · " + onlineCount + " online" : ""), devs.length ? " ▾" : "")),
+        devList || "",
+        row("WHATSAPP", c.phone ? el("span", { class: "cc-phone" }, phoneLabel(c.phone))
+          : el("button", { class: "chip link-chip", onclick: () => openEdit(c, true) }, "+ Adicionar")),
+        el("div", { class: "cc-acts" }, el("span", { class: "cc-lab2" }, "Ações"),
+          el("div", { class: "cc-icons" },
+            act("wa", c.phone ? "Abrir WhatsApp" : "Cadastrar WhatsApp", "a-wa", () => openWhatsApp(c)),
+            act("msg", "Copiar mensagem", "a-msg", (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada")),
+            act("renew", "Renovar", "a-renew", () => openRenew(c)),
+            act("edit", "Editar cliente", "a-edit", () => openEdit(c)),
+            act("menu", "Mais opções", "a-more", () => more.classList.toggle("hidden")))),
         more));
     });
   }
 
   const todaySP = () => new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
+
+  // ── Customer phone and WhatsApp ──
+  // Digits with the country code; a Brazilian number typed without it gets 55.
+  function phoneDigits(v) {
+    let d = String(v || "").replace(/\D/g, "");
+    if (!d) return null;
+    if (d.length === 10 || d.length === 11) d = "55" + d;
+    return d.length >= 8 && d.length <= 15 ? d : null;
+  }
+  function phoneLabel(d) {
+    if (!d) return "";
+    const m = d.match(/^55(\d{2})(\d{4,5})(\d{4})$/);
+    return m ? "(" + m[1] + ") " + m[2] + "-" + m[3] : "+" + d;
+  }
+  function openWhatsApp(c) {
+    if (!c.phone) { openEdit(c, true); return; }
+    window.open("https://wa.me/" + c.phone + "?text=" + encodeURIComponent(messageFor(c)), "_blank", "noopener");
+  }
+  const initials = (c) => (c.note || c.code).replace(/[^\p{L}\p{N} ]/gu, " ").trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "#";
+
+  let editing = null;
+  function openEdit(c, askPhone) {
+    editing = c;
+    $("edCode").textContent = c.code;
+    $("edNote").value = c.note || ""; $("edPhone").value = c.phone ? phoneLabel(c.phone) : "";
+    $("edMsg").textContent = askPhone ? "Cadastre o WhatsApp do cliente para abrir a conversa." : "";
+    $("edMsg").className = askPhone ? "msg info" : "msg";
+    $("editDlg").showModal();
+    setTimeout(() => (askPhone ? $("edPhone") : $("edNote")).focus(), 50);
+  }
+  $("edCancel").addEventListener("click", () => $("editDlg").close());
+  $("editForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const raw = $("edPhone").value.trim();
+    const phone = raw ? phoneDigits(raw) : null;
+    if (raw && !phone) { $("edMsg").textContent = "Número inválido. Use DDD + número, ex.: (11) 91234-5678."; $("edMsg").className = "msg"; return; }
+    const { error } = await sb.from("access_codes").update({ note: $("edNote").value.trim() || null, phone }).eq("id", editing.id);
+    if (error) {
+      $("edMsg").className = "msg";
+      $("edMsg").textContent = /phone/i.test(error.message) ? "Para salvar o telefone, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível salvar: " + error.message;
+      return;
+    }
+    $("editDlg").close(); toast("Cliente atualizado"); load(true);
+  });
   const daySP = (d) => new Date(d).toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
 
   // ── Renew a customer's code ──
@@ -1263,6 +1345,12 @@
         : "Não foi possível gerar: " + error.message;
       return;
     }
+    // The phone goes on the code when only one was made.
+    const phone = phoneDigits($("gPhone").value);
+    if (phone && data.length === 1) {
+      const { error: pe } = await sb.from("access_codes").update({ phone }).eq("id", data[0].id);
+      if (!pe) data[0].phone = phone;
+    }
     lastCodes = data.map((c) => c.code);
     lastGenerated = data;
     $("msgPreview").textContent = messageFor(data[0]) + (data.length > 1 ? "\n\n(+ " + (data.length - 1) + " mensagem(ns) com os outros códigos)" : "");
@@ -1273,7 +1361,7 @@
       return b;
     }));
     $("newBox").classList.remove("hidden");
-    $("gNote").value = "";
+    $("gNote").value = ""; $("gPhone").value = "";
     load();
   });
 
