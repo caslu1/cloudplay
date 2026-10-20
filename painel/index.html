@@ -10,7 +10,7 @@
 <meta http-equiv="Expires" content="0">
 <title>CloudPlay · Painel</title>
 <link rel="icon" href="icon.png">
-<script src="config.js?v=6"></script>
+<script src="config.js?v=7"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -305,6 +305,22 @@
     .st { grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
     .st .nm { grid-column: 1 / 3; } .st .pill { justify-self: end; }
   }
+  .online-card { padding: 18px 20px; }
+  .online-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .online-num { display: flex; align-items: center; gap: 14px; }
+  .online-num > b { font-size: 44px; font-weight: 600; letter-spacing: -1px; line-height: 1; }
+  .online-num strong { display: block; font-weight: 600; }
+  .online-num span:not(.live) { display: block; color: var(--muted); font-size: 12.5px; }
+  .live { width: 12px; height: 12px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 rgba(60, 207, 142, .6); animation: livepulse 2s infinite; flex: none; }
+  @keyframes livepulse { 0% { box-shadow: 0 0 0 0 rgba(60, 207, 142, .55); } 70% { box-shadow: 0 0 0 12px rgba(60, 207, 142, 0); } 100% { box-shadow: 0 0 0 0 rgba(60, 207, 142, 0); } }
+  .online-side { text-align: right; } .online-side b { display: block; font-size: 22px; font-weight: 600; } .online-side span { color: var(--muted); font-size: 12.5px; }
+  .online-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; margin-top: 14px; }
+  .online-list:empty { display: none; }
+  .on-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; min-width: 0; }
+  .on-item i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex: none; }
+  .on-item div { min-width: 0; } .on-item b { display: block; font-weight: 600; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .on-item span { display: block; color: var(--faint); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dot-on { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); margin-right: 6px; vertical-align: 1px; }
   .bottom-nav { display: none; }
   .top-logo, .gen-open, .gen-close, .code-cards { display: none; }
   @media (max-width: 720px) {
@@ -357,6 +373,9 @@
       background: var(--brand); color: #fff; font-size: 10.5px; line-height: 17px; text-align: center; }
     .topbar #menuBtn { display: none; }
     .topbar .lbl, .list-head .lbl, .card-head .lbl { display: none; }
+    .online-head { display: grid; grid-template-columns: 1fr auto; align-items: center; }
+    .online-num > b { font-size: 38px; }
+    .online-num span:not(.live) { display: none; }
     #reqReload { width: 36px; height: 36px; padding: 0; }
     .topbar #refreshAll, #reload { width: 36px; height: 36px; padding: 0; }
     .toast { bottom: calc(80px + env(safe-area-inset-bottom)); }
@@ -528,7 +547,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v6</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v7</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -536,6 +555,13 @@
 
     <!-- Visão geral -->
     <main class="page" data-section="inicio" data-title="Visão geral">
+      <div class="card online-card">
+        <div class="online-head">
+          <div class="online-num"><span class="live"></span><b id="onNow">0</b><div><strong>online agora</strong><span>aparelhos com o app aberto · atualiza a cada minuto</span></div></div>
+          <div class="online-side"><b id="onToday">0</b><span>aparelhos usaram hoje</span></div>
+        </div>
+        <div id="onList" class="online-list"></div>
+      </div>
       <div class="stats">
         <div class="stat" style="--dot: var(--brand)"><span>Códigos criados</span><b id="sTotal">0</b></div>
         <div class="stat" style="--dot: var(--info)"><span>Livres</span><b id="sFree">0</b></div>
@@ -889,6 +915,7 @@
     $("sActive").textContent = counts.active; $("sExpired").textContent = counts.expired + counts.revoked;
     $("cFree").textContent = counts.free; $("cActive").textContent = counts.active; $("cTrial").textContent = trialActive;
     document.querySelectorAll("#filter [data-n]").forEach((n) => n.textContent = counts[n.dataset.n] || 0);
+    renderOnline();
 
     const list = codes.filter((c) => (!f || (f === "trial" ? isTrial(c) : statusOf(c) === f)) &&
       (!q || c.code.includes(q) || (c.note || "").toLowerCase().includes(q)));
@@ -901,7 +928,7 @@
       const devs = c.access_code_devices || [];
       const devBox = devs.length ? el("div", { class: "devices" }, devs.map((d) => el("div", {},
         el("span", { class: "dev-name", title: "Ativado em " + fmtTime(d.activated_at) + " · visto " + ago(d.last_seen) },
-          (d.device_name || "Aparelho")),
+          isOnline(d) ? el("i", { class: "dot-on", title: "Online agora" }) : "", (d.device_name || "Aparelho")),
         el("button", { class: "link", onclick: () => removeDevice(c, d) }, "Liberar")))) : "";
       const validity = c.expires_at
         ? el("div", {}, el("span", { class: "cell-main" }, "Vence " + (c.expires_on ? fmt(c.expires_at) : fmtTime(c.expires_at))),
@@ -932,7 +959,7 @@
         el("div", { class: "cc-line" }, icon("tv"), el("span", {}, el("b", {}, devs.length + " de " + c.max_devices), " aparelho" + (c.max_devices > 1 ? "s" : "")),
           c.activated_at ? el("span", { style: "margin-left:auto" }, "ativado " + fmt(c.activated_at)) : ""),
         devs.length ? el("div", { class: "cc-devs" }, devs.map((d) => el("div", {},
-          el("span", {}, (d.device_name || "Aparelho") + " · " + ago(d.last_seen)),
+          el("span", {}, isOnline(d) ? el("i", { class: "dot-on" }) : "", (d.device_name || "Aparelho") + " · " + (isOnline(d) ? "online agora" : ago(d.last_seen))),
           el("button", { class: "link", onclick: () => removeDevice(c, d) }, "Liberar")))) : "",
         el("div", { class: "cc-actions" },
           el("button", { class: "primary", onclick: (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada") }, icon("msg"), "Copiar mensagem"),
@@ -941,6 +968,28 @@
           iconBtn("trash", "Excluir", () => removeCode(c), "bad"))));
     });
   }
+
+  // A device is online when the app checked in during the last 5 minutes (it does every 2 while on screen).
+  const ONLINE_MS = 5 * 60 * 1000;
+  const isOnline = (d) => d.last_seen && Date.now() - new Date(d.last_seen) < ONLINE_MS;
+  function renderOnline() {
+    const startOfDay = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })); startOfDay.setHours(0, 0, 0, 0);
+    const offset = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })) - new Date();
+    const online = [], today = new Set();
+    codes.forEach((c) => (c.access_code_devices || []).forEach((d) => {
+      if (!d.last_seen) return;
+      if (new Date(new Date(d.last_seen).getTime() + offset) >= startOfDay) today.add(c.id + d.device_id);
+      if (isOnline(d)) online.push({ c, d });
+    }));
+    online.sort((x, y) => new Date(y.d.last_seen) - new Date(x.d.last_seen));
+    $("onNow").textContent = online.length; $("onToday").textContent = today.size;
+    const shown = online.slice(0, 12).map(({ c, d }) => el("div", { class: "on-item" }, el("i", {}),
+      el("div", {}, el("b", {}, (c.note || "Sem nome") + " · " + (d.device_name || "Aparelho")), el("span", {}, "Código " + c.code + " · " + ago(d.last_seen)))));
+    if (online.length > 12) shown.push(el("div", { class: "on-item" }, el("div", {}, el("b", {}, "+ " + (online.length - 12) + " aparelhos"))));
+    $("onList").replaceChildren(...shown);
+  }
+  // Keep the numbers fresh while the overview or the codes page is open.
+  setInterval(() => { if (!document.hidden && ["", "#inicio", "#codigos"].includes(location.hash)) load(); }, 60000);
 
   async function toggleRevoke(c) {
     const { error } = await sb.from("access_codes").update({ revoked: !c.revoked }).eq("id", c.id);
