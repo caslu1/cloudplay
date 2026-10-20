@@ -274,6 +274,7 @@
   .sheet-item.bad, .sheet-item.bad svg { color: #ff8a8e; }
   .sheet-cancel { width: 100%; height: 46px; margin-top: 8px; }
   .stats.stats-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .stat-sub { display: block; color: var(--faint); font-size: 12px; margin-top: 2px; }
   .hist-card { position: relative; margin-bottom: 16px; }
   .hist-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
   .hist-ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(255, 61, 138, .12); color: #ff8ab5; flex: none; }
@@ -671,7 +672,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v16</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v17</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -681,7 +682,7 @@
     <main class="page" data-section="inicio" data-title="Visão geral">
       <div class="card online-card">
         <div class="online-head">
-          <div class="online-num"><span class="live"></span><b id="onNow">0</b><div><strong>online agora</strong><span>aparelhos com o app aberto · atualiza a cada minuto</span></div></div>
+          <div class="online-num"><span class="live"></span><b id="onNow">0</b><div><strong>online agora</strong><span>aparelhos com o app aberto · atualiza a cada 10 segundos</span></div></div>
           <div class="online-side"><b id="onToday">0</b><span>aparelhos usaram hoje</span><a href="#conectados" class="see-all">Ver todos</a></div>
         </div>
         <div id="onList" class="online-list"></div>
@@ -822,14 +823,21 @@
 
     <!-- Conectados -->
     <main class="page hidden" data-section="conectados" data-title="Conectados">
-      <div class="stats stats-3">
+      <div class="stats stats-4">
         <div class="stat"><span>Online agora</span><b id="cnNow">0</b></div>
+        <div class="stat"><span>Pico de hoje</span><b id="cnPeak">—</b><small id="cnPeakAt" class="stat-sub"></small></div>
         <div class="stat"><span>Usaram hoje</span><b id="cnToday">0</b></div>
         <div class="stat"><span>Cadastrados</span><b id="cnAll">0</b></div>
       </div>
+      <div class="card hist-card">
+        <div class="hist-head"><div class="hist-ic"><svg class="i"><use href="#i-chart"/></svg></div>
+          <div><h2>Pico por hora</h2><p class="sub" style="margin:0">Mais aparelhos online ao mesmo tempo, hoje</p></div></div>
+        <div id="peakChart" class="hist-chart"></div>
+        <p id="peakMsg" class="empty hidden"></p>
+      </div>
       <div class="card">
         <div class="list-head">
-          <div><h2>Aparelhos</h2><p class="sub" style="margin:0">Online = app aberto nos últimos 5 minutos. Atualiza a cada minuto.</p></div>
+          <div><h2>Aparelhos</h2><p class="sub" style="margin:0">Online = app aberto nos últimos 3 minutos. Atualiza a cada 10 segundos.</p></div>
           <button id="cnReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
         </div>
         <div class="toolbar">
@@ -1295,8 +1303,8 @@
     load(true);
   });
   $("rnCopy").addEventListener("click", (e) => renewing && copy(renewedMessage(renewing), e.currentTarget, "Mensagem copiada"));
-  // A device is online when the app checked in during the last 5 minutes (it does every 2 while on screen).
-  const ONLINE_MS = 5 * 60 * 1000;
+  // A device is online when the app checked in during the last 3 minutes (it does every 2 while on screen).
+  const ONLINE_MS = 3 * 60 * 1000;
   const isOnline = (d) => d.last_seen && Date.now() - new Date(d.last_seen) < ONLINE_MS;
   function renderOnline() {
     const today0 = todaySP();
@@ -1390,8 +1398,66 @@
   $("cnSearch").addEventListener("input", renderConnected);
   $("cnReload").addEventListener("click", () => load());
 
+  // Every 10 s on the overview and Conectados: only the devices seen today (a small read),
+  // merged into the codes already loaded.
+  async function refreshOnline() {
+    const since = new Date(todaySP() + "T00:00:00-03:00").toISOString();
+    const { data, error } = await sb.from("access_code_devices").select("code_id, device_id, device_name, activated_at, last_seen").gte("last_seen", since);
+    if (error || !data) return;
+    const byCode = new Map(codes.map((c) => [c.id, c]));
+    data.forEach((d) => {
+      const c = byCode.get(d.code_id); if (!c) return;
+      const list = c.access_code_devices || (c.access_code_devices = []);
+      const old = list.find((x) => x.device_id === d.device_id);
+      if (old) Object.assign(old, d); else list.push(d);
+    });
+    renderOnline(); renderConnected();
+  }
+  setInterval(() => { if (!document.hidden && !$("app").classList.contains("hidden") && ["", "#inicio", "#conectados"].includes(location.hash)) refreshOnline(); }, 10000);
+
+  // Peak of devices online at once, per hour of today (recorded by the server on each check-in).
+  async function loadPeaks() {
+    const since = new Date(todaySP() + "T00:00:00-03:00").toISOString();
+    const { data, error } = await sb.from("online_peak").select("hour, peak, peak_at").gte("hour", since).order("hour");
+    if (error) {
+      $("cnPeak").textContent = "—"; $("cnPeakAt").textContent = "";
+      $("peakMsg").textContent = "Para ver o pico, rode antes o arquivo cloudplay_functions.sql no Supabase.";
+      $("peakMsg").classList.remove("hidden"); $("peakChart").replaceChildren(); return;
+    }
+    $("peakMsg").classList.add("hidden");
+    const rows = data || [];
+    const top = rows.reduce((a, b) => (!a || b.peak > a.peak ? b : a), null);
+    $("cnPeak").textContent = top ? top.peak : 0;
+    $("cnPeakAt").textContent = top ? "às " + new Date(top.peak_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" }) : "";
+    drawPeaks(rows);
+  }
+  function drawPeaks(rows) {
+    const box = $("peakChart"); if (!box || box.offsetParent === null) return;
+    const byHour = {}; rows.forEach((r) => { byHour[Number(new Date(r.hour).toLocaleString("en-US", { hour: "numeric", hour12: false, timeZone: "America/Sao_Paulo" })) % 24] = r.peak; });
+    const nowH = Number(new Date().toLocaleString("en-US", { hour: "numeric", hour12: false, timeZone: "America/Sao_Paulo" })) % 24;
+    const hours = []; for (let h = 0; h <= nowH; h++) hours.push({ h, n: byHour[h] || 0 });
+    const W = box.clientWidth || 600, H = 200, T = 24, B = 26, L = 4, R = 4;
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg"); svg.setAttribute("width", W); svg.setAttribute("height", H);
+    const mk = (tag, attrs, text) => { const e = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); if (text != null) e.textContent = text; svg.append(e); return e; };
+    const max = Math.max(1, ...hours.map((x) => x.n)), plotH = H - T - B;
+    const slot = (W - L - R) / 24, bw = Math.max(5, Math.min(22, slot - 4));
+    const best = Math.max(...hours.map((x) => x.n));
+    hours.forEach(({ h, n }) => {
+      const x = L + h * slot + (slot - bw) / 2, hh = Math.max(n ? 3 : 1, n / max * (plotH - 14)), y = T + plotH - hh;
+      mk("rect", { x, y, width: bw, height: hh, rx: 3, fill: n && n === best ? "rgba(255, 61, 138, .55)" : "rgba(255, 255, 255, .16)" });
+      if (n && (W > 560 || n === best)) mk("text", { x: x + bw / 2, y: y - 5, "text-anchor": "middle", fill: "#d4d4d8", "font-size": 10.5, "font-weight": 600 }, n);
+    });
+    for (let h = 0; h < 24; h += (W < 560 ? 6 : 3)) mk("text", { x: L + h * slot + slot / 2, y: H - 8, "text-anchor": "middle", fill: "#6b6b73", "font-size": 11 }, String(h).padStart(2, "0") + "h");
+    box.replaceChildren(svg);
+  }
+
   // Keep the numbers fresh while the overview, codes or connected page is open.
-  setInterval(() => { if (!document.hidden && !$("app").classList.contains("hidden") && ["", "#inicio", "#codigos", "#conectados"].includes(location.hash)) load(true); }, 60000);
+  setInterval(() => {
+    if (document.hidden || $("app").classList.contains("hidden")) return;
+    if (["", "#inicio", "#codigos", "#conectados"].includes(location.hash)) load(true);
+    if (location.hash === "#conectados") loadPeaks();
+  }, 60000);
 
   async function toggleRevoke(c) {
     const { error } = await sb.from("access_codes").update({ revoked: !c.revoked }).eq("id", c.id);
@@ -1932,6 +1998,7 @@
       if (on) { $("pageTitle").textContent = s.dataset.title; document.title = s.dataset.title + " · CloudPlay"; }
       if (on && page === "uso" && !$("app").classList.contains("hidden")) setTimeout(loadUsage, 0);
       if (on && page === "codigos") setTimeout(drawActiveHistory, 0);
+      if (on && page === "conectados" && !$("app").classList.contains("hidden")) setTimeout(loadPeaks, 0);
     });
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.page === page));
     document.querySelectorAll(".bottom-nav a").forEach((a) => a.classList.toggle("active", a.dataset.page.split(" ").includes(page)));
@@ -1943,7 +2010,7 @@
   $("menuBtn").addEventListener("click", () => document.body.classList.add("nav-open"));
   $("bnMore").addEventListener("click", (e) => { e.preventDefault(); document.body.classList.add("nav-open"); });
   $("backdrop").addEventListener("click", () => document.body.classList.remove("nav-open"));
-  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); };
+  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); };
   $("refreshAll").addEventListener("click", loadAll);
 
   $("search").addEventListener("input", render);
