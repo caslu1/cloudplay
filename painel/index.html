@@ -120,7 +120,7 @@
   .nav a.active { background: var(--panel2); color: var(--text); }
   .nav a.active::before { content: ""; position: absolute; left: -12px; top: 9px; bottom: 9px; width: 3px; border-radius: 0 3px 3px 0; background: var(--brand); }
   .nav a.active svg { color: var(--brand); }
-  .nav .pill { margin-left: auto; background: var(--brand); color: #fff; font-size: 11px; font-weight: 600; border-radius: 99px; padding: 0 7px; line-height: 18px; }
+  .nav .pill.count-pill { margin-left: auto; background: var(--brand); color: #fff; font-size: 11px; font-weight: 600; border-radius: 99px; padding: 0 7px; line-height: 18px; }
   .side-foot { margin-top: auto; border-top: 1px solid var(--line); padding: 14px 4px 0; display: flex; align-items: center; gap: 10px; }
   .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--brand-soft); color: #ffb3d1; display: grid; place-items: center; font-weight: 600; flex: none; }
   .who { min-width: 0; flex: 1; }
@@ -519,7 +519,7 @@
       <a href="#inicio" data-page="inicio"><svg class="i"><use href="#i-home"/></svg>Visão geral</a>
       <div class="nav-label">Clientes</div>
       <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg>Códigos de acesso</a>
-      <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-inbox"/></svg>Pedidos<span id="navPending" class="pill hidden">0</span></a>
+      <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-inbox"/></svg>Pedidos<span id="navPending" class="pill count-pill hidden">0</span></a>
       <div class="nav-label">Aplicativo</div>
       <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg>Addons padrão</a>
       <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-list"/></svg>Categorias</a>
@@ -547,7 +547,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v7</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v8</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -595,7 +595,7 @@
       <div class="stats three">
         <div class="stat" style="--dot: var(--info)"><span>Livres</span><b id="cFree">0</b></div>
         <div class="stat" style="--dot: var(--ok)"><span>Em uso</span><b id="cActive">0</b></div>
-        <div class="stat" style="--dot: var(--brand)"><span>Testes</span><b id="cTrial">0</b></div>
+        <div class="stat" style="--dot: var(--brand)"><span>Testes ativos</span><b id="cTrial">0</b></div>
       </div>
 
       <button type="button" id="genOpen" class="gen-open"><svg class="i"><use href="#i-plus"/></svg>Novo código</button>
@@ -896,11 +896,11 @@
   }));
   ["gDevices", "gCount"].forEach((id) => $(id).addEventListener("input", updateSummary));
 
-  async function load() {
+  async function load(quiet) {
     const { data, error } = await sb.from("access_codes")
       .select("*, access_code_devices(device_id, device_name, activated_at, last_seen)")
       .order("created_at", { ascending: false });
-    if (error) { alert("Erro ao carregar: " + error.message); return; }
+    if (error) { if (!quiet) alert("Erro ao carregar: " + error.message); return; }
     codes = data || [];
     render();
   }
@@ -969,16 +969,16 @@
     });
   }
 
+  const todaySP = () => new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
   // A device is online when the app checked in during the last 5 minutes (it does every 2 while on screen).
   const ONLINE_MS = 5 * 60 * 1000;
   const isOnline = (d) => d.last_seen && Date.now() - new Date(d.last_seen) < ONLINE_MS;
   function renderOnline() {
-    const startOfDay = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })); startOfDay.setHours(0, 0, 0, 0);
-    const offset = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })) - new Date();
+    const today0 = todaySP();
     const online = [], today = new Set();
     codes.forEach((c) => (c.access_code_devices || []).forEach((d) => {
       if (!d.last_seen) return;
-      if (new Date(new Date(d.last_seen).getTime() + offset) >= startOfDay) today.add(c.id + d.device_id);
+      if (new Date(d.last_seen).toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" }) === today0) today.add(c.id + d.device_id);
       if (isOnline(d)) online.push({ c, d });
     }));
     online.sort((x, y) => new Date(y.d.last_seen) - new Date(x.d.last_seen));
@@ -989,7 +989,7 @@
     $("onList").replaceChildren(...shown);
   }
   // Keep the numbers fresh while the overview or the codes page is open.
-  setInterval(() => { if (!document.hidden && ["", "#inicio", "#codigos"].includes(location.hash)) load(); }, 60000);
+  setInterval(() => { if (!document.hidden && !$("app").classList.contains("hidden") && ["", "#inicio", "#codigos"].includes(location.hash)) load(true); }, 60000);
 
   async function toggleRevoke(c) {
     const { error } = await sb.from("access_codes").update({ revoked: !c.revoked }).eq("id", c.id);
@@ -1020,17 +1020,17 @@
     $("daysHint").classList.toggle("hidden", daysChoice === "date");
     $("sumDays").textContent = trial ? "24 horas"
       : daysChoice === "date" ? ($("gDate").value ? "Até " + fmtDay($("gDate").value) : "Escolha a data") : DAY_LABEL[daysChoice];
-    $("sumDevices").textContent = trial ? "1" : $("gDevices").value;
+    $("sumDevices").textContent = trial ? "1" : Math.min(5, Math.max(1, parseInt($("gDevices").value, 10) || 1));
     $("sumCount").textContent = count;
     $("genBtn").querySelector("span").textContent = (trial ? "Gerar teste" : "Gerar código") + (count > 1 ? "s" : "");
   }
   seg("gType", updateSummary); seg("gDays", updateSummary); seg("filter", render);
   const setGen = (open) => { $("genCard").classList.toggle("open", open); document.body.classList.toggle("gen-visible", open);
     if (open) $("genCard").scrollIntoView({ behavior: "smooth", block: "start" }); };
-  $("genOpen").addEventListener("click", () => setGen(true));
+  $("genOpen").addEventListener("click", () => { $("gDate").min = todaySP(); setGen(true); });
   $("genClose").addEventListener("click", () => setGen(false));
   $("gDate").addEventListener("input", updateSummary);
-  $("gDate").min = new Date().toISOString().slice(0, 10);
+  $("gDate").min = todaySP();
   updateSummary();
 
   let lastCodes = [];
@@ -1045,7 +1045,7 @@
     const count = Math.min(100, Math.max(1, parseInt($("gCount").value || "1", 10)));
     const days = $("gDays").dataset.value;
     const byDate = !trial && days === "date";
-    if (byDate && (!$("gDate").value || $("gDate").value < new Date().toISOString().slice(0, 10))) {
+    if (byDate && (!$("gDate").value || $("gDate").value < todaySP())) {
       $("genMsg").textContent = "Escolha uma data de vencimento a partir de hoje."; return;
     }
     const devices = Math.min(5, Math.max(1, parseInt($("gDevices").value, 10) || 1));
@@ -1063,9 +1063,9 @@
     $("genBtn").disabled = false;
     if (error) {
       $("genMsg").textContent = trial && /generate_trial_codes|function/i.test(error.message)
-        ? "Para criar testes, rode antes o arquivo trial_codes.sql no Supabase."
+        ? "Para criar testes, rode antes o arquivo cloudplay_functions.sql no Supabase."
         : byDate && /generate_access_codes_until|function/i.test(error.message)
-        ? "Para escolher a data, rode antes o arquivo fixed_date_codes.sql no Supabase."
+        ? "Para escolher a data, rode antes o arquivo cloudplay_functions.sql no Supabase."
         : "Não foi possível gerar: " + error.message;
       return;
     }
@@ -1089,7 +1089,7 @@
 
   async function loadAddons() {
     const { data, error } = await sb.from("default_addons").select("*").order("position").order("created_at");
-    if (error) { $("addonMsg").textContent = "Erro ao carregar addons: " + error.message; return; }
+    if (error) { toast("Erro ao carregar addons: " + error.message); $("addonEmpty").textContent = "Não foi possível carregar os addons."; $("addonEmpty").classList.remove("hidden"); return; }
     addons = data || [];
     renderAddons();
     loadStats();
@@ -1122,7 +1122,7 @@
   // ── Addon test (from this browser) and stability (from the customers' devices) ──
   const testResults = {};
   const TEST_TITLES = [["movie", "tt0111161", "Um Sonho de Liberdade"], ["movie", "tt15239678", "Duna: Parte Dois"], ["series", "tt0903747:1:1", "Breaking Bad 1x1"]];
-  const normUrl = (u) => { const [b, q] = u.trim().split(/\?(.*)/s); const base = b.replace(/\/+$/, "").replace(/\/manifest\.json$/, "").replace(/\/+$/, ""); return q ? base + "?" + q : base; };
+  const normUrl = (u) => { const [b, q] = u.trim().split(/\?(.*)/s); const base = b.replace(/\/$/, "").replace(/\/manifest\.json$/, "").replace(/\/$/, ""); return q !== undefined ? base + "?" + q : base; };
   async function keyFor(u) {
     const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(normUrl(u)));
     return Array.from(new Uint8Array(h)).map((x) => x.toString(16).padStart(2, "0")).join("").slice(0, 16);
@@ -1134,11 +1134,18 @@
   }
   const secs = (ms) => (ms / 1000).toFixed(1).replace(".", ",") + " s";
   async function testAddon(a) {
-    const box = $("test-" + a.id); if (!box) return;
-    box.replaceChildren(el("span", { class: "pill wait" }, "Testando…"));
-    const [b, q] = a.manifest_url.trim().split(/\?(.*)/s);
-    const base = b.replace(/\/+$/, "").replace(/\/manifest\.json$/, "");
-    const results = await Promise.all(TEST_TITLES.map(async ([type, id, label]) => {
+    const box0 = $("test-" + a.id); if (!box0) return;
+    box0.replaceChildren(el("span", { class: "pill wait" }, "Testando…"));
+    const [b, q] = a.manifest_url.trim().split("#")[0].split(/\?(.*)/s);
+    const base = b.replace(/\/$/, "").replace(/\/manifest\.json$/, "").replace(/\/$/, "");
+    // Only ask for the kinds the addon says it serves.
+    let types = null;
+    try {
+      const m = await (await fetch(base + "/manifest.json" + (q ? "?" + q : ""), { signal: AbortSignal.timeout(15000) })).json();
+      types = Array.isArray(m.types) ? m.types : null;
+    } catch (_) {}
+    const titles = TEST_TITLES.filter(([type]) => !types || types.includes(type));
+    const results = await Promise.all((titles.length ? titles : TEST_TITLES).map(async ([type, id, label]) => {
       const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 15000); const t0 = performance.now();
       try {
         const r = await fetch(base + "/stream/" + type + "/" + id + ".json" + (q ? "?" + q : ""), { signal: ctl.signal });
@@ -1149,10 +1156,10 @@
     const answered = results.filter((r) => r.ok);
     const withSources = results.filter((r) => r.n > 0);
     const avg = answered.length ? answered.reduce((x, r) => x + r.ms, 0) / answered.length : 15000;
-    const [cls, word] = !answered.length ? ["bad", "Fora do ar"] : grade(withSources.length / results.length, avg);
+    const [cls, word] = !answered.length ? ["bad", "Fora do ar"] : !withSources.length ? ["mid", "Sem fontes"] : grade(answered.length / results.length, avg);
     const parts = [el("span", { class: "pill " + cls }, word), el("span", {}, answered.length ? "Resposta média " + secs(avg) : "Não respondeu")]
       .concat(results.map((r) => el("span", {}, r.label + ": " + (r.ok ? r.n + " fontes" : "falhou"))));
-    testResults[a.id] = parts; box.replaceChildren(...parts);
+    testResults[a.id] = parts; const box = $("test-" + a.id); if (box) box.replaceChildren(...parts);
     return cls;
   }
   $("aTestAll").addEventListener("click", async () => { for (const a of addons) await testAddon(a); toast("Teste concluído"); });
@@ -1161,12 +1168,15 @@
   async function loadStats() {
     const days = parseInt($("stDays").dataset.value || "7", 10);
     const { data, error } = await sb.rpc("admin_addon_stats", { p_days: days });
-    if (error) { $("stMsg").textContent = "Para ver a estabilidade, rode antes o arquivo addon_stats.sql no Supabase."; return; }
+    if (error) { $("stMsg").textContent = "Para ver a estabilidade, rode antes o arquivo cloudplay_functions.sql no Supabase."; return; }
     $("stMsg").textContent = ""; stats = data || []; renderStats();
   }
+  let statsRun = 0;
   async function renderStats() {
-    const keys = {}; for (const a of addons) keys[await keyFor(a.manifest_url)] = a;
-    const enabled = addons.filter((x) => x.enabled);
+    const run = ++statsRun; const list = addons.slice();
+    const keys = {}; for (const a of list) keys[await keyFor(a.manifest_url)] = a;
+    if (run !== statsRun) return;
+    const enabled = list.filter((x) => x.enabled);
     $("stEmpty").classList.toggle("hidden", stats.length > 0);
     $("stList").replaceChildren(...stats.map((st) => {
       const okRate = st.requests ? st.ok / st.requests : 0;
@@ -1339,7 +1349,7 @@
   }
   async function saveCategory(c, change) {
     const ov = Object.assign({}, settings.category_overrides || {});
-    const next = Object.assign({}, ov[c.id] || {}, change);
+    const next = Object.assign({}, Object.hasOwn(ov, c.id) ? ov[c.id] : {}, change);
     if (!next.name) delete next.name;
     if (!next.hidden) delete next.hidden;
     if (Object.keys(next).length) ov[c.id] = next; else delete ov[c.id];
@@ -1358,7 +1368,7 @@
     const f = $("reqFilter").dataset.value ?? "pending";
     if (f) q = q.eq("status", f);
     const { data, error } = await q;
-    if (error) { $("reqList").textContent = "Rode o arquivo app_settings.sql no Supabase para usar esta seção."; return; }
+    if (error) { $("reqEmpty").classList.add("hidden"); $("reqList").textContent = "Rode o arquivo app_settings.sql no Supabase para usar esta seção."; return; }
     const list = data || [];
     $("reqEmpty").classList.toggle("hidden", list.length > 0);
     $("reqList").replaceChildren(...list.map((r) => el("div", { class: "req" },
@@ -1368,12 +1378,12 @@
         el("span", { class: "muted" }, (r.media_type === "movie" ? "Filme" : "Série") + " · " + reqStatus[r.status] + " · " + fmt(r.last_requested_at)),
         el("span", {}, el("span", { class: "count" }, r.request_count + (r.request_count === 1 ? " pedido" : " pedidos"))),
         el("div", { class: "actions" },
-          el("button", { class: "ghost small", onclick: () => window.open("https://www.themoviedb.org/" + r.media_type + "/" + r.tmdb_id, "_blank") }, "Ver no TMDB"),
+          el("button", { class: "ghost small", onclick: () => window.open("https://www.themoviedb.org/" + r.media_type + "/" + r.tmdb_id, "_blank", "noopener") }, "Ver no TMDB"),
           r.status !== "done" ? el("button", { class: "ghost small", onclick: () => setReq(r, "done") }, "Marcar adicionado") : "",
           r.status !== "rejected" ? el("button", { class: "ghost small", onclick: () => setReq(r, "rejected") }, "Recusar") : "",
           el("button", { class: "danger small", onclick: () => delReq(r) }, "Excluir"))))));
   }
-  const posterOf = (r) => r.poster ? (r.poster.startsWith("http") ? r.poster : "https://image.tmdb.org/t/p/w185" + r.poster) : null;
+  const posterOf = (r) => !r.poster ? null : /^https:\/\/image\.tmdb\.org\//.test(r.poster) ? r.poster : /^\/[\w.-]+$/.test(r.poster) ? "https://image.tmdb.org/t/p/w185" + r.poster : null;
   async function loadPendingSummary() {
     const { data, error } = await sb.from("content_requests").select("*").eq("status", "pending")
       .order("request_count", { ascending: false }).order("last_requested_at", { ascending: false });
@@ -1411,7 +1421,7 @@
   let usage = null;
   async function loadUsage() {
     const { data, error } = await sb.rpc("admin_usage_stats");
-    if (error) { $("usoMsg").textContent = "Para ver o uso, rode antes os arquivos code_library_since.sql e usage_stats.sql no Supabase."; return; }
+    if (error) { $("usoMsg").textContent = "Para ver o uso, rode antes o arquivo cloudplay_functions.sql no Supabase."; return; }
     $("usoMsg").textContent = "";
     usage = data; renderUsage();
   }
@@ -1423,7 +1433,7 @@
     $("uMeter").style.width = Math.max(pct, 0.5) + "%";
     $("uMeter").className = "meter-fill" + (pct >= 90 ? " bad" : pct >= 70 ? " warn" : "");
     $("uPct").textContent = pct.toFixed(pct < 10 ? 1 : 0).replace(".", ",") + "% do limite";
-    const now = new Date(); const day = now.getDate(); const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const [yy, mm, day] = todaySP().split("-").map(Number); const daysInMonth = new Date(yy, mm, 0).getDate();
     $("uForecast").textContent = day > 1 ? "Previsão para o mês: " + human(u.month_bytes / day * daysInMonth) : "";
     $("uDev24").textContent = u.devices_24h; $("uDev7").textContent = u.devices_7d;
     $("uStarts").textContent = u.month_starts; $("uDb").textContent = human(u.db_bytes) + " / 500 MB";
@@ -1468,6 +1478,7 @@
         const p = ev.touches ? ev.touches[0] : ev; tip.style.left = Math.min(window.innerWidth - 170, p.clientX + 12) + "px"; tip.style.top = (p.clientY - 54) + "px"; };
       hit.addEventListener("mousemove", show); hit.addEventListener("touchstart", show, { passive: true });
       hit.addEventListener("mouseleave", () => tip.classList.add("hidden"));
+      hit.addEventListener("touchend", () => setTimeout(() => tip.classList.add("hidden"), 1500), { passive: true });
     });
     box.append(svg);
   }
@@ -1482,7 +1493,7 @@
       const on = s.dataset.section === page;
       s.classList.toggle("hidden", !on);
       if (on) { $("pageTitle").textContent = s.dataset.title; document.title = s.dataset.title + " · CloudPlay"; }
-      if (on && page === "uso") setTimeout(loadUsage, 0);
+      if (on && page === "uso" && !$("app").classList.contains("hidden")) setTimeout(loadUsage, 0);
     });
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.page === page));
     document.querySelectorAll(".bottom-nav a").forEach((a) => a.classList.toggle("active", a.dataset.page.split(" ").includes(page)));
@@ -1494,7 +1505,7 @@
   $("menuBtn").addEventListener("click", () => document.body.classList.add("nav-open"));
   $("bnMore").addEventListener("click", (e) => { e.preventDefault(); document.body.classList.add("nav-open"); });
   $("backdrop").addEventListener("click", () => document.body.classList.remove("nav-open"));
-  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); };
+  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); };
   $("refreshAll").addEventListener("click", loadAll);
 
   $("search").addEventListener("input", render);
@@ -1529,6 +1540,7 @@
   }
 
   sb.auth.getSession().then(({ data }) => show(data.session));
+  sb.auth.onAuthStateChange((event) => { if (event === "SIGNED_OUT" && !$("app").classList.contains("hidden")) show(null); });
 })();
 </script>
 </body>
