@@ -194,6 +194,23 @@
   .req .info .actions { justify-content: flex-start; }
   .req .title { font-weight: 600; }
   .cat-list { display: grid; gap: 6px; }
+  .cat2 { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel2); }
+  .cat2.off { grid-template-columns: minmax(0, 1fr) auto; opacity: .7; }
+  .cat2-n { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: var(--field); border: 1px solid var(--line2); color: var(--muted); font-size: 13px; font-weight: 600; }
+  .cat2-main { min-width: 0; display: grid; gap: 3px; }
+  .cat2-main b { font-weight: 600; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cat2-src { margin-left: 8px; padding: 1px 7px; border-radius: 6px; background: rgba(255, 255, 255, .06); color: var(--faint); font-size: 11px; font-weight: 600; vertical-align: 1px; }
+  .cat2-where { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px; min-width: 0; }
+  .cat2-where svg { width: 13px; height: 13px; color: var(--faint); flex: none; }
+  .cat2-orig { color: var(--faint); font-size: 12px; }
+  .cat2-acts { display: flex; gap: 4px; }
+  .cat2-edit { grid-column: 2 / -1; display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .cat2-edit input { flex: 1 1 180px; height: 36px; font-size: 13.5px; }
+  .svc-list { display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .svc { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel2); }
+  .svc.off { opacity: .7; }
+  .svc b { font-weight: 600; }
+  .svc-n { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: var(--field); border: 1px solid var(--line2); color: var(--muted); }
   .cat { display: grid; grid-template-columns: auto 1fr minmax(160px, 280px) auto; gap: 12px; align-items: center;
     padding: 10px 12px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; }
   .cat.off { opacity: .55; }
@@ -296,6 +313,10 @@
   @media (max-width: 720px) {
     .stats.stats-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .stats.stats-4 { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .cat2 { grid-template-columns: 30px minmax(0, 1fr) auto; padding: 12px; gap: 4px 10px; }
+    .cat2-main b { white-space: normal; }
+    .cat2-src { display: inline-block; margin: 2px 0 0 6px; }
+    .svc-list { grid-template-columns: 1fr; }
     .stats.stats-4 .stat { padding: 11px 14px; }
     .stats.stats-4 .stat b { font-size: 22px; }
     .toolbar { position: relative; }
@@ -684,7 +705,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v19</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v20</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -915,7 +936,7 @@
     <main class="page hidden" data-section="categorias" data-title="Categorias">
       <div class="card">
         <div class="card-head">
-          <div><h2>Categorias do app</h2><p class="sub">As fileiras que aparecem no app. Troque o nome mostrado ou apague a categoria. Vale na próxima vez que o app abrir.</p></div>
+          <div><h2>Categorias do app</h2><p class="sub">As fileiras do app, na ordem em que aparecem. Cada uma mostra onde fica no app. Renomeie ou apague; vale na próxima vez que o app abrir.</p></div>
         </div>
         <div class="toolbar">
           <div class="field-icon"><svg class="i"><use href="#i-search"/></svg><input id="catSearch" placeholder="Buscar categoria" autocomplete="off"></div>
@@ -965,9 +986,17 @@
     <!-- Streamings -->
     <main class="page hidden" data-section="streamings" data-title="Streamings">
       <div class="card">
-        <h2>Fileira "Streamings"</h2>
-        <p class="sub">Escolha quais streamings aparecem na fileira "Streamings" do app.</p>
-        <div id="serviceToggles" class="toggle-grid"></div>
+        <div class="card-head">
+          <div><h2>Fileira "Streamings"</h2><p class="sub">Os streamings da fileira "Streamings" da tela Início do app. Apague os que não quer mostrar. Vale na próxima vez que o app abrir.</p></div>
+        </div>
+        <div class="toolbar">
+          <div id="svcFilter" class="seg">
+            <button type="button" data-v="on" class="on">No app<span class="n" data-sn="on"></span></button>
+            <button type="button" data-v="off">Apagados<span class="n" data-sn="off"></span></button>
+          </div>
+        </div>
+        <div id="serviceToggles" class="svc-list"></div>
+        <p id="svcEmpty" class="empty hidden"></p>
       </div>
     </main>
   </div>
@@ -1804,10 +1833,21 @@
   }
 
   function renderSettings() {
-    const hiddenServices = settings.hidden_services || [];
-    $("serviceToggles").replaceChildren(...SERVICES.map((name) =>
-      toggleBox(name, !hiddenServices.includes(name.toLowerCase()), () => saveSetting("hidden_services", name.toLowerCase()))));
+    const hidden = settings.hidden_services || [];
+    const f = $("svcFilter").dataset.value || "on";
+    const off = (n) => hidden.includes(n.toLowerCase());
+    document.querySelectorAll("#svcFilter [data-sn]").forEach((x) => x.textContent = SERVICES.filter((n) => (x.dataset.sn === "off") === off(n)).length);
+    const list = SERVICES.filter((n) => (f === "off") === off(n));
+    $("svcEmpty").textContent = f === "off" ? "Nenhum streaming apagado." : "Todos os streamings foram apagados.";
+    $("svcEmpty").classList.toggle("hidden", list.length > 0);
+    $("serviceToggles").replaceChildren(...list.map((name, i) => el("div", { class: "svc" + (f === "off" ? " off" : "") },
+      el("span", { class: "svc-n" }, icon("tv")),
+      el("b", {}, name),
+      f === "off"
+        ? el("button", { class: "ghost small", onclick: () => saveSetting("hidden_services", name.toLowerCase()) }, "Voltar para o app")
+        : iconBtn("trash", "Apagar " + name, () => { if (confirm("Apagar " + name + " da fileira Streamings? Dá para voltar em Apagados.")) saveSetting("hidden_services", name.toLowerCase()); }, "bad"))));
   }
+  seg("svcFilter", renderSettings);
 
   async function saveSetting(key, value) {
     const list = new Set(settings[key] || []);
@@ -1824,11 +1864,28 @@
   const SOURCE_LABELS = { app: "App", preinstalled: "Padrão do app", tmdb: "TMDB", trakt: "Trakt", mdblist: "MDBList", addon: "Addon" };
   const sourceLabel = (src) => SOURCE_LABELS[(src || "app").toLowerCase()] || src;
   async function loadCategories() {
-    const { data, error } = await sb.from("app_categories").select("*").order("title");
+    const { data, error } = await sb.from("app_categories").select("*").order("position", { nullsFirst: false }).order("title");
     if (error) { $("catMsg").textContent = "Rode o arquivo categories.sql no Supabase para usar esta seção."; return; }
     $("catMsg").textContent = "";
     categories = data || [];
     renderCategories();
+  }
+  // Where a row shows in the app. Home lists Continuar assistindo first, then the Top 10 rows, then
+  // the Streamings rail, then the rest in the app's own order; Filmes and Séries show the same
+  // rows with only their kind of titles.
+  const TOP10_IDS = ["top10_movies_today", "top10_shows_today"];
+  function homeOrder(list) {
+    const rank = (c) => c.id === "continue_watching" ? 0 : TOP10_IDS.includes(c.id) ? 1 : c.id === "collection_row_service" ? 2 : 3;
+    return list.slice().sort((a, b) => rank(a) - rank(b) || (a.position ?? 9999) - (b.position ?? 9999));
+  }
+  function whereIs(c, n) {
+    const tab = /movie|filme/i.test(c.id + " " + c.title) && !/show|serie|série/i.test(c.id) ? "Também na aba Filmes"
+      : /show|series|serie|série|tv_/i.test(c.id + " " + c.title) ? "Também na aba Séries"
+      : "Também em Filmes e Séries";
+    if (c.id === "continue_watching") return "Início · 1ª fileira, no topo";
+    if (c.id === "collection_row_service") return "Início · " + n + "ª fileira · a fileira Streamings";
+    if (c.id.startsWith("collection_row_")) return "Início · " + n + "ª fileira · fileira de coleções (cartões grandes)";
+    return "Início · " + n + "ª fileira · " + tab;
   }
   function renderCategories() {
     const ov = settings.category_overrides || {};
@@ -1837,32 +1894,39 @@
     const counts = { on: 0, off: 0 };
     categories.forEach((c) => counts[(ov[c.id] || {}).hidden ? "off" : "on"]++);
     document.querySelectorAll("#catFilter [data-n]").forEach((n) => n.textContent = counts[n.dataset.n]);
-    const list = categories.filter((c) => {
+    const visible = homeOrder(categories.filter((c) => !(ov[c.id] || {}).hidden));
+    const placeOf = new Map(visible.map((c, i) => [c.id, i + 1]));
+    const list = (f === "on" ? visible : categories.filter((c) => (ov[c.id] || {}).hidden)).filter((c) => {
       const o = ov[c.id] || {};
-      if ((f === "on") === !!o.hidden) return false;
       return !q || c.title.toLowerCase().includes(q) || (o.name || "").toLowerCase().includes(q);
     });
     $("catEmpty").textContent = categories.length ? (f === "on" ? "Nenhuma categoria encontrada." : "Nenhuma categoria apagada.") : "Nenhuma categoria ainda. Abra o app em um aparelho para a lista aparecer aqui.";
     $("catEmpty").classList.toggle("hidden", list.length > 0);
     $("catList").replaceChildren(...list.map((c) => {
       const o = ov[c.id] || {};
+      const name = o.name || c.title;
       if (o.hidden) {
-        return el("div", { class: "cat cat-off off" },
-          el("div", { class: "meta" }, el("b", {}, o.name || c.title), el("span", {}, "Apagada · " + sourceLabel(c.source))),
-          el("div", { class: "actions" }, el("button", { class: "ghost small", onclick: () => saveCategory(c, { hidden: false }) }, "Voltar para o app")));
+        return el("div", { class: "cat2 off" },
+          el("div", { class: "cat2-main" }, el("b", {}, name), el("span", { class: "cat2-where" }, "Apagada · não aparece no app")),
+          el("div", { class: "cat2-acts" }, el("button", { class: "ghost small", onclick: () => saveCategory(c, { hidden: false }) }, "Voltar para o app")));
       }
       const input = el("input", { placeholder: c.title, maxlength: "60" });
       input.value = o.name || "";
       const save = () => saveCategory(c, { name: input.value.trim() });
       input.addEventListener("keydown", (e) => { if (e.key === "Enter") save(); });
-      return el("div", { class: "cat cat-on" },
-        el("div", { class: "meta" }, el("b", {}, o.name || c.title),
-          el("span", {}, (o.name ? "Original: " + c.title + " · " : "") + sourceLabel(c.source))),
-        input,
-        el("div", { class: "actions" },
-          el("button", { class: "ghost small", onclick: save }, "Salvar nome"),
-          o.name ? el("button", { class: "ghost small", onclick: () => { input.value = ""; saveCategory(c, { name: "" }); } }, "Restaurar nome") : "",
-          iconBtn("trash", "Apagar do app", () => { if (confirm("Apagar \"" + (o.name || c.title) + "\" do app? Dá para voltar em Apagadas.")) saveCategory(c, { hidden: true }); }, "bad")));
+      const edit = el("div", { class: "cat2-edit hidden" }, input,
+        el("button", { class: "small", onclick: save }, "Salvar"),
+        o.name ? el("button", { class: "ghost small", onclick: () => { input.value = ""; saveCategory(c, { name: "" }); } }, "Usar o original") : "");
+      return el("div", { class: "cat2" },
+        el("span", { class: "cat2-n" }, String(placeOf.get(c.id) || "")),
+        el("div", { class: "cat2-main" },
+          el("b", {}, name, el("span", { class: "cat2-src" }, sourceLabel(c.source))),
+          el("span", { class: "cat2-where" }, icon("home"), whereIs(c, placeOf.get(c.id) || "?")),
+          o.name ? el("span", { class: "cat2-orig" }, "Nome original: " + c.title) : ""),
+        el("div", { class: "cat2-acts" },
+          iconBtn("edit", "Renomear", () => { edit.classList.toggle("hidden"); if (!edit.classList.contains("hidden")) input.focus(); }),
+          iconBtn("trash", "Apagar do app", () => { if (confirm("Apagar \"" + name + "\" do app? Dá para voltar em Apagadas.")) saveCategory(c, { hidden: true }); }, "bad")),
+        edit);
     }));
   }
   async function saveCategory(c, change) {
