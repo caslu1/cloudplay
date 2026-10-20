@@ -1,0 +1,1265 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<!-- Always fetch the latest panel: phones kept showing an old copy. -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>CloudPlay · Painel</title>
+<link rel="icon" href="icon.png">
+<script src="config.js?v=4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0a0c; --side: #0f0e11; --panel: #141217; --panel2: #1a171d; --field: #100e12;
+    --line: #241f27; --line2: #312b35; --hover: #3e3743;
+    --text: #f4f1f3; --muted: #a39ba6; --faint: #6e6671;
+    --brand: #ff3d8a; --brand-hi: #ff5c9d; --brand-soft: rgba(255, 61, 138, .12); --brand-ring: rgba(255, 61, 138, .28);
+    --coral: #ff6f7f; --peach: #ffa07a;
+    --ok: #3ccf8e; --warn: #f5a524; --bad: #f2555a; --info: #8fa3b8;
+    --side-w: 236px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh; color: var(--text); background: var(--bg);
+    font: 14px/1.5 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; font-feature-settings: "cv11", "tnum";
+  }
+  ::selection { background: var(--brand-ring); }
+  svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  h1 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -.3px; }
+  h2 { margin: 0 0 2px; font-size: 15px; font-weight: 600; letter-spacing: -.1px; }
+  .sub { color: var(--muted); font-size: 13px; margin: 0 0 18px; }
+  code { font: 12.5px ui-monospace, Menlo, Consolas, monospace; background: var(--panel2); padding: 1px 5px; border-radius: 4px; }
+
+  /* ── Fields ── */
+  label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+  .hint { display: block; color: var(--faint); font-size: 12px; margin-top: 6px; }
+  input, select {
+    width: 100%; height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line2);
+    background: var(--field); color: var(--text); font: inherit; font-size: 14px; outline: none;
+    transition: border-color .12s, box-shadow .12s, background .12s;
+  }
+  input::placeholder { color: var(--faint); }
+  input:hover, select:hover { border-color: var(--hover); }
+  input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-ring); }
+  select {
+    appearance: none; -webkit-appearance: none; padding-right: 34px; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a39ba6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+  }
+  input[type=number] { -moz-appearance: textfield; }
+  input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=color] { padding: 4px; cursor: pointer; }
+  .field-icon { position: relative; }
+  .field-icon svg { position: absolute; left: 12px; top: 12px; color: var(--faint); pointer-events: none; }
+  .field-icon input { padding-left: 36px; }
+
+  /* Segmented choice and number stepper */
+  .seg { display: inline-flex; flex-wrap: wrap; align-items: center; align-self: flex-start; gap: 2px; padding: 3px; background: var(--field); border: 1px solid var(--line2); border-radius: 9px; }
+  .seg button { height: 32px; padding: 0 12px; border-radius: 6px; background: transparent; color: var(--muted); font-weight: 500; border: 0; }
+  .seg button:hover { color: var(--text); background: transparent; }
+  .seg button.on { background: var(--panel2); color: var(--text); box-shadow: inset 0 0 0 1px var(--line2); }
+  .seg.accent button.on { background: var(--brand-soft); color: #ffd1e3; box-shadow: inset 0 0 0 1px rgba(255, 61, 138, .35); }
+  .seg button .n { color: var(--faint); font-weight: 500; margin-left: 5px; font-size: 12px; }
+  .stepper { display: flex; height: 40px; border: 1px solid var(--line2); border-radius: 8px; background: var(--field); overflow: hidden; }
+  .stepper:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-ring); }
+  .stepper button { width: 38px; height: 100%; border-radius: 0; background: transparent; color: var(--muted); padding: 0; font-size: 17px; font-weight: 500; }
+  .stepper button:hover { color: var(--text); background: var(--panel2); filter: none; }
+  .stepper input { height: 100%; border: 0; border-radius: 0; text-align: center; background: transparent; box-shadow: none !important; padding: 0; }
+
+  /* ── Buttons ── */
+  button {
+    border: 0; border-radius: 8px; height: 40px; padding: 0 16px; font: inherit; font-weight: 600; font-size: 13.5px; cursor: pointer;
+    color: #fff; background: var(--brand); display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    transition: background .12s, color .12s, border-color .12s; white-space: nowrap;
+  }
+  button:hover { background: var(--brand-hi); }
+  button:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--brand-ring); }
+  button:disabled { opacity: .5; cursor: default; }
+  button.ghost { background: var(--panel2); color: var(--text); border: 1px solid var(--line2); }
+  button.ghost:hover { border-color: var(--hover); background: #201c23; }
+  button.danger { background: transparent; color: #ff8a8e; border: 1px solid #4a2427; }
+  button.danger:hover { background: #2a1416; }
+  button.small { height: 30px; padding: 0 10px; font-size: 12.5px; border-radius: 7px; }
+  button.icon { width: 30px; height: 30px; padding: 0; border-radius: 7px; background: transparent; color: var(--muted); border: 1px solid transparent; }
+  button.icon:hover { color: var(--text); background: var(--panel2); border-color: var(--line2); }
+  button.icon.bad:hover { color: #ff8a8e; border-color: #4a2427; background: #2a1416; }
+  .muted { color: var(--muted); }
+  .hidden { display: none !important; }
+
+  /* ── Login / setup ── */
+  .center { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+  .login-box { width: 100%; max-width: 360px; }
+  .login-box > img { display: block; width: 190px; margin: 0 auto 28px; }
+  .login-box input { margin-bottom: 10px; }
+  .msg { min-height: 20px; color: var(--bad); font-size: 13px; margin-top: 10px; }
+  .msg.ok { color: var(--ok); }
+
+  /* ── Layout ── */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0; width: var(--side-w); background: var(--side); border-right: 1px solid var(--line);
+    display: flex; flex-direction: column; padding: 18px 12px; z-index: 30; transition: transform .2s ease;
+  }
+  .brand { padding: 4px 10px 20px; }
+  .brand img { width: 150px; height: auto; display: block; }
+  .nav-label { font-size: 11px; color: var(--faint); padding: 16px 10px 6px; font-weight: 600; letter-spacing: .3px; }
+  .nav a {
+    display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 10px; border-radius: 7px; color: var(--muted);
+    text-decoration: none; font-weight: 500; margin-bottom: 1px; position: relative;
+  }
+  .nav a:hover { background: #ffffff08; color: var(--text); }
+  .nav a.active { background: var(--panel2); color: var(--text); }
+  .nav a.active::before { content: ""; position: absolute; left: -12px; top: 9px; bottom: 9px; width: 3px; border-radius: 0 3px 3px 0; background: var(--brand); }
+  .nav a.active svg { color: var(--brand); }
+  .nav .pill { margin-left: auto; background: var(--brand); color: #fff; font-size: 11px; font-weight: 600; border-radius: 99px; padding: 0 7px; line-height: 18px; }
+  .side-foot { margin-top: auto; border-top: 1px solid var(--line); padding: 14px 4px 0; display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--brand-soft); color: #ffb3d1; display: grid; place-items: center; font-weight: 600; flex: none; }
+  .who { min-width: 0; flex: 1; }
+  .who b { display: block; font-size: 13px; font-weight: 600; }
+  .who span { display: block; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .icon-btn { background: transparent; border: 1px solid var(--line2); width: 34px; height: 34px; padding: 0; border-radius: 8px; color: var(--muted); }
+  .icon-btn:hover { color: var(--text); background: var(--panel2); }
+
+  .content { flex: 1; margin-left: var(--side-w); min-width: 0; }
+  .topbar {
+    position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 12px; padding: 16px 32px;
+    background: rgba(11, 10, 12, .85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
+  }
+  .topbar .crumb { color: var(--faint); font-size: 12px; }
+  .topbar .grow { flex: 1; min-width: 0; }
+  #menuBtn { display: none; }
+  .page { padding: 24px 32px 48px; max-width: 1200px; }
+  .backdrop { display: none; }
+
+  /* ── Components ── */
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .card-head .sub { margin: 0; }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); align-items: end; }
+  .span2 { grid-column: span 2; }
+  .stats { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); margin-bottom: 16px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .stat span { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12.5px; font-weight: 500; }
+  .stat span::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dot, var(--faint)); }
+  .stat b { display: block; font-size: 26px; font-weight: 600; letter-spacing: -.5px; margin-top: 6px; line-height: 1.1; }
+  .two { display: grid; gap: 16px; grid-template-columns: 1.4fr 1fr; }
+  .quick { display: grid; gap: 8px; }
+  .quick a { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line2); color: var(--text); text-decoration: none; font-weight: 500; }
+  .quick a svg { color: var(--brand); }
+  .quick a:hover { border-color: var(--hover); }
+  .quick a small { display: block; color: var(--muted); font-weight: 400; }
+  .code { font: 600 15px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: 2px; }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
+  .toolbar .field-icon { flex: 1 1 220px; }
+  .toolbar select { flex: 0 0 170px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--faint); font-weight: 500; font-size: 12px; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: #ffffff03; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 500; background: var(--panel2); color: var(--muted); border: 1px solid var(--line2); white-space: nowrap; }
+  .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .b-free { color: var(--info); } .b-active { color: var(--ok); } .b-expired { color: var(--warn); } .b-revoked { color: var(--bad); }
+  .tag { display: inline-block; margin-left: 8px; padding: 1px 6px; border-radius: 5px; font-size: 11px; font-weight: 600; color: #ffb3d1; background: var(--brand-soft); vertical-align: 2px; letter-spacing: 0; }
+  .actions { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  td .actions { flex-wrap: nowrap; }
+  .nowrap { white-space: nowrap; }
+  .small-line { display: block; color: var(--faint); font-size: 12px; margin-top: 2px; }
+  .devices { margin-top: 6px; font-size: 12.5px; color: var(--muted); display: grid; gap: 4px; }
+  .devices div { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .devices .dev-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .devices .link { background: none; border: 0; height: auto; padding: 0; color: var(--brand); font-weight: 500; font-size: 12px; }
+  .devices .link:hover { text-decoration: underline; background: none; }
+  .toggle-grid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+  .toggle { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px;
+    background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; cursor: pointer; user-select: none; font-weight: 500; }
+  .toggle:hover { border-color: var(--hover); }
+  .switch { width: 36px; height: 20px; border-radius: 99px; background: #3a343e; position: relative; flex: none; transition: background .15s; }
+  .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }
+  .toggle.on .switch { background: var(--brand); }
+  .toggle.on .switch::after { left: 18px; }
+  .req-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .req { display: flex; gap: 12px; padding: 12px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; }
+  .req img, .req .noposter { width: 64px; height: 96px; border-radius: 6px; object-fit: cover; background: #241f27; flex: none; }
+  .req .info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .req .info .actions { justify-content: flex-start; }
+  .req .title { font-weight: 600; }
+  .cat-list { display: grid; gap: 6px; }
+  .cat { display: grid; grid-template-columns: auto 1fr minmax(160px, 280px) auto; gap: 12px; align-items: center;
+    padding: 10px 12px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; }
+  .cat.off { opacity: .55; }
+  .cat.cat-on { grid-template-columns: 1fr minmax(160px, 280px) 250px; }
+  .cat.cat-off { grid-template-columns: 1fr auto; }
+  .cat .meta { min-width: 0; }
+  .cat .meta b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+  .cat .meta span { font-size: 12px; color: var(--muted); }
+  .cat input { height: 34px; font-size: 13.5px; }
+  .cat .switch { cursor: pointer; }
+  .cat.on-state .switch { background: var(--brand); }
+  .cat.on-state .switch::after { left: 18px; }
+  @media (max-width: 720px) {
+    .cat.cat-on, .cat.cat-off { grid-template-columns: 1fr; gap: 10px; }
+    .cat .actions { justify-content: flex-end; }
+  }
+  .mini { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .mini:last-child { border-bottom: 0; }
+  .mini img, .mini .noposter { width: 36px; height: 54px; border-radius: 5px; object-fit: cover; background: #241f27; flex: none; }
+  .mini .t { flex: 1; min-width: 0; }
+  .mini .t b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+  .count { display: inline-block; padding: 1px 8px; border-radius: 6px; background: var(--brand-soft); color: #ffb3d1; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .table-wrap { overflow-x: auto; margin: 0 -10px; }
+  .empty { text-align: center; padding: 28px 10px; color: var(--muted); }
+
+  /* ── Codes page ── */
+  .gen { display: grid; gap: 18px; grid-template-columns: 1fr 300px; }
+  .gen-fields { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; align-content: start; }
+  .gen-fields .full { grid-column: 1 / -1; }
+  .gen-side { background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .gen-side h3 { margin: 0; font-size: 13px; font-weight: 600; }
+  .summary { display: grid; gap: 8px; font-size: 13px; }
+  .summary div { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); }
+  .summary b { color: var(--text); font-weight: 500; text-align: right; }
+  .gen-side button[type=submit] { width: 100%; margin-top: auto; }
+  .trial-note { display: flex; gap: 10px; padding: 12px 14px; border-radius: 8px; background: var(--brand-soft); color: #ffd1e3; font-size: 13px; border: 1px solid rgba(255, 61, 138, .25); }
+  .trial-note svg { color: var(--brand); margin-top: 2px; }
+  .new-codes { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .new-codes .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip-code { display: inline-flex; align-items: center; gap: 10px; height: 38px; padding: 0 8px 0 14px; background: var(--field); border: 1px solid var(--line2); border-radius: 8px; color: var(--text); }
+  .chip-code:hover { border-color: var(--hover); background: var(--field); }
+  .chip-code svg { color: var(--faint); }
+  .list-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+
+  .date-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+  .date-row input { max-width: 220px; color-scheme: dark; }
+  .msg-box { margin-top: 14px; background: var(--field); border: 1px solid var(--line2); border-radius: 10px; padding: 14px 16px; white-space: pre-wrap; font-size: 13.5px; line-height: 1.55; color: var(--text); }
+  .msg-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; }
+  .msg-head b { font-size: 13px; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: #1f1b22; border: 1px solid var(--line2); color: var(--text);
+    padding: 10px 16px; border-radius: 10px; font-weight: 500; font-size: 13.5px; opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s; z-index: 50; box-shadow: 0 8px 30px #0008; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  table.codes { table-layout: fixed; }
+  table.codes td { vertical-align: middle; }
+  table.codes col.c-code { width: 130px; } table.codes col.c-client { width: 22%; } table.codes col.c-status { width: 120px; }
+  table.codes col.c-valid { width: 24%; } table.codes col.c-dev { width: 20%; } table.codes col.c-act { width: 150px; }
+  .cell-main { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .addon-list { display: grid; gap: 8px; }
+  .addon { display: grid; grid-template-columns: 64px 92px minmax(0, 1fr) 110px auto; gap: 14px; align-items: center;
+    padding: 12px 14px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; }
+  .addon.off { opacity: .6; }
+  .addon .order { display: flex; align-items: center; gap: 2px; }
+  .addon .order b { width: 22px; text-align: center; color: var(--faint); font-weight: 600; }
+  .addon .fonte { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; white-space: nowrap; }
+  .addon .fonte i { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,.35); display: inline-block; }
+  .addon .meta { min-width: 0; }
+  .addon .meta b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .addon .meta span { display: block; color: var(--faint); font: 12px ui-monospace, Menlo, Consolas, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .addon .state { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--muted); font-size: 12.5px; user-select: none; }
+  .addon .state.on .switch { background: var(--brand); } .addon .state.on .switch::after { left: 18px; }
+  .addon-form { display: grid; gap: 14px; grid-template-columns: 1fr 2fr 120px; align-items: end; }
+  .addon-form .btns { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; }
+  @media (max-width: 860px) {
+    .addon { grid-template-columns: 1fr auto; grid-template-areas: "meta meta" "fonte state" "order act"; gap: 10px 12px; }
+    .addon .meta { grid-area: meta; } .addon .fonte { grid-area: fonte; } .addon .state { grid-area: state; }
+    .addon .order { grid-area: order; } .addon .act { grid-area: act; }
+    .addon-form { grid-template-columns: 1fr; }
+    .addon-form .btns button { flex: 1; }
+  }
+  .bottom-nav { display: none; }
+  .top-logo, .gen-open, .gen-close, .code-cards { display: none; }
+  @media (max-width: 720px) {
+    .top-logo { display: block; height: 30px; width: auto; }
+    .topbar .crumb { display: none; }
+    .topbar h1 { font-size: 15px; color: var(--muted); font-weight: 500; text-align: right; }
+    .topbar .grow { order: 2; }
+    .topbar #refreshAll { order: 3; }
+    /* Codes: the form opens from a button, the list is cards */
+    .gen-open { display: flex; width: 100%; height: 50px; font-size: 15px; margin-bottom: 14px; border-radius: 12px; }
+    .gen-card { display: none; position: relative; }
+    .gen-card.open { display: block; }
+    body.gen-visible .gen-open { display: none; }
+    .gen-close { display: inline-flex; position: absolute; top: 12px; right: 12px; }
+    .gen-card .card-head { padding-right: 40px; }
+    table.codes, .codes-wrap thead { display: none !important; }
+    .code-cards { display: grid; gap: 10px; }
+    .cc { background: var(--panel2); border: 1px solid var(--line2); border-radius: 12px; padding: 14px; display: grid; gap: 8px; }
+    .cc-top { display: flex; align-items: center; gap: 8px; }
+    .cc-top .code { font-size: 20px; letter-spacing: 2.5px; }
+    .cc-top .badge { margin-left: auto; }
+    .cc-client { font-weight: 600; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cc-line { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13.5px; }
+    .cc-line svg { color: var(--faint); flex: none; }
+    .cc-line b { color: var(--text); font-weight: 500; }
+    .cc-devs { display: grid; gap: 6px; padding: 8px 10px; border-radius: 8px; background: var(--field); border: 1px solid var(--line); }
+    .cc-devs div { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
+    .cc-devs span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cc-devs .link { background: none; border: 0; height: auto; padding: 0; color: var(--brand); font-weight: 600; font-size: 13px; }
+    .cc-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 8px; margin-top: 4px; }
+    .cc-actions .primary { height: 40px; font-size: 13px; padding: 0 10px; min-width: 0; overflow: hidden; }
+    .cc { min-width: 0; }
+    .list-head { flex-wrap: nowrap; align-items: flex-start; }
+    .cc-actions button.icon { width: 40px; height: 40px; background: var(--field); border-color: var(--line2); }
+  }
+  @media (max-width: 1060px) { .gen { grid-template-columns: 1fr; } }
+  @media (max-width: 860px) {
+    body { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+    .bottom-nav {
+      display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+      background: rgba(15, 14, 17, .96); backdrop-filter: blur(12px); border-top: 1px solid var(--line);
+      padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    }
+    .bottom-nav a { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; color: var(--faint);
+      text-decoration: none; font-size: 11px; font-weight: 500; border-radius: 10px; -webkit-tap-highlight-color: transparent; }
+    .bottom-nav a svg { width: 20px; height: 20px; }
+    .bottom-nav a.active { color: var(--text); }
+    .bottom-nav a.active svg { color: var(--brand); }
+    .bottom-nav b { position: absolute; top: 2px; left: 54%; min-width: 17px; height: 17px; padding: 0 5px; border-radius: 99px;
+      background: var(--brand); color: #fff; font-size: 10.5px; line-height: 17px; text-align: center; }
+    .topbar #menuBtn { display: none; }
+    .topbar .lbl, .list-head .lbl, .card-head .lbl { display: none; }
+    #reqReload { width: 36px; height: 36px; padding: 0; }
+    .topbar #refreshAll, #reload { width: 36px; height: 36px; padding: 0; }
+    .toast { bottom: calc(80px + env(safe-area-inset-bottom)); }
+  }
+  @media (max-width: 720px) {
+    input, select { font-size: 16px; height: 44px; }
+    .stepper { height: 44px; } .stepper button { width: 46px; }
+    button.icon { width: 38px; height: 38px; }
+    .seg button { height: 36px; }
+    .seg.scroll { display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; width: 100%; }
+    .seg.scroll::-webkit-scrollbar { display: none; }
+    .seg.scroll button { flex: 0 0 auto; }
+    .toolbar { flex-direction: column; align-items: stretch; }
+    .toolbar .field-icon { flex: 0 0 auto; }
+    .field-icon svg { top: 14px; }
+    .gen-side h3, .gen-side .summary { display: none; }
+    .gen-side { background: none; border: 0; padding: 0; }
+    .gen-side button[type=submit] { height: 48px; font-size: 15px; }
+    .card-head { margin-bottom: 12px; }
+    .stats.three .stat { padding: 10px 12px; }
+    .stats.three .stat b { font-size: 20px; margin-top: 4px; }
+    /* Codes: one compact card per code */
+    table.codes tr { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "code status" "client client" "valid valid" "dev dev" "act act";
+      gap: 6px 10px; padding: 14px 0; }
+    table.codes td { display: block; padding: 0; text-align: left; }
+    table.codes td > * { text-align: left; }
+    table.codes td::before { display: none; }
+    table.codes .td-code { grid-area: code; } table.codes .td-status { grid-area: status; align-self: center; }
+    table.codes .td-client { grid-area: client; } table.codes .td-valid { grid-area: valid; }
+    table.codes .td-dev { grid-area: dev; } table.codes .td-act { grid-area: act; }
+    table.codes .td-code .code { font-size: 18px; }
+    table.codes .td-client .cell-main { font-weight: 600; }
+    table.codes .td-valid, table.codes .td-dev { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; }
+    table.codes .td-dev .cell-main::before { content: "Aparelhos: "; color: var(--faint); }
+    table.codes .devices div { justify-content: space-between; }
+    table.codes .td-act .actions { justify-content: flex-start; gap: 6px; }
+    table.codes .td-act button.icon { border-color: var(--line2); background: var(--panel2); }
+  }
+  @media (max-width: 980px) { .two { grid-template-columns: 1fr; } }
+  @media (max-width: 860px) {
+    .sidebar { transform: translateX(-100%); box-shadow: 0 0 40px #0008; }
+    body.nav-open .sidebar { transform: none; }
+    body.nav-open .backdrop { display: block; position: fixed; inset: 0; background: #0009; z-index: 20; }
+    .content { margin-left: 0; }
+    #menuBtn { display: inline-flex; }
+    .topbar { padding: 12px 16px; }
+    .page { padding: 16px 16px 40px; }
+    .span2 { grid-column: auto; }
+    h1 { font-size: 18px; }
+    .card { padding: 16px; }
+  }
+  @media (max-width: 720px) {
+    .gen-fields { grid-template-columns: 1fr; }
+    .seg { display: flex; }
+    .seg button { flex: 1 1 auto; }
+    .table-wrap { margin: 0; }
+    thead { display: none; }
+    tr { display: block; border-bottom: 1px solid var(--line); padding: 10px 0; }
+    tbody tr:last-child { border-bottom: 0; }
+    td { display: flex; justify-content: space-between; gap: 12px; border: 0; padding: 4px 0; text-align: right; }
+    td > * { text-align: right; }
+    td::before { content: attr(data-label); color: var(--faint); font-size: 12.5px; text-align: left; flex: none; }
+    td[data-label=""]::before { display: none; }
+    tbody tr:hover td { background: none; }
+    .devices div { justify-content: flex-end; }
+    .stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stats.three { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stats.three .stat span { font-size: 11.5px; }
+    td[data-label=""] { justify-content: flex-end; }
+    table.codes, table.codes tbody { display: block; width: 100%; }
+    table.codes colgroup { display: none; }
+    .cell-main { white-space: normal; }
+    .stat { padding: 12px 14px; }
+    .stat b { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.7-8.7M16 7l3 3M14 9l2 2"/></symbol>
+  <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M10 3h4v3a2 2 0 1 0 4 0V3h3v7h-3a2 2 0 1 0 0 4h3v7h-7v-3a2 2 0 1 0-4 0v3H3v-7h3a2 2 0 1 0 0-4H3V3z"/></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5 5h14l2 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></symbol>
+  <symbol id="i-layout" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></symbol>
+  <symbol id="i-tv" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 17l5-5-5-5M15 12H4"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-msg" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13 7 4 4"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></symbol>
+</svg>
+
+<section id="setup" class="center hidden">
+  <div class="login-box">
+    <img src="logo.png" alt="CloudPlay">
+    <div class="card">
+      <h2>Falta configurar</h2>
+      <p class="muted">Abra <code>docs/painel/config.js</code> no repositório e cole a URL e a chave anon do seu projeto Supabase.</p>
+    </div>
+  </div>
+</section>
+
+<section id="login" class="center hidden">
+  <div class="login-box">
+    <img src="logo.png" alt="CloudPlay">
+    <div class="card">
+      <h2>Painel administrativo</h2>
+      <p class="sub">Entre com o e-mail de administrador.</p>
+      <form id="loginForm">
+        <input id="email" type="email" placeholder="E-mail" autocomplete="username" required>
+        <input id="password" type="password" placeholder="Senha" autocomplete="current-password" required>
+        <button type="submit" style="width:100%">Entrar</button>
+      </form>
+      <div id="loginMsg" class="msg"></div>
+    </div>
+  </div>
+</section>
+
+<div id="app" class="layout hidden">
+  <aside class="sidebar">
+    <div class="brand"><img src="logo.png" alt="CloudPlay"></div>
+    <nav class="nav">
+      <div class="nav-label">Geral</div>
+      <a href="#inicio" data-page="inicio"><svg class="i"><use href="#i-home"/></svg>Visão geral</a>
+      <div class="nav-label">Clientes</div>
+      <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg>Códigos de acesso</a>
+      <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-inbox"/></svg>Pedidos<span id="navPending" class="pill hidden">0</span></a>
+      <div class="nav-label">Aplicativo</div>
+      <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg>Addons padrão</a>
+      <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-list"/></svg>Categorias</a>
+      <a href="#streamings" data-page="streamings"><svg class="i"><use href="#i-tv"/></svg>Streamings</a>
+    </nav>
+    <div class="side-foot">
+      <div id="avatar" class="avatar">A</div>
+      <div class="who"><b>Administrador</b><span id="who"></span></div>
+      <button id="logout" class="icon-btn" title="Sair"><svg class="i"><use href="#i-logout"/></svg></button>
+    </div>
+  </aside>
+  <div id="backdrop" class="backdrop"></div>
+  <div id="toast" class="toast"></div>
+  <nav class="bottom-nav" aria-label="Menu">
+    <a href="#inicio" data-page="inicio"><svg class="i"><use href="#i-home"/></svg><span>Início</span></a>
+    <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
+    <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-inbox"/></svg><span>Pedidos</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg><span>Addons</span></a>
+    <a href="#mais" id="bnMore" data-page="categorias streamings"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span></a>
+  </nav>
+
+  <div class="content">
+    <div class="topbar">
+      <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
+      <img class="top-logo" src="logo.png" alt="CloudPlay">
+      <div class="grow">
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v4</span></div>
+        <h1 id="pageTitle">Visão geral</h1>
+      </div>
+      <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
+    </div>
+
+    <!-- Visão geral -->
+    <main class="page" data-section="inicio" data-title="Visão geral">
+      <div class="stats">
+        <div class="stat" style="--dot: var(--brand)"><span>Códigos criados</span><b id="sTotal">0</b></div>
+        <div class="stat" style="--dot: var(--info)"><span>Livres</span><b id="sFree">0</b></div>
+        <div class="stat" style="--dot: var(--ok)"><span>Em uso</span><b id="sActive">0</b></div>
+        <div class="stat" style="--dot: var(--warn)"><span>Vencidos / bloqueados</span><b id="sExpired">0</b></div>
+        <div class="stat" style="--dot: var(--coral)"><span>Pedidos pendentes</span><b id="sPending">0</b></div>
+        <div class="stat" style="--dot: var(--peach)"><span>Addons ativos</span><b id="sAddons">0</b></div>
+      </div>
+      <div class="two">
+        <div class="card">
+          <div class="card-head">
+            <div><h2>Pedidos mais recentes</h2><p class="sub">Pendentes, do mais pedido para o menos pedido.</p></div>
+            <a href="#pedidos"><button class="ghost small">Ver todos</button></a>
+          </div>
+          <div id="recentReq"></div>
+        </div>
+        <div class="card">
+          <h2>Atalhos</h2>
+          <p class="sub">O que você mais faz no painel.</p>
+          <div class="quick">
+            <a href="#codigos"><svg class="i"><use href="#i-key"/></svg><div>Gerar códigos<small>Para novos clientes</small></div></a>
+            <a href="#addons"><svg class="i"><use href="#i-puzzle"/></svg><div>Addons padrão<small>Instalados em todos os aparelhos</small></div></a>
+            <a href="#streamings"><svg class="i"><use href="#i-tv"/></svg><div>Streamings<small>O que aparece no app</small></div></a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Códigos -->
+    <main class="page hidden" data-section="codigos" data-title="Códigos de acesso">
+      <div class="stats three">
+        <div class="stat" style="--dot: var(--info)"><span>Livres</span><b id="cFree">0</b></div>
+        <div class="stat" style="--dot: var(--ok)"><span>Em uso</span><b id="cActive">0</b></div>
+        <div class="stat" style="--dot: var(--brand)"><span>Testes</span><b id="cTrial">0</b></div>
+      </div>
+
+      <button type="button" id="genOpen" class="gen-open"><svg class="i"><use href="#i-plus"/></svg>Novo código</button>
+      <div id="genCard" class="card gen-card">
+        <button type="button" id="genClose" class="icon gen-close" title="Fechar" aria-label="Fechar"><svg class="i"><use href="#i-down"/></svg></button>
+        <div class="card-head">
+          <div><h2>Novo código</h2><p class="sub">6 dígitos. Escolha a validade em dias ou uma data de vencimento.</p></div>
+          <div id="gType" class="seg accent">
+            <button type="button" data-v="client" class="on">Cliente</button>
+            <button type="button" data-v="trial"><svg class="i"><use href="#i-bolt"/></svg>Teste 24h</button>
+          </div>
+        </div>
+        <form id="genForm" class="gen">
+          <div class="gen-fields">
+            <div class="full"><label for="gNote">Cliente ou observação</label>
+              <input id="gNote" placeholder="Ex.: João · TV da sala" maxlength="80" autocomplete="off"></div>
+            <div class="full client-only"><label>Validade</label>
+              <div id="gDays" class="seg">
+                <button type="button" data-v="30" class="on">30 dias</button><button type="button" data-v="90">90 dias</button>
+                <button type="button" data-v="180">6 meses</button><button type="button" data-v="365">1 ano</button>
+                <button type="button" data-v="">Sem validade</button>
+                <button type="button" data-v="date"><svg class="i"><use href="#i-calendar"/></svg>Escolher data</button>
+              </div>
+              <div id="dateRow" class="date-row hidden"><input id="gDate" type="date"><span class="hint" style="margin:0">Vale até as 23:59 desse dia, mesmo antes de ativar.</span></div>
+              <span id="daysHint" class="hint">A validade começa a contar quando o cliente ativa no aparelho.</span></div>
+            <div class="full trial-only hidden"><div class="trial-note"><svg class="i"><use href="#i-clock"/></svg>
+              <div>O teste vale <b>24 horas</b> a partir da ativação, em <b>1 aparelho</b>. Depois disso o app pede um novo código.</div></div></div>
+            <div class="client-only"><label for="gDevices">Aparelhos por código</label>
+              <div class="stepper"><button type="button" data-step="-1" data-for="gDevices">−</button>
+                <input id="gDevices" type="number" min="1" max="5" value="1"><button type="button" data-step="1" data-for="gDevices">+</button></div>
+              <span class="hint">De 1 a 5 aparelhos ao mesmo tempo.</span></div>
+            <div><label for="gCount">Quantidade</label>
+              <div class="stepper"><button type="button" data-step="-1" data-for="gCount">−</button>
+                <input id="gCount" type="number" min="1" max="100" value="1"><button type="button" data-step="1" data-for="gCount">+</button></div>
+              <span class="hint">Até 100 por vez.</span></div>
+          </div>
+          <div class="gen-side">
+            <h3>Resumo</h3>
+            <div class="summary">
+              <div>Tipo<b id="sumType">Cliente</b></div>
+              <div>Validade<b id="sumDays">30 dias</b></div>
+              <div>Aparelhos<b id="sumDevices">1</b></div>
+              <div>Quantidade<b id="sumCount">1</b></div>
+            </div>
+            <button type="submit" id="genBtn"><svg class="i"><use href="#i-plus"/></svg><span>Gerar código</span></button>
+          </div>
+        </form>
+        <div id="genMsg" class="msg"></div>
+        <div id="newBox" class="new-codes hidden">
+          <div class="head"><b id="newTitle">Códigos gerados</b><button type="button" id="copyAll" class="ghost small"><svg class="i"><use href="#i-copy"/></svg>Copiar códigos</button></div>
+          <div id="newCodes" class="chips"></div>
+          <div class="msg-head"><b>Mensagem para o cliente</b><button type="button" id="copyMsg" class="small"><svg class="i"><use href="#i-msg"/></svg>Copiar mensagem</button></div>
+          <div id="msgPreview" class="msg-box"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="list-head">
+          <div><h2>Todos os códigos</h2><p class="sub" style="margin:0">Veja quando cada código foi ativado, bloqueie, libere aparelhos ou exclua.</p></div>
+          <button id="reload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
+        </div>
+        <div class="toolbar">
+          <div id="filter" class="seg scroll">
+            <button type="button" data-v="" class="on">Todos<span class="n" data-n=""></span></button>
+            <button type="button" data-v="free">Livres<span class="n" data-n="free"></span></button>
+            <button type="button" data-v="active">Em uso<span class="n" data-n="active"></span></button>
+            <button type="button" data-v="trial">Testes<span class="n" data-n="trial"></span></button>
+            <button type="button" data-v="expired">Vencidos<span class="n" data-n="expired"></span></button>
+            <button type="button" data-v="revoked">Bloqueados<span class="n" data-n="revoked"></span></button>
+          </div>
+          <div class="field-icon"><svg class="i"><use href="#i-search"/></svg><input id="search" placeholder="Buscar por código ou cliente" autocomplete="off"></div>
+        </div>
+        <div class="table-wrap">
+          <table class="codes">
+            <colgroup><col class="c-code"><col class="c-client"><col class="c-status"><col class="c-valid"><col class="c-dev"><col class="c-act"></colgroup>
+            <thead><tr><th>Código</th><th>Cliente</th><th>Status</th><th>Validade</th><th>Aparelhos</th><th style="text-align:right">Ações</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div id="codeCards" class="code-cards"></div>
+        <p id="empty" class="empty hidden">Nenhum código ainda.</p>
+      </div>
+    </main>
+
+    <!-- Pedidos -->
+    <main class="page hidden" data-section="pedidos" data-title="Pedidos de conteúdo">
+      <div class="card">
+        <div class="card-head" style="flex-wrap: nowrap">
+          <div><h2>Pedidos dos clientes</h2><p class="sub">Títulos pedidos em "Solicitar conteúdo" quando nenhum addon tinha o título.</p></div>
+          <button id="reqReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
+        </div>
+        <div class="toolbar">
+          <div id="reqFilter" class="seg scroll">
+            <button type="button" data-v="pending" class="on">Pendentes</button><button type="button" data-v="done">Adicionados</button>
+            <button type="button" data-v="rejected">Recusados</button><button type="button" data-v="">Todos</button>
+          </div>
+        </div>
+        <div id="reqList" class="req-grid"></div>
+        <p id="reqEmpty" class="empty hidden">Nenhum pedido aqui.</p>
+      </div>
+    </main>
+
+    <!-- Addons -->
+    <main class="page hidden" data-section="addons" data-title="Addons padrão">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Addons instalados</h2><p class="sub">Vão para todos os aparelhos ao abrir o app, nesta ordem. No app cada um aparece como "Fonte 1", "Fonte 2"… com a bolinha da cor escolhida. Addons que o cliente adicionou sozinho não mudam.</p></div>
+          <button type="button" id="aNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Novo addon</button>
+        </div>
+        <div id="addonList" class="addon-list"></div>
+        <p id="addonEmpty" class="empty hidden">Nenhum addon padrão. Os aparelhos ficam só com os addons que cada cliente adicionar.</p>
+      </div>
+      <div id="addonCard" class="card hidden">
+        <div class="card-head"><div><h2 id="addonFormTitle">Novo addon</h2><p class="sub">Cole o link do manifest do addon (termina em manifest.json).</p></div></div>
+        <form id="addonForm" class="addon-form">
+          <div><label for="aName">Nome</label><input id="aName" placeholder="Ex.: Torrentio" maxlength="60" required></div>
+          <div><label for="aUrl">Link do manifest</label><input id="aUrl" type="url" placeholder="https://.../manifest.json" required></div>
+          <div><label for="aColor">Cor da bolinha</label><input id="aColor" type="color" value="#ff3d8a"></div>
+          <div class="btns"><button type="button" id="aCancel" class="ghost">Cancelar</button><button type="submit" id="aSubmit">Adicionar</button></div>
+        </form>
+        <div id="addonMsg" class="msg"></div>
+      </div>
+    </main>
+
+    <!-- Categorias -->
+    <main class="page hidden" data-section="categorias" data-title="Categorias">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Categorias do app</h2><p class="sub">As fileiras que aparecem no app. Troque o nome mostrado ou apague a categoria. Vale na próxima vez que o app abrir.</p></div>
+        </div>
+        <div class="toolbar">
+          <div class="field-icon"><svg class="i"><use href="#i-search"/></svg><input id="catSearch" placeholder="Buscar categoria" autocomplete="off"></div>
+          <div id="catFilter" class="seg">
+            <button type="button" data-v="on" class="on">No app<span class="n" data-n="on"></span></button>
+            <button type="button" data-v="off">Apagadas<span class="n" data-n="off"></span></button>
+          </div>
+        </div>
+        <div id="catMsg" class="msg"></div>
+        <div id="catList" class="cat-list"></div>
+        <p id="catEmpty" class="empty hidden">Nenhuma categoria ainda. Abra o app em um aparelho (com a versão nova) para a lista aparecer aqui.</p>
+      </div>
+    </main>
+
+    <!-- Streamings -->
+    <main class="page hidden" data-section="streamings" data-title="Streamings">
+      <div class="card">
+        <h2>Fileira "Streamings"</h2>
+        <p class="sub">Escolha quais streamings aparecem na fileira "Streamings" do app.</p>
+        <div id="serviceToggles" class="toggle-grid"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const url = window.CLOUDFLIX_SUPABASE_URL || "";
+  const key = window.CLOUDFLIX_SUPABASE_ANON_KEY || "";
+  if (!/^https?:\/\//.test(url) || key.length < 20) { $("setup").classList.remove("hidden"); return; }
+  const sb = supabase.createClient(url, key);
+  let codes = [];
+
+  // Dates in Brasília time, wherever the panel is opened.
+  const TZ = { timeZone: "America/Sao_Paulo" };
+  const fmt = (d) => d ? new Date(d).toLocaleDateString("pt-BR", TZ) : "—";
+  const fmtTime = (d) => d ? fmt(d) + " às " + new Date(d).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", ...TZ }) : "—";
+  const isTrial = (c) => c.duration_hours != null;
+  const statusOf = (c) => c.revoked ? "revoked"
+    : (c.expires_at && new Date(c.expires_at) <= new Date()) ? "expired"
+    : (c.access_code_devices || []).length ? "active" : "free";
+  const statusLabel = { free: "Livre", active: "Em uso", expired: "Vencido", revoked: "Bloqueado" };
+  const validityOf = (c) => isTrial(c) ? "Teste de " + c.duration_hours + "h"
+    : c.expires_on ? "Até " + fmt(c.expires_at)
+    : c.duration_days ? c.duration_days + " dias" : "Sem validade";
+
+  // The message sent to the customer with the code (copied to WhatsApp, etc.).
+  function messageFor(c) {
+    if (isTrial(c)) {
+      return "🚀 CLOUDPLAY – TESTE GRÁTIS\n\n" +
+        "🎬 Experimente o CloudPlay e descubra uma nova forma de aproveitar seu entretenimento favorito!\n\n" +
+        "🔑 Código de teste: " + c.code + "\n\n" +
+        "📲 Acesse o aplicativo e aproveite a experiência!";
+    }
+    const due = c.expires_at ? fmt(c.expires_at)
+      : c.duration_days ? c.duration_days + " dias a partir da ativação" : "Sem vencimento";
+    return "🚀 CLOUDPLAY – ACESSO LIBERADO\n\n" +
+      "🎬 Seu acesso ao CloudPlay está pronto! Aproveite filmes, séries e muito mais.\n\n" +
+      "🔑 Código de acesso: " + c.code + "\n" +
+      "📅 Vencimento: " + due + "\n" +
+      (c.max_devices > 1 ? "📱 Aparelhos: até " + c.max_devices + "\n" : "") + "\n" +
+      "📲 Acesse o aplicativo, digite o código e aproveite a experiência!";
+  }
+  function toast(text) {
+    const t = $("toast"); t.textContent = text; t.classList.add("show");
+    clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove("show"), 1600);
+  }
+  function timeLeft(d) {
+    const ms = new Date(d) - new Date();
+    if (ms <= 0) return "vencido";
+    const h = Math.floor(ms / 3600000);
+    if (h < 24) return "faltam " + Math.max(1, h) + " h";
+    const days = Math.floor(h / 24);
+    return days === 1 ? "falta 1 dia" : "faltam " + days + " dias";
+  }
+  function ago(d) {
+    const m = Math.floor((new Date() - new Date(d)) / 60000);
+    if (m < 2) return "agora";
+    if (m < 60) return "há " + m + " min";
+    const h = Math.floor(m / 60);
+    if (h < 24) return "há " + h + " h";
+    const days = Math.floor(h / 24);
+    return days === 1 ? "há 1 dia" : "há " + days + " dias";
+  }
+
+  function el(tag, attrs, ...children) {
+    const e = document.createElement(tag);
+    Object.entries(attrs || {}).forEach(([k, v]) => k === "onclick" ? e.addEventListener("click", v) : e.setAttribute(k, v));
+    children.flat().forEach((c) => e.append(c instanceof Node ? c : document.createTextNode(c ?? "")));
+    return e;
+  }
+  function icon(name) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "i");
+    const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+    use.setAttribute("href", "#i-" + name); svg.append(use); return svg;
+  }
+  function iconBtn(name, title, onClick, extra) {
+    return el("button", { class: "icon" + (extra ? " " + extra : ""), title, "aria-label": title, onclick: onClick }, icon(name));
+  }
+
+  async function copy(text, btn, label) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast(label || "Copiado!");
+      if (btn) { btn.classList.add("copied"); const t = btn.title; btn.title = "Copiado!"; setTimeout(() => { btn.title = t; btn.classList.remove("copied"); }, 1200); }
+    } catch (_) {}
+  }
+
+  // Segmented controls keep their choice in data-value.
+  function seg(id, onChange) {
+    const box = $(id);
+    box.dataset.value = (box.querySelector(".on") || {}).dataset?.v ?? "";
+    box.addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      box.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+      box.dataset.value = b.dataset.v; onChange && onChange(b.dataset.v);
+    });
+  }
+  document.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("click", () => {
+    const input = $(b.dataset.for);
+    const v = Math.min(+input.max, Math.max(+input.min, (parseInt(input.value, 10) || 0) + +b.dataset.step));
+    input.value = v; updateSummary();
+  }));
+  ["gDevices", "gCount"].forEach((id) => $(id).addEventListener("input", updateSummary));
+
+  async function load() {
+    const { data, error } = await sb.from("access_codes")
+      .select("*, access_code_devices(device_id, device_name, activated_at, last_seen)")
+      .order("created_at", { ascending: false });
+    if (error) { alert("Erro ao carregar: " + error.message); return; }
+    codes = data || [];
+    render();
+  }
+
+  function render() {
+    const q = $("search").value.trim().toLowerCase();
+    const f = $("filter").dataset.value || "";
+    const counts = { "": codes.length, free: 0, active: 0, expired: 0, revoked: 0, trial: 0 };
+    let trialActive = 0;
+    codes.forEach((c) => { const st = statusOf(c); counts[st]++; if (isTrial(c)) { counts.trial++; if (st === "active") trialActive++; } });
+    $("sTotal").textContent = codes.length; $("sFree").textContent = counts.free;
+    $("sActive").textContent = counts.active; $("sExpired").textContent = counts.expired + counts.revoked;
+    $("cFree").textContent = counts.free; $("cActive").textContent = counts.active; $("cTrial").textContent = trialActive;
+    document.querySelectorAll("#filter [data-n]").forEach((n) => n.textContent = counts[n.dataset.n] || 0);
+
+    const list = codes.filter((c) => (!f || (f === "trial" ? isTrial(c) : statusOf(c) === f)) &&
+      (!q || c.code.includes(q) || (c.note || "").toLowerCase().includes(q)));
+    const tbody = $("rows"); tbody.replaceChildren();
+    const cards = $("codeCards"); cards.replaceChildren();
+    $("empty").textContent = codes.length ? "Nenhum código com esse filtro." : "Nenhum código ainda.";
+    $("empty").classList.toggle("hidden", list.length > 0);
+    list.forEach((c) => {
+      const st = statusOf(c);
+      const devs = c.access_code_devices || [];
+      const devBox = devs.length ? el("div", { class: "devices" }, devs.map((d) => el("div", {},
+        el("span", { class: "dev-name", title: "Ativado em " + fmtTime(d.activated_at) + " · visto " + ago(d.last_seen) },
+          (d.device_name || "Aparelho")),
+        el("button", { class: "link", onclick: () => removeDevice(c, d) }, "Liberar")))) : "";
+      const validity = c.expires_at
+        ? el("div", {}, el("span", { class: "cell-main" }, "Vence " + (c.expires_on ? fmt(c.expires_at) : fmtTime(c.expires_at))),
+            el("span", { class: "small-line" }, timeLeft(c.expires_at) + (c.activated_at ? " · ativado " + fmt(c.activated_at) : " · ainda não ativado")))
+        : el("div", {}, el("span", { class: "cell-main" }, validityOf(c)),
+            el("span", { class: "small-line" }, c.activated_at ? "ativado " + fmtTime(c.activated_at) : isTrial(c) ? "conta após ativar" : c.duration_days ? "conta após ativar" : "nunca vence"));
+      tbody.append(el("tr", {},
+        el("td", { "data-label": "Código", class: "td-code" }, el("div", {}, el("span", { class: "code" }, c.code), isTrial(c) ? el("span", { class: "tag" }, "TESTE") : "")),
+        el("td", { "data-label": "Cliente", class: "td-client" }, el("div", {}, el("span", { class: "cell-main" }, c.note || "—"), el("span", { class: "small-line" }, "criado " + fmt(c.created_at)))),
+        el("td", { "data-label": "Status", class: "td-status" }, el("span", { class: "badge b-" + st }, statusLabel[st])),
+        el("td", { "data-label": "Validade", class: "td-valid" }, validity),
+        el("td", { "data-label": "Aparelhos", class: "td-dev" }, el("div", {}, el("span", { class: "cell-main" }, devs.length + " de " + c.max_devices), devBox)),
+        el("td", { "data-label": "", class: "td-act" }, el("div", { class: "actions" },
+          iconBtn("copy", "Copiar código", (e) => copy(c.code, e.currentTarget, "Código copiado")),
+          iconBtn("msg", "Copiar mensagem para o cliente", (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada")),
+          iconBtn(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
+          iconBtn("trash", "Excluir", () => removeCode(c), "bad")))));
+
+      // Phones: one simple card per code.
+      const due = c.expires_at
+        ? [el("b", {}, (isTrial(c) ? fmtTime(c.expires_at) : fmt(c.expires_at))), " · " + timeLeft(c.expires_at)]
+        : [el("b", {}, validityOf(c)), c.activated_at ? "" : (c.duration_days || isTrial(c) ? " · conta após ativar" : "")];
+      cards.append(el("div", { class: "cc" },
+        el("div", { class: "cc-top" }, el("span", { class: "code" }, c.code), isTrial(c) ? el("span", { class: "tag" }, "TESTE") : "",
+          el("span", { class: "badge b-" + st }, statusLabel[st])),
+        el("div", { class: "cc-client" }, c.note || "Sem nome"),
+        el("div", { class: "cc-line" }, icon("calendar"), el("span", {}, c.expires_at ? "Vence " : "", ...due)),
+        el("div", { class: "cc-line" }, icon("tv"), el("span", {}, el("b", {}, devs.length + " de " + c.max_devices), " aparelho" + (c.max_devices > 1 ? "s" : "")),
+          c.activated_at ? el("span", { style: "margin-left:auto" }, "ativado " + fmt(c.activated_at)) : ""),
+        devs.length ? el("div", { class: "cc-devs" }, devs.map((d) => el("div", {},
+          el("span", {}, (d.device_name || "Aparelho") + " · " + ago(d.last_seen)),
+          el("button", { class: "link", onclick: () => removeDevice(c, d) }, "Liberar")))) : "",
+        el("div", { class: "cc-actions" },
+          el("button", { class: "primary", onclick: (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada") }, icon("msg"), "Copiar mensagem"),
+          iconBtn("copy", "Copiar código", (e) => copy(c.code, e.currentTarget, "Código copiado")),
+          iconBtn(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
+          iconBtn("trash", "Excluir", () => removeCode(c), "bad"))));
+    });
+  }
+
+  async function toggleRevoke(c) {
+    const { error } = await sb.from("access_codes").update({ revoked: !c.revoked }).eq("id", c.id);
+    if (error) alert(error.message); else load();
+  }
+  async function removeCode(c) {
+    if (!confirm("Excluir o código " + c.code + "? Os aparelhos que usam esse código perdem o acesso.")) return;
+    const { error } = await sb.from("access_codes").delete().eq("id", c.id);
+    if (error) alert(error.message); else load();
+  }
+  async function removeDevice(c, d) {
+    if (!confirm("Liberar a vaga de \"" + (d.device_name || "Aparelho") + "\"? Esse aparelho perde o acesso.")) return;
+    const { error } = await sb.from("access_code_devices").delete().eq("code_id", c.id).eq("device_id", d.device_id);
+    if (error) alert(error.message); else load();
+  }
+
+  const DAY_LABEL = { "30": "30 dias", "90": "90 dias", "180": "6 meses", "365": "1 ano", "": "Sem validade", date: "Escolher data" };
+  const fmtDay = (v) => v ? v.split("-").reverse().join("/") : "";
+  function genType() { return $("gType").dataset.value || "client"; }
+  function updateSummary() {
+    const trial = genType() === "trial";
+    document.querySelectorAll(".client-only").forEach((n) => n.classList.toggle("hidden", trial));
+    document.querySelectorAll(".trial-only").forEach((n) => n.classList.toggle("hidden", !trial));
+    const count = Math.min(100, Math.max(1, parseInt($("gCount").value || "1", 10)));
+    $("sumType").textContent = trial ? "Teste" : "Cliente";
+    const daysChoice = $("gDays").dataset.value ?? "30";
+    $("dateRow").classList.toggle("hidden", daysChoice !== "date");
+    $("daysHint").classList.toggle("hidden", daysChoice === "date");
+    $("sumDays").textContent = trial ? "24 horas"
+      : daysChoice === "date" ? ($("gDate").value ? "Até " + fmtDay($("gDate").value) : "Escolha a data") : DAY_LABEL[daysChoice];
+    $("sumDevices").textContent = trial ? "1" : $("gDevices").value;
+    $("sumCount").textContent = count;
+    $("genBtn").querySelector("span").textContent = (trial ? "Gerar teste" : "Gerar código") + (count > 1 ? "s" : "");
+  }
+  seg("gType", updateSummary); seg("gDays", updateSummary); seg("filter", render);
+  const setGen = (open) => { $("genCard").classList.toggle("open", open); document.body.classList.toggle("gen-visible", open);
+    if (open) $("genCard").scrollIntoView({ behavior: "smooth", block: "start" }); };
+  $("genOpen").addEventListener("click", () => setGen(true));
+  $("genClose").addEventListener("click", () => setGen(false));
+  $("gDate").addEventListener("input", updateSummary);
+  $("gDate").min = new Date().toISOString().slice(0, 10);
+  updateSummary();
+
+  let lastCodes = [];
+  let lastGenerated = [];
+  $("copyAll").addEventListener("click", (e) => copy(lastCodes.join("\n"), e.currentTarget, "Códigos copiados"));
+  $("copyMsg").addEventListener("click", (e) => copy(lastGenerated.map(messageFor).join("\n\n———\n\n"), e.currentTarget,
+    lastGenerated.length > 1 ? "Mensagens copiadas" : "Mensagem copiada"));
+  $("genForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("genMsg").textContent = ""; $("genMsg").className = "msg";
+    const trial = genType() === "trial";
+    const count = Math.min(100, Math.max(1, parseInt($("gCount").value || "1", 10)));
+    const days = $("gDays").dataset.value;
+    const byDate = !trial && days === "date";
+    if (byDate && (!$("gDate").value || $("gDate").value < new Date().toISOString().slice(0, 10))) {
+      $("genMsg").textContent = "Escolha uma data de vencimento a partir de hoje."; return;
+    }
+    const devices = Math.min(5, Math.max(1, parseInt($("gDevices").value, 10) || 1));
+    $("genBtn").disabled = true;
+    const { data, error } = trial
+      ? await sb.rpc("generate_trial_codes", { p_count: count, p_hours: 24, p_note: $("gNote").value })
+      : byDate
+      ? await sb.rpc("generate_access_codes_until", { p_count: count, p_max_devices: devices, p_expires_on: $("gDate").value, p_note: $("gNote").value })
+      : await sb.rpc("generate_access_codes", {
+          p_count: count,
+          p_max_devices: devices,
+          p_duration_days: days ? parseInt(days, 10) : null,
+          p_note: $("gNote").value
+        });
+    $("genBtn").disabled = false;
+    if (error) {
+      $("genMsg").textContent = trial && /generate_trial_codes|function/i.test(error.message)
+        ? "Para criar testes, rode antes o arquivo trial_codes.sql no Supabase."
+        : byDate && /generate_access_codes_until|function/i.test(error.message)
+        ? "Para escolher a data, rode antes o arquivo fixed_date_codes.sql no Supabase."
+        : "Não foi possível gerar: " + error.message;
+      return;
+    }
+    lastCodes = data.map((c) => c.code);
+    lastGenerated = data;
+    $("msgPreview").textContent = messageFor(data[0]) + (data.length > 1 ? "\n\n(+ " + (data.length - 1) + " mensagem(ns) com os outros códigos)" : "");
+    $("newTitle").textContent = data.length === 1 ? (trial ? "Teste gerado" : "Código gerado") : data.length + (trial ? " testes gerados" : " códigos gerados");
+    $("newCodes").replaceChildren(...data.map((c) => {
+      const b = el("button", { type: "button", class: "chip-code", title: "Copiar", onclick: (ev) => copy(c.code, ev.currentTarget, "Código copiado") },
+        el("span", { class: "code" }, c.code), icon("copy"));
+      return b;
+    }));
+    $("newBox").classList.remove("hidden");
+    $("gNote").value = "";
+    load();
+  });
+
+  // ── Default addons ──
+  let addons = [];
+  let editingAddon = null;
+
+  async function loadAddons() {
+    const { data, error } = await sb.from("default_addons").select("*").order("position").order("created_at");
+    if (error) { $("addonMsg").textContent = "Erro ao carregar addons: " + error.message; return; }
+    addons = data || [];
+    renderAddons();
+  }
+
+  function renderAddons() {
+    const list = $("addonList"); list.replaceChildren();
+    $("addonEmpty").classList.toggle("hidden", addons.length > 0);
+    $("sAddons").textContent = addons.filter((a) => a.enabled).length;
+    const enabled = addons.filter((x) => x.enabled);
+    addons.forEach((a, i) => {
+      const state = el("div", { class: "state" + (a.enabled ? " on" : ""), title: a.enabled ? "Desativar" : "Ativar", onclick: () => toggleAddon(a) },
+        el("span", { class: "switch" }), a.enabled ? "Ativo" : "Desativado");
+      const up = iconBtn("up", "Subir", () => moveAddon(i, -1)); if (i === 0) up.disabled = true;
+      const down = iconBtn("down", "Descer", () => moveAddon(i, 1)); if (i === addons.length - 1) down.disabled = true;
+      list.append(el("div", { class: "addon" + (a.enabled ? "" : " off") },
+        el("div", { class: "order" }, up, down),
+        el("span", { class: "fonte" }, el("i", { style: "background:" + (a.color || "transparent") }), a.enabled ? "Fonte " + (enabled.indexOf(a) + 1) : "—"),
+        el("div", { class: "meta" }, el("b", {}, a.name), el("span", { title: a.manifest_url }, a.manifest_url)),
+        state,
+        el("div", { class: "actions act" },
+          iconBtn("copy", "Copiar link", (e) => copy(a.manifest_url, e.currentTarget, "Link copiado")),
+          iconBtn("edit", "Editar", () => startEdit(a)),
+          iconBtn("trash", "Apagar", () => deleteAddon(a), "bad"))));
+    });
+  }
+
+  function resetAddonForm() {
+    editingAddon = null;
+    $("aName").value = ""; $("aUrl").value = ""; $("aColor").value = "#ff3d8a";
+    $("aSubmit").textContent = "Adicionar";
+    $("addonFormTitle").textContent = "Novo addon";
+    $("addonCard").classList.add("hidden");
+  }
+
+  function startEdit(a) {
+    editingAddon = a;
+    $("aName").value = a.name; $("aUrl").value = a.manifest_url; $("aColor").value = a.color || "#ff3d8a";
+    $("aSubmit").textContent = "Salvar";
+    $("addonFormTitle").textContent = "Editar addon";
+    $("addonCard").classList.remove("hidden");
+    $("addonCard").scrollIntoView({ behavior: "smooth", block: "center" });
+    $("aName").focus();
+  }
+
+  $("aCancel").addEventListener("click", resetAddonForm);
+  $("aNew").addEventListener("click", () => {
+    resetAddonForm(); $("addonCard").classList.remove("hidden");
+    $("addonCard").scrollIntoView({ behavior: "smooth", block: "center" }); $("aName").focus();
+  });
+
+  $("addonForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("addonMsg").textContent = ""; $("addonMsg").className = "msg";
+    const name = $("aName").value.trim();
+    const url = $("aUrl").value.trim();
+    if (!/^https?:\/\//i.test(url)) { $("addonMsg").textContent = "O link precisa começar com http:// ou https://"; return; }
+    const color = $("aColor").value.toLowerCase();
+    const { error } = editingAddon
+      ? await sb.from("default_addons").update({ name, manifest_url: url, color }).eq("id", editingAddon.id)
+      : await sb.from("default_addons").insert({ name, manifest_url: url, color, position: addons.length });
+    if (error) {
+      $("addonMsg").textContent = /color/i.test(error.message)
+        ? "Para salvar a cor, rode antes o arquivo code_library.sql no Supabase."
+        : "Não foi possível salvar: " + error.message;
+      return;
+    }
+    toast(editingAddon ? "Addon atualizado" : "Addon adicionado");
+    resetAddonForm();
+    loadAddons();
+  });
+
+  async function toggleAddon(a) {
+    const { error } = await sb.from("default_addons").update({ enabled: !a.enabled }).eq("id", a.id);
+    if (error) alert(error.message); else loadAddons();
+  }
+
+  async function deleteAddon(a) {
+    if (!confirm("Apagar o addon \"" + a.name + "\"? Ele será removido dos aparelhos na próxima vez que o app abrir.")) return;
+    const { error } = await sb.from("default_addons").delete().eq("id", a.id);
+    if (error) alert(error.message); else { if (editingAddon && editingAddon.id === a.id) resetAddonForm(); loadAddons(); }
+  }
+
+  async function moveAddon(i, delta) {
+    const j = i + delta;
+    if (j < 0 || j >= addons.length) return;
+    const order = addons.slice();
+    [order[i], order[j]] = [order[j], order[i]];
+    const results = await Promise.all(order.map((a, pos) => sb.from("default_addons").update({ position: pos }).eq("id", a.id)));
+    const failed = results.find((r) => r.error);
+    if (failed) alert(failed.error.message);
+    loadAddons();
+  }
+
+  // ── App settings: tabs and streaming services ──
+  const SERVICES = ["Netflix", "Disney+", "Apple TV+", "Prime Video", "HBO Max", "Globoplay", "Hulu", "Paramount+", "Peacock",
+    "Starz", "Shudder", "MGM+", "Discovery+", "Crunchyroll"];
+  let settings = { hidden_tabs: [], hidden_services: [] };
+
+  async function loadSettings() {
+    const { data, error } = await sb.from("app_settings").select("key,value");
+    if (error) { $("serviceToggles").textContent = "Rode o arquivo app_settings.sql no Supabase para usar esta seção."; return; }
+    (data || []).forEach((r) => {
+      settings[r.key] = r.key === "category_overrides"
+        ? (r.value && typeof r.value === "object" && !Array.isArray(r.value) ? r.value : {})
+        : (Array.isArray(r.value) ? r.value : []);
+    });
+    renderSettings();
+  }
+
+  function toggleBox(label, on, onClick) {
+    const box = el("div", { class: "toggle" + (on ? " on" : ""), onclick: onClick }, el("span", {}, label), el("span", { class: "switch" }));
+    return box;
+  }
+
+  function renderSettings() {
+    const hiddenServices = settings.hidden_services || [];
+    $("serviceToggles").replaceChildren(...SERVICES.map((name) =>
+      toggleBox(name, !hiddenServices.includes(name.toLowerCase()), () => saveSetting("hidden_services", name.toLowerCase()))));
+  }
+
+  async function saveSetting(key, value) {
+    const list = new Set(settings[key] || []);
+    if (list.has(value)) list.delete(value); else list.add(value);
+    const next = Array.from(list);
+    const { error } = await sb.from("app_settings").upsert({ key, value: next, updated_at: new Date().toISOString() });
+    if (error) { alert("Não foi possível salvar: " + error.message); return; }
+    settings[key] = next;
+    renderSettings();
+  }
+
+  // ── Categories: hide or rename the app's rows ──
+  let categories = [];
+  const SOURCE_LABELS = { app: "App", preinstalled: "Padrão do app", tmdb: "TMDB", trakt: "Trakt", mdblist: "MDBList", addon: "Addon" };
+  const sourceLabel = (src) => SOURCE_LABELS[(src || "app").toLowerCase()] || src;
+  async function loadCategories() {
+    const { data, error } = await sb.from("app_categories").select("*").order("title");
+    if (error) { $("catMsg").textContent = "Rode o arquivo categories.sql no Supabase para usar esta seção."; return; }
+    $("catMsg").textContent = "";
+    categories = data || [];
+    renderCategories();
+  }
+  function renderCategories() {
+    const ov = settings.category_overrides || {};
+    const q = $("catSearch").value.trim().toLowerCase();
+    const f = $("catFilter").dataset.value || "on";
+    const counts = { on: 0, off: 0 };
+    categories.forEach((c) => counts[(ov[c.id] || {}).hidden ? "off" : "on"]++);
+    document.querySelectorAll("#catFilter [data-n]").forEach((n) => n.textContent = counts[n.dataset.n]);
+    const list = categories.filter((c) => {
+      const o = ov[c.id] || {};
+      if ((f === "on") === !!o.hidden) return false;
+      return !q || c.title.toLowerCase().includes(q) || (o.name || "").toLowerCase().includes(q);
+    });
+    $("catEmpty").textContent = categories.length ? (f === "on" ? "Nenhuma categoria encontrada." : "Nenhuma categoria apagada.") : "Nenhuma categoria ainda. Abra o app em um aparelho para a lista aparecer aqui.";
+    $("catEmpty").classList.toggle("hidden", list.length > 0);
+    $("catList").replaceChildren(...list.map((c) => {
+      const o = ov[c.id] || {};
+      if (o.hidden) {
+        return el("div", { class: "cat cat-off off" },
+          el("div", { class: "meta" }, el("b", {}, o.name || c.title), el("span", {}, "Apagada · " + sourceLabel(c.source))),
+          el("div", { class: "actions" }, el("button", { class: "ghost small", onclick: () => saveCategory(c, { hidden: false }) }, "Voltar para o app")));
+      }
+      const input = el("input", { placeholder: c.title, maxlength: "60" });
+      input.value = o.name || "";
+      const save = () => saveCategory(c, { name: input.value.trim() });
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") save(); });
+      return el("div", { class: "cat cat-on" },
+        el("div", { class: "meta" }, el("b", {}, o.name || c.title),
+          el("span", {}, (o.name ? "Original: " + c.title + " · " : "") + sourceLabel(c.source))),
+        input,
+        el("div", { class: "actions" },
+          el("button", { class: "ghost small", onclick: save }, "Salvar nome"),
+          o.name ? el("button", { class: "ghost small", onclick: () => { input.value = ""; saveCategory(c, { name: "" }); } }, "Restaurar nome") : "",
+          iconBtn("trash", "Apagar do app", () => { if (confirm("Apagar \"" + (o.name || c.title) + "\" do app? Dá para voltar em Apagadas.")) saveCategory(c, { hidden: true }); }, "bad")));
+    }));
+  }
+  async function saveCategory(c, change) {
+    const ov = Object.assign({}, settings.category_overrides || {});
+    const next = Object.assign({}, ov[c.id] || {}, change);
+    if (!next.name) delete next.name;
+    if (!next.hidden) delete next.hidden;
+    if (Object.keys(next).length) ov[c.id] = next; else delete ov[c.id];
+    const { error } = await sb.from("app_settings").upsert({ key: "category_overrides", value: ov, updated_at: new Date().toISOString() });
+    if (error) { alert("Não foi possível salvar: " + error.message); return; }
+    settings.category_overrides = ov;
+    renderCategories();
+  }
+  $("catSearch").addEventListener("input", renderCategories);
+  seg("catFilter", renderCategories);
+
+  // ── Content requests ──
+  const reqStatus = { pending: "Pendente", done: "Adicionado", rejected: "Recusado" };
+  async function loadRequests() {
+    let q = sb.from("content_requests").select("*").order("request_count", { ascending: false }).order("last_requested_at", { ascending: false });
+    const f = $("reqFilter").dataset.value ?? "pending";
+    if (f) q = q.eq("status", f);
+    const { data, error } = await q;
+    if (error) { $("reqList").textContent = "Rode o arquivo app_settings.sql no Supabase para usar esta seção."; return; }
+    const list = data || [];
+    $("reqEmpty").classList.toggle("hidden", list.length > 0);
+    $("reqList").replaceChildren(...list.map((r) => el("div", { class: "req" },
+      posterOf(r) ? el("img", { src: posterOf(r), alt: "" }) : el("div", { class: "noposter" }),
+      el("div", { class: "info" },
+        el("span", { class: "title" }, r.title + (r.year ? " (" + r.year + ")" : "")),
+        el("span", { class: "muted" }, (r.media_type === "movie" ? "Filme" : "Série") + " · " + reqStatus[r.status] + " · " + fmt(r.last_requested_at)),
+        el("span", {}, el("span", { class: "count" }, r.request_count + (r.request_count === 1 ? " pedido" : " pedidos"))),
+        el("div", { class: "actions" },
+          el("button", { class: "ghost small", onclick: () => window.open("https://www.themoviedb.org/" + r.media_type + "/" + r.tmdb_id, "_blank") }, "Ver no TMDB"),
+          r.status !== "done" ? el("button", { class: "ghost small", onclick: () => setReq(r, "done") }, "Marcar adicionado") : "",
+          r.status !== "rejected" ? el("button", { class: "ghost small", onclick: () => setReq(r, "rejected") }, "Recusar") : "",
+          el("button", { class: "danger small", onclick: () => delReq(r) }, "Excluir"))))));
+  }
+  const posterOf = (r) => r.poster ? (r.poster.startsWith("http") ? r.poster : "https://image.tmdb.org/t/p/w185" + r.poster) : null;
+  async function loadPendingSummary() {
+    const { data, error } = await sb.from("content_requests").select("*").eq("status", "pending")
+      .order("request_count", { ascending: false }).order("last_requested_at", { ascending: false });
+    if (error) { $("recentReq").replaceChildren(el("p", { class: "empty" }, "Rode o arquivo app_settings.sql no Supabase para usar os pedidos.")); return; }
+    const list = data || [];
+    $("sPending").textContent = list.length;
+    $("navPending").textContent = list.length;
+    $("navPending").classList.toggle("hidden", list.length === 0);
+    $("bnPending").textContent = list.length;
+    $("bnPending").classList.toggle("hidden", list.length === 0);
+    $("recentReq").replaceChildren(...(list.length ? list.slice(0, 5).map((r) => el("div", { class: "mini" },
+      posterOf(r) ? el("img", { src: posterOf(r), alt: "" }) : el("div", { class: "noposter" }),
+      el("div", { class: "t" }, el("b", {}, r.title + (r.year ? " (" + r.year + ")" : "")),
+        el("span", { class: "muted" }, (r.media_type === "movie" ? "Filme" : "Série") + " · " + fmt(r.last_requested_at))),
+      el("span", { class: "count" }, r.request_count + (r.request_count === 1 ? " pedido" : " pedidos"))))
+      : [el("p", { class: "empty" }, "Nenhum pedido pendente.")]));
+  }
+  async function setReq(r, status) {
+    const { error } = await sb.from("content_requests").update({ status }).eq("id", r.id);
+    if (error) alert(error.message); else { loadRequests(); loadPendingSummary(); }
+  }
+  async function delReq(r) {
+    if (!confirm("Excluir o pedido de \"" + r.title + "\"?")) return;
+    const { error } = await sb.from("content_requests").delete().eq("id", r.id);
+    if (error) alert(error.message); else { loadRequests(); loadPendingSummary(); }
+  }
+  seg("reqFilter", loadRequests);
+  $("reqReload").addEventListener("click", () => { loadRequests(); loadPendingSummary(); });
+
+  // ── Sidebar navigation ──
+  const PAGES = ["inicio", "codigos", "pedidos", "addons", "categorias", "streamings"];
+  function go() {
+    const page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "inicio";
+    document.querySelectorAll("[data-section]").forEach((s) => {
+      const on = s.dataset.section === page;
+      s.classList.toggle("hidden", !on);
+      if (on) { $("pageTitle").textContent = s.dataset.title; document.title = s.dataset.title + " · CloudPlay"; }
+    });
+    document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.page === page));
+    document.querySelectorAll(".bottom-nav a").forEach((a) => a.classList.toggle("active", a.dataset.page.split(" ").includes(page)));
+    document.body.classList.remove("nav-open");
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", go);
+  go();
+  $("menuBtn").addEventListener("click", () => document.body.classList.add("nav-open"));
+  $("bnMore").addEventListener("click", (e) => { e.preventDefault(); document.body.classList.add("nav-open"); });
+  $("backdrop").addEventListener("click", () => document.body.classList.remove("nav-open"));
+  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); };
+  $("refreshAll").addEventListener("click", loadAll);
+
+  $("search").addEventListener("input", render);
+  $("reload").addEventListener("click", load);
+  $("logout").addEventListener("click", async () => { await sb.auth.signOut(); show(null); });
+
+  $("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("loginMsg").textContent = "";
+    const { data, error } = await sb.auth.signInWithPassword({ email: $("email").value.trim(), password: $("password").value });
+    if (error) { $("loginMsg").textContent = "E-mail ou senha incorretos."; return; }
+    show(data.session);
+  });
+
+  async function show(session) {
+    const signedIn = !!session;
+    if (signedIn) {
+      const { data: isAdmin } = await sb.rpc("is_cloudflix_admin");
+      if (!isAdmin) {
+        await sb.auth.signOut();
+        $("loginMsg").textContent = "Este e-mail não é administrador do CloudPlay.";
+        return show(null);
+      }
+    }
+    $("login").classList.toggle("hidden", signedIn);
+    $("app").classList.toggle("hidden", !signedIn);
+    if (signedIn) {
+      $("who").textContent = session.user.email;
+      $("avatar").textContent = (session.user.email || "A").charAt(0).toUpperCase();
+      loadAll();
+    }
+  }
+
+  sb.auth.getSession().then(({ data }) => show(data.session));
+})();
+</script>
+</body>
+</html>
