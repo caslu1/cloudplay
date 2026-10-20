@@ -17,9 +17,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b0a0c; --side: #0f0e11; --panel: #141217; --panel2: #1a171d; --field: #100e12;
-    --line: #241f27; --line2: #312b35; --hover: #3e3743;
-    --text: #f4f1f3; --muted: #a39ba6; --faint: #6e6671;
+    --bg: #0a0a0b; --side: #0e0e10; --panel: #141416; --panel2: #1a1a1d; --field: #0f0f11;
+    --line: #232326; --line2: #2e2e33; --hover: #3a3a40;
+    --text: #f4f4f5; --muted: #a1a1aa; --faint: #6b6b73;
     --brand: #ececee; --brand-hi: #ffffff; --brand-soft: rgba(255, 255, 255, .07); --brand-ring: rgba(255, 255, 255, .16);
     --coral: #ff6f7f; --peach: #ffa07a;
     --ok: #3ccf8e; --warn: #f5a524; --bad: #f2555a; --info: #8fa3b8;
@@ -85,7 +85,7 @@
   button:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--brand-ring); }
   button:disabled { opacity: .5; cursor: default; }
   button.ghost { background: var(--panel2); color: var(--text); border: 1px solid var(--line2); }
-  button.ghost:hover { border-color: var(--hover); background: #201c23; }
+  button.ghost:hover { border-color: var(--hover); background: #1f1f22; }
   button.danger { background: transparent; color: #ff8a8e; border: 1px solid #4a2427; }
   button.danger:hover { background: #2a1416; }
   button.small { height: 30px; padding: 0 10px; font-size: 12.5px; border-radius: 7px; }
@@ -137,7 +137,7 @@
   .topbar .crumb { color: var(--faint); font-size: 12px; }
   .topbar .grow { flex: 1; min-width: 0; }
   #menuBtn { display: none; }
-  .page { padding: 24px 32px 48px; max-width: 1200px; }
+  .page { padding: 24px 32px 48px; }
   .backdrop { display: none; }
 
   /* ── Components ── */
@@ -183,13 +183,13 @@
   .toggle { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px;
     background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; cursor: pointer; user-select: none; font-weight: 500; }
   .toggle:hover { border-color: var(--hover); }
-  .switch { width: 36px; height: 20px; border-radius: 99px; background: #3a343e; position: relative; flex: none; transition: background .15s; }
+  .switch { width: 36px; height: 20px; border-radius: 99px; background: #3a3a40; position: relative; flex: none; transition: background .15s; }
   .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }
   .toggle.on .switch { background: var(--ok); }
   .toggle.on .switch::after { left: 18px; }
   .req-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
   .req { display: flex; gap: 12px; padding: 12px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; }
-  .req img, .req .noposter { width: 64px; height: 96px; border-radius: 6px; object-fit: cover; background: #241f27; flex: none; }
+  .req img, .req .noposter { width: 64px; height: 96px; border-radius: 6px; object-fit: cover; background: #232326; flex: none; }
   .req .info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
   .req .info .actions { justify-content: flex-start; }
   .req .title { font-weight: 600; }
@@ -212,7 +212,7 @@
   }
   .mini { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
   .mini:last-child { border-bottom: 0; }
-  .mini img, .mini .noposter { width: 36px; height: 54px; border-radius: 5px; object-fit: cover; background: #241f27; flex: none; }
+  .mini img, .mini .noposter { width: 36px; height: 54px; border-radius: 5px; object-fit: cover; background: #232326; flex: none; }
   .mini .t { flex: 1; min-width: 0; }
   .mini .t b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
   .count { display: inline-block; padding: 1px 8px; border-radius: 6px; background: var(--brand-soft); color: var(--text); font-size: 12px; font-weight: 600; white-space: nowrap; }
@@ -244,7 +244,7 @@
   .msg-box { margin-top: 14px; background: var(--field); border: 1px solid var(--line2); border-radius: 10px; padding: 14px 16px; white-space: pre-wrap; font-size: 13.5px; line-height: 1.55; color: var(--text); }
   .msg-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; }
   .msg-head b { font-size: 13px; }
-  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: #1f1b22; border: 1px solid var(--line2); color: var(--text);
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: #1c1c1f; border: 1px solid var(--line2); color: var(--text);
     padding: 10px 16px; border-radius: 10px; font-weight: 500; font-size: 13.5px; opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s; z-index: 50; box-shadow: 0 8px 30px #0008; }
   dialog.renew { width: min(440px, calc(100vw - 32px)); padding: 22px; border-radius: 14px; border: 1px solid var(--line2); background: var(--panel); color: var(--text); }
   dialog.renew::backdrop { background: rgba(0, 0, 0, .62); }
@@ -256,6 +256,26 @@
   dialog.renew .rn-new b { color: var(--text); }
   dialog.renew .rn-extra { margin-top: 12px; }
   dialog.renew .rn-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
+  .nav .pill.count-pill::before { content: none; }
+  .see-all { display: inline-block; margin-top: 6px; color: var(--muted); font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; }
+  .stats.stats-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cn-list { display: grid; gap: 6px; margin-top: 12px; }
+  .cn { display: grid; grid-template-columns: 10px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel2); }
+  .cn .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
+  .cn .dot.on { background: var(--ok); box-shadow: 0 0 0 3px rgba(60, 207, 142, .15); }
+  .cn b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cn .c-sub { display: none; }
+  .cn span { display: block; color: var(--muted); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cn .when { text-align: right; color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+  .cn .when.on { color: var(--ok); font-weight: 600; }
+  @media (max-width: 720px) {
+    .stats.stats-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cn { grid-template-columns: 10px minmax(0, 1fr) auto; gap: 10px; }
+    .cn .c-dev, .cn .c-code { display: none; }
+    .cn span.c-sub { display: block; }
+    .list-head > div > .sub { display: none; }
+    .list-head { align-items: center; }
+  }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   table.codes { table-layout: fixed; }
   table.codes td { vertical-align: middle; }
@@ -293,7 +313,7 @@
   .meter-foot { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 12.5px; }
   .chart { position: relative; width: 100%; height: 220px; }
   .chart svg { display: block; }
-  .chart-tip { position: fixed; z-index: 60; pointer-events: none; background: #1f1b22; border: 1px solid var(--line2); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 6px 24px #0008; }
+  .chart-tip { position: fixed; z-index: 60; pointer-events: none; background: #1c1c1f; border: 1px solid var(--line2); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 6px 24px #0008; }
   .chart-tip b { display: block; font-size: 14px; }
   .quick-link { display: block; text-decoration: none; margin-bottom: 16px; }
   .head-btns { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -349,23 +369,27 @@
     .gen-card .card-head { padding-right: 40px; }
     table.codes, .codes-wrap thead { display: none !important; }
     .code-cards { display: grid; gap: 10px; }
-    .cc { background: var(--panel2); border: 1px solid var(--line2); border-radius: 12px; padding: 14px; display: grid; gap: 8px; }
+    .cc { background: var(--panel2); border: 1px solid var(--line2); border-radius: 12px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
     .cc-top { display: flex; align-items: center; gap: 8px; }
-    .cc-top .code { font-size: 20px; letter-spacing: 2.5px; }
+    .cc-top .code { font-size: 19px; letter-spacing: 2px; }
     .cc-top .badge { margin-left: auto; }
-    .cc-client { font-weight: 600; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .cc-line { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13.5px; }
-    .cc-line svg { color: var(--faint); flex: none; }
-    .cc-line b { color: var(--text); font-weight: 500; }
-    .cc-devs { display: grid; gap: 6px; padding: 8px 10px; border-radius: 8px; background: var(--field); border: 1px solid var(--line); }
-    .cc-devs div { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
-    .cc-devs span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .cc-devs .link { background: none; border: 0; height: auto; padding: 0; color: var(--muted); font-weight: 500; font-size: 13px; text-decoration: underline; text-underline-offset: 2px; }
-    .cc-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto auto; gap: 6px; margin-top: 4px; }
-    .cc-actions .ghost { height: 40px; font-size: 13px; padding: 0 10px; min-width: 0; overflow: hidden; }
-    .cc { min-width: 0; }
-    .list-head { flex-wrap: nowrap; align-items: flex-start; }
+    .cc-client { font-weight: 600; font-size: 15px; margin-top: -4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cc-facts { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--field); }
+    .cc-facts > div, .cc-dev summary { display: flex; align-items: center; gap: 8px; padding: 9px 12px; color: var(--muted); font-size: 13px; }
+    .cc-facts > * + * { border-top: 1px solid var(--line); }
+    .cc-facts svg { color: var(--faint); flex: none; }
+    .cc-dev summary { cursor: pointer; list-style: none; }
+    .cc-dev summary::-webkit-details-marker { display: none; }
+    .cc-dev summary::after { content: "›"; margin-left: auto; color: var(--faint); font-size: 16px; transition: transform .15s; }
+    .cc-dev[open] summary::after { transform: rotate(90deg); }
+    .cc-dev-row { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px 8px 36px; font-size: 13px; border-top: 1px dashed var(--line); }
+    .cc-dev-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cc-dev-row .link { background: none; border: 0; height: auto; padding: 0; color: var(--muted); font-weight: 500; font-size: 13px; text-decoration: underline; text-underline-offset: 2px; }
+    .cc-actions { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 8px; }
+    .cc-actions .ghost { height: 40px; font-size: 13px; padding: 0 10px; min-width: 0; }
     .cc-actions button.icon { width: 40px; height: 40px; background: var(--field); border-color: var(--line2); }
+    .cc-more { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .cc-more button { height: 38px; font-size: 12.5px; padding: 0 6px; }
   }
   @media (max-width: 1060px) { .gen { grid-template-columns: 1fr; } }
   @media (max-width: 860px) {
@@ -531,6 +555,7 @@
       <a href="#inicio" data-page="inicio"><svg class="i"><use href="#i-home"/></svg>Visão geral</a>
       <div class="nav-label">Clientes</div>
       <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg>Códigos de acesso</a>
+      <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg>Conectados<span id="navOnline" class="pill count-pill hidden">0</span></a>
       <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-inbox"/></svg>Pedidos<span id="navPending" class="pill count-pill hidden">0</span></a>
       <div class="nav-label">Aplicativo</div>
       <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg>Addons padrão</a>
@@ -571,9 +596,9 @@
   <nav class="bottom-nav" aria-label="Menu">
     <a href="#inicio" data-page="inicio"><svg class="i"><use href="#i-home"/></svg><span>Início</span></a>
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
-    <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-inbox"/></svg><span>Pedidos</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg><span>Conectados</span></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg><span>Addons</span></a>
-    <a href="#mais" id="bnMore" data-page="categorias streamings uso"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span></a>
+    <a href="#mais" id="bnMore" data-page="pedidos categorias streamings uso"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
   </nav>
 
   <div class="content">
@@ -581,7 +606,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v11</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v12</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -592,7 +617,7 @@
       <div class="card online-card">
         <div class="online-head">
           <div class="online-num"><span class="live"></span><b id="onNow">0</b><div><strong>online agora</strong><span>aparelhos com o app aberto · atualiza a cada minuto</span></div></div>
-          <div class="online-side"><b id="onToday">0</b><span>aparelhos usaram hoje</span></div>
+          <div class="online-side"><b id="onToday">0</b><span>aparelhos usaram hoje</span><a href="#conectados" class="see-all">Ver todos</a></div>
         </div>
         <div id="onList" class="online-list"></div>
       </div>
@@ -711,6 +736,31 @@
         </div>
         <div id="codeCards" class="code-cards"></div>
         <p id="empty" class="empty hidden">Nenhum código ainda.</p>
+      </div>
+    </main>
+
+    <!-- Conectados -->
+    <main class="page hidden" data-section="conectados" data-title="Conectados">
+      <div class="stats stats-3">
+        <div class="stat"><span>Online agora</span><b id="cnNow">0</b></div>
+        <div class="stat"><span>Usaram hoje</span><b id="cnToday">0</b></div>
+        <div class="stat"><span>Cadastrados</span><b id="cnAll">0</b></div>
+      </div>
+      <div class="card">
+        <div class="list-head">
+          <div><h2>Aparelhos</h2><p class="sub" style="margin:0">Online = app aberto nos últimos 5 minutos. Atualiza a cada minuto.</p></div>
+          <button id="cnReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
+        </div>
+        <div class="toolbar">
+          <div id="cnFilter" class="seg scroll">
+            <button type="button" data-v="online" class="on">Online<span class="n" data-cn="online"></span></button>
+            <button type="button" data-v="today">Hoje<span class="n" data-cn="today"></span></button>
+            <button type="button" data-v="all">Todos<span class="n" data-cn="all"></span></button>
+          </div>
+          <div class="field-icon"><svg class="i"><use href="#i-search"/></svg><input id="cnSearch" placeholder="Buscar cliente, código ou aparelho" autocomplete="off"></div>
+        </div>
+        <div id="cnList" class="cn-list"></div>
+        <p id="cnEmpty" class="empty hidden">Ninguém online agora.</p>
       </div>
     </main>
 
@@ -950,6 +1000,7 @@
     $("cFree").textContent = counts.free; $("cActive").textContent = counts.active; $("cTrial").textContent = trialActive;
     document.querySelectorAll("#filter [data-n]").forEach((n) => n.textContent = counts[n.dataset.n] || 0);
     renderOnline();
+    renderConnected();
 
     const list = codes.filter((c) => (!f || (f === "trial" ? isTrial(c) : statusOf(c) === f)) &&
       (!q || c.code.includes(q) || (c.note || "").toLowerCase().includes(q)));
@@ -982,26 +1033,34 @@
           iconBtn(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
           iconBtn("trash", "Excluir", () => removeCode(c), "bad")))));
 
-      // Phones: one simple card per code.
-      const due = c.expires_at
-        ? [el("b", {}, (isTrial(c) ? fmtTime(c.expires_at) : fmt(c.expires_at))), " · " + timeLeft(c.expires_at)]
-        : [el("b", {}, validityOf(c)), c.activated_at ? "" : (c.duration_days || isTrial(c) ? " · conta após ativar" : "")];
+      // Phones: one tidy card per code. Line 1: code and status; line 2: customer; then the
+      // expiry and devices as two short facts; the devices list opens on tap; actions at the bottom.
+      const dueText = c.expires_at
+        ? "Vence " + (isTrial(c) ? fmtTime(c.expires_at) : fmt(c.expires_at)) + " · " + timeLeft(c.expires_at)
+        : validityOf(c) + (c.activated_at ? "" : (c.duration_days || isTrial(c) ? " · conta após ativar" : ""));
+      const onlineCount = devs.filter(isOnline).length;
+      const devSummary = devs.length + " de " + c.max_devices + " aparelho" + (c.max_devices > 1 ? "s" : "") + (onlineCount ? " · " + onlineCount + " online" : "");
+      const more = el("div", { class: "cc-more hidden" },
+        el("button", { class: "ghost", onclick: (e) => copy(c.code, e.currentTarget, "Código copiado") }, icon("copy"), "Copiar código"),
+        el("button", { class: "ghost", onclick: () => toggleRevoke(c) }, icon(c.revoked ? "unlock" : "lock"), c.revoked ? "Desbloquear" : "Bloquear"),
+        el("button", { class: "danger", onclick: () => removeCode(c) }, icon("trash"), "Excluir"));
       cards.append(el("div", { class: "cc" },
         el("div", { class: "cc-top" }, el("span", { class: "code" }, c.code), isTrial(c) ? el("span", { class: "tag" }, "TESTE") : "",
           el("span", { class: "badge b-" + st }, statusLabel[st])),
         el("div", { class: "cc-client" }, c.note || "Sem nome"),
-        el("div", { class: "cc-line" }, icon("calendar"), el("span", {}, c.expires_at ? "Vence " : "", ...due)),
-        el("div", { class: "cc-line" }, icon("tv"), el("span", {}, el("b", {}, devs.length + " de " + c.max_devices), " aparelho" + (c.max_devices > 1 ? "s" : "")),
-          c.activated_at ? el("span", { style: "margin-left:auto" }, "ativado " + fmt(c.activated_at)) : ""),
-        devs.length ? el("div", { class: "cc-devs" }, devs.map((d) => el("div", {},
-          el("span", {}, isOnline(d) ? el("i", { class: "dot-on" }) : "", (d.device_name || "Aparelho") + " · " + (isOnline(d) ? "online agora" : ago(d.last_seen))),
-          el("button", { class: "link", onclick: () => removeDevice(c, d) }, "Liberar")))) : "",
+        el("div", { class: "cc-facts" },
+          el("div", {}, icon("calendar"), el("span", {}, dueText)),
+          devs.length
+            ? el("details", { class: "cc-dev" }, el("summary", {}, icon("tv"), el("span", {}, devSummary)),
+                devs.map((d) => el("div", { class: "cc-dev-row" },
+                  el("span", {}, isOnline(d) ? el("i", { class: "dot-on" }) : "", (d.device_name || "Aparelho") + " · " + (isOnline(d) ? "online agora" : ago(d.last_seen))),
+                  el("button", { class: "link", onclick: () => removeDevice(c, d) }, "Liberar"))))
+            : el("div", {}, icon("tv"), el("span", {}, devSummary))),
         el("div", { class: "cc-actions" },
           el("button", { class: "ghost", onclick: (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada") }, icon("msg"), "Mensagem"),
-          iconBtn("renew", "Renovar", () => openRenew(c)),
-          iconBtn("copy", "Copiar código", (e) => copy(c.code, e.currentTarget, "Código copiado")),
-          iconBtn(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
-          iconBtn("trash", "Excluir", () => removeCode(c), "bad"))));
+          el("button", { class: "ghost", onclick: () => openRenew(c) }, icon("renew"), "Renovar"),
+          iconBtn("menu", "Mais opções", () => more.classList.toggle("hidden"))),
+        more));
     });
   }
 
@@ -1094,8 +1153,37 @@
     if (online.length > 12) shown.push(el("div", { class: "on-item" }, el("div", {}, el("b", {}, "+ " + (online.length - 12) + " aparelhos"))));
     $("onList").replaceChildren(...shown);
   }
-  // Keep the numbers fresh while the overview or the codes page is open.
-  setInterval(() => { if (!document.hidden && !$("app").classList.contains("hidden") && ["", "#inicio", "#codigos"].includes(location.hash)) load(true); }, 60000);
+  // ── Conectados: every device of every code, online ones first ──
+  function renderConnected() {
+    const q = $("cnSearch").value.trim().toLowerCase();
+    const f = $("cnFilter").dataset.value || "online";
+    const today0 = todaySP();
+    const all = [];
+    codes.forEach((c) => (c.access_code_devices || []).forEach((d) => all.push({ c, d,
+      on: isOnline(d), today: !!d.last_seen && daySP(d.last_seen) === today0 })));
+    all.sort((x, y) => (y.on - x.on) || (new Date(y.d.last_seen || 0) - new Date(x.d.last_seen || 0)));
+    const counts = { online: all.filter((x) => x.on).length, today: all.filter((x) => x.today).length, all: all.length };
+    $("cnNow").textContent = counts.online; $("cnToday").textContent = counts.today; $("cnAll").textContent = counts.all;
+    document.querySelectorAll("#cnFilter [data-cn]").forEach((n) => n.textContent = counts[n.dataset.cn]);
+    $("navOnline").textContent = counts.online; $("navOnline").classList.toggle("hidden", counts.online === 0);
+    const list = all.filter((x) => (f === "all" || (f === "online" ? x.on : x.today)) &&
+      (!q || x.c.code.includes(q) || (x.c.note || "").toLowerCase().includes(q) || (x.d.device_name || "").toLowerCase().includes(q)));
+    $("cnEmpty").textContent = f === "online" ? "Ninguém online agora." : f === "today" ? "Ninguém usou hoje." : "Nenhum aparelho ainda.";
+    $("cnEmpty").classList.toggle("hidden", list.length > 0);
+    $("cnList").replaceChildren(...list.map(({ c, d, on }) => el("div", { class: "cn" },
+      el("i", { class: "dot" + (on ? " on" : "") }),
+      el("div", {}, el("b", {}, c.note || "Sem nome"),
+        el("span", { class: "c-sub" }, (d.device_name || "Aparelho") + " · " + c.code)),
+      el("div", { class: "c-dev" }, el("b", {}, d.device_name || "Aparelho"), el("span", {}, "ativado " + fmt(d.activated_at))),
+      el("div", { class: "c-code" }, el("b", {}, c.code), el("span", {}, statusLabel[statusOf(c)])),
+      el("div", { class: "when" + (on ? " on" : "") }, on ? "Online agora" : d.last_seen ? ago(d.last_seen) : "—"))));
+  }
+  seg("cnFilter", renderConnected);
+  $("cnSearch").addEventListener("input", renderConnected);
+  $("cnReload").addEventListener("click", () => load());
+
+  // Keep the numbers fresh while the overview, codes or connected page is open.
+  setInterval(() => { if (!document.hidden && !$("app").classList.contains("hidden") && ["", "#inicio", "#codigos", "#conectados"].includes(location.hash)) load(true); }, 60000);
 
   async function toggleRevoke(c) {
     const { error } = await sb.from("access_codes").update({ revoked: !c.revoked }).eq("id", c.id);
@@ -1563,8 +1651,8 @@
     const plotW = W - L - R, plotH = H - T - B;
     for (let g = 0; g <= 2; g++) {
       const y = T + plotH - plotH * g / 2;
-      mk("line", { x1: L, x2: W - R, y1: y, y2: y, stroke: "#241f27", "stroke-width": 1 });
-      const t = mk("text", { x: L - 8, y: y + 4, "text-anchor": "end", fill: "#6e6671", "font-size": 11 }); t.textContent = (top * g / 2).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
+      mk("line", { x1: L, x2: W - R, y1: y, y2: y, stroke: "#232326", "stroke-width": 1 });
+      const t = mk("text", { x: L - 8, y: y + 4, "text-anchor": "end", fill: "#6b6b73", "font-size": 11 }); t.textContent = (top * g / 2).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
     }
     const slot = plotW / series.length, bw = Math.min(16, slot - 3);
     series.forEach((s, i) => {
@@ -1575,7 +1663,7 @@
       }
       if (i % Math.ceil(series.length / (W < 500 ? 5 : 10)) === 0 || i === series.length - 1) {
         const last = i === series.length - 1;
-        const t = mk("text", { x: last ? x + bw : x + bw / 2, y: H - 8, "text-anchor": last ? "end" : "middle", fill: "#6e6671", "font-size": 11 }); t.textContent = s.label;
+        const t = mk("text", { x: last ? x + bw : x + bw / 2, y: H - 8, "text-anchor": last ? "end" : "middle", fill: "#6b6b73", "font-size": 11 }); t.textContent = s.label;
       }
       const hit = mk("rect", { x: L + i * slot, y: T, width: slot, height: plotH, fill: "transparent" });
       const tip = $("uTip");
@@ -1592,7 +1680,7 @@
   window.addEventListener("resize", () => { if (location.hash === "#uso") renderUsage(); });
 
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "pedidos", "addons", "categorias", "streamings", "uso"];
+  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "categorias", "streamings", "uso"];
   function go() {
     const page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "inicio";
     document.querySelectorAll("[data-section]").forEach((s) => {
