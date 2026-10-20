@@ -684,7 +684,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v18</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v19</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -996,6 +996,11 @@
     : c.duration_days ? c.duration_days + " dias" : "Sem validade";
 
   // The message sent to the customer with the code (copied to WhatsApp, etc.).
+  // Where customers get the app (the message after a code is made).
+  const APP_LINK = "https://dl.ntdev.in/14922";
+  const APP_DOWNLOADER = "5259665";
+  // What the copy buttons put on the clipboard: the code ready to paste in WhatsApp (bold).
+  const codeLine = (c) => "🔑 Código de acesso: *" + c.code + "*";
   function messageFor(c) {
     if (isTrial(c)) {
       return "🚀 CLOUDPLAY – TESTE GRÁTIS\n\n" +
@@ -1006,11 +1011,12 @@
     const due = c.expires_at ? fmt(c.expires_at)
       : c.duration_days ? c.duration_days + " dias a partir da ativação" : "Sem vencimento";
     return "🚀 CLOUDPLAY – ACESSO LIBERADO\n\n" +
-      "🎬 Seu acesso ao CloudPlay está pronto! Aproveite filmes, séries e muito mais.\n\n" +
-      "🔑 Código de acesso: " + c.code + "\n" +
-      "📅 Vencimento: " + due + "\n" +
-      (c.max_devices > 1 ? "📱 Aparelhos: até " + c.max_devices + "\n" : "") + "\n" +
-      "📲 Acesse o aplicativo, digite o código e aproveite a experiência!";
+      "🎬 Seu acesso ao CloudPlay está pronto!\n\n" +
+      "Link para baixar o app:\n" + APP_LINK + "\n" +
+      "Downloader: " + APP_DOWNLOADER + "\n\n" +
+      codeLine(c) + "\n\n" +
+      "📅 Vencimento: " + due + "\n\n" +
+      "📲 Acesse o aplicativo, digite o código e aproveite.";
   }
   function toast(text) {
     const t = $("toast"); t.textContent = text; t.classList.add("show");
@@ -1126,7 +1132,7 @@
         el("td", { "data-label": "Validade", class: "td-valid" }, validity),
         el("td", { "data-label": "Aparelhos", class: "td-dev" }, el("div", {}, el("span", { class: "cell-main" }, devs.length + " de " + c.max_devices), devBox)),
         el("td", { "data-label": "", class: "td-act" }, el("div", { class: "actions" },
-          iconBtn("copy", "Copiar código", (e) => copy(c.code, e.currentTarget, "Código copiado")),
+          iconBtn("copy", "Copiar código", (e) => copy(codeLine(c), e.currentTarget, "Código copiado")),
           iconBtn("wa", c.phone ? "Abrir WhatsApp do cliente" : "Cadastrar WhatsApp", () => openWhatsApp(c), c.phone ? "wa" : ""),
           iconBtn("msg", "Copiar mensagem para o cliente", (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada")),
           iconBtn("renew", "Renovar", () => openRenew(c)),
@@ -1214,7 +1220,7 @@
     const item = (name, label, fn, cls) => el("button", { type: "button", class: "sheet-item" + (cls ? " " + cls : ""),
       onclick: (e) => { $("actSheet").close(); fn(e); } }, icon(name), el("span", {}, label));
     $("shItems").replaceChildren(
-      item("copy", "Copiar código", (e) => copy(c.code, null, "Código copiado")),
+      item("copy", "Copiar código", (e) => copy(codeLine(c), null, "Código copiado")),
       item("msg", "Copiar mensagem", () => copy(messageFor(c), null, "Mensagem copiada")),
       item("tv", "Telas, nome e WhatsApp", () => openEdit(c)),
       item(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
@@ -1528,7 +1534,7 @@
 
   let lastCodes = [];
   let lastGenerated = [];
-  $("copyAll").addEventListener("click", (e) => copy(lastCodes.join("\n"), e.currentTarget, "Códigos copiados"));
+  $("copyAll").addEventListener("click", (e) => copy(lastGenerated.map(codeLine).join("\n"), e.currentTarget, "Códigos copiados"));
   $("copyMsg").addEventListener("click", (e) => copy(lastGenerated.map(messageFor).join("\n\n———\n\n"), e.currentTarget,
     lastGenerated.length > 1 ? "Mensagens copiadas" : "Mensagem copiada"));
   $("genForm").addEventListener("submit", async (e) => {
@@ -1586,7 +1592,7 @@
     $("msgPreview").textContent = messageFor(data[0]) + (data.length > 1 ? "\n\n(+ " + (data.length - 1) + " mensagem(ns) com os outros códigos)" : "");
     $("newTitle").textContent = data.length === 1 ? (trial ? "Teste gerado" : "Código gerado") : data.length + (trial ? " testes gerados" : " códigos gerados");
     $("newCodes").replaceChildren(...data.map((c) => {
-      const b = el("button", { type: "button", class: "chip-code", title: "Copiar", onclick: (ev) => copy(c.code, ev.currentTarget, "Código copiado") },
+      const b = el("button", { type: "button", class: "chip-code", title: "Copiar", onclick: (ev) => copy(codeLine(c), ev.currentTarget, "Código copiado") },
         el("span", { class: "code" }, c.code), icon("copy"));
       return b;
     }));
