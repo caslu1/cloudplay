@@ -10,7 +10,7 @@
 <meta http-equiv="Expires" content="0">
 <title>CloudPlay · Painel</title>
 <link rel="icon" href="icon.png">
-<script src="config.js?v=4"></script>
+<script src="config.js?v=5"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -274,6 +274,18 @@
     .addon-form { grid-template-columns: 1fr; }
     .addon-form .btns button { flex: 1; }
   }
+  .meter-row { display: grid; gap: 10px; }
+  .meter-num b { font-size: 32px; font-weight: 600; letter-spacing: -.5px; margin-right: 8px; }
+  .meter-num span { color: var(--muted); font-size: 13.5px; }
+  .meter { height: 12px; border-radius: 99px; background: var(--panel2); border: 1px solid var(--line2); overflow: hidden; }
+  .meter-fill { height: 100%; width: 0; border-radius: 99px; background: var(--brand); transition: width .4s; }
+  .meter-fill.warn { background: var(--warn); } .meter-fill.bad { background: var(--bad); }
+  .meter-foot { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 12.5px; }
+  .chart { position: relative; width: 100%; height: 220px; }
+  .chart svg { display: block; }
+  .chart-tip { position: fixed; z-index: 60; pointer-events: none; background: #1f1b22; border: 1px solid var(--line2); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 6px 24px #0008; }
+  .chart-tip b { display: block; font-size: 14px; }
+  .quick-link { display: block; text-decoration: none; margin-bottom: 16px; }
   .bottom-nav { display: none; }
   .top-logo, .gen-open, .gen-close, .code-cards { display: none; }
   @media (max-width: 720px) {
@@ -430,6 +442,8 @@
   <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
   <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></symbol>
 </svg>
 
@@ -472,6 +486,7 @@
       <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg>Addons padrão</a>
       <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-list"/></svg>Categorias</a>
       <a href="#streamings" data-page="streamings"><svg class="i"><use href="#i-tv"/></svg>Streamings</a>
+      <a href="#uso" data-page="uso"><svg class="i"><use href="#i-chart"/></svg>Uso do Supabase</a>
     </nav>
     <div class="side-foot">
       <div id="avatar" class="avatar">A</div>
@@ -486,7 +501,7 @@
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-inbox"/></svg><span>Pedidos</span><b id="bnPending" class="hidden">0</b></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg><span>Addons</span></a>
-    <a href="#mais" id="bnMore" data-page="categorias streamings"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span></a>
+    <a href="#mais" id="bnMore" data-page="categorias streamings uso"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span></a>
   </nav>
 
   <div class="content">
@@ -494,7 +509,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v4</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v5</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -677,6 +692,38 @@
         <div id="catList" class="cat-list"></div>
         <p id="catEmpty" class="empty hidden">Nenhuma categoria ainda. Abra o app em um aparelho (com a versão nova) para a lista aparecer aqui.</p>
       </div>
+    </main>
+
+    <!-- Uso do Supabase -->
+    <main class="page hidden" data-section="uso" data-title="Uso do Supabase">
+      <div class="card">
+        <div class="card-head" style="flex-wrap: nowrap">
+          <div><h2>Tráfego do app neste mês</h2><p class="sub">Estimativa medida pelo próprio banco: biblioteca dos clientes e aberturas do app. O número oficial fica no painel do Supabase.</p></div>
+          <button id="usoReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
+        </div>
+        <div id="usoMsg" class="msg"></div>
+        <div class="meter-row">
+          <div class="meter-num"><b id="uMonth">—</b><span id="uMonthOf">de 5 GB do plano grátis</span></div>
+          <div class="meter"><div id="uMeter" class="meter-fill"></div></div>
+          <div class="meter-foot"><span id="uPct">0%</span><span id="uForecast"></span></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat" style="--dot: var(--ok)"><span>Aparelhos ativos (24 h)</span><b id="uDev24">—</b></div>
+        <div class="stat" style="--dot: var(--info)"><span>Aparelhos ativos (7 dias)</span><b id="uDev7">—</b></div>
+        <div class="stat" style="--dot: var(--peach)"><span>Aberturas do app no mês</span><b id="uStarts">—</b></div>
+        <div class="stat" style="--dot: var(--coral)"><span>Tamanho do banco</span><b id="uDb">—</b></div>
+        <div class="stat" style="--dot: var(--brand)"><span>Bibliotecas salvas</span><b id="uLibs">—</b></div>
+        <div class="stat" style="--dot: var(--faint)"><span>Média por biblioteca</span><b id="uLibAvg">—</b></div>
+      </div>
+      <div class="card">
+        <h2>Tráfego por dia</h2>
+        <p class="sub">Últimos 30 dias, em MB.</p>
+        <div id="uChart" class="chart"></div>
+        <div id="uTip" class="chart-tip hidden"></div>
+      </div>
+      <a class="quick-link" href="https://supabase.com/dashboard/project/nrncfajbfmcztlwxakvc/usage" target="_blank" rel="noopener">
+        <button type="button" class="ghost" style="width:100%"><svg class="i"><use href="#i-ext"/></svg>Ver o uso oficial no Supabase</button></a>
     </main>
 
     <!-- Streamings -->
@@ -1205,14 +1252,86 @@
   seg("reqFilter", loadRequests);
   $("reqReload").addEventListener("click", () => { loadRequests(); loadPendingSummary(); });
 
+  // ── Supabase usage ──
+  const FREE_EGRESS = 5 * 1024 ** 3;
+  const mb = (b) => b / 1024 / 1024;
+  const human = (b) => b >= 1024 ** 3 ? (b / 1024 ** 3).toFixed(2).replace(".", ",") + " GB"
+    : b >= 1024 ** 2 ? mb(b).toFixed(1).replace(".", ",") + " MB" : Math.round(b / 1024) + " KB";
+  let usage = null;
+  async function loadUsage() {
+    const { data, error } = await sb.rpc("admin_usage_stats");
+    if (error) { $("usoMsg").textContent = "Para ver o uso, rode antes os arquivos code_library_since.sql e usage_stats.sql no Supabase."; return; }
+    $("usoMsg").textContent = "";
+    usage = data; renderUsage();
+  }
+  function renderUsage() {
+    if (!usage) return;
+    const u = usage;
+    const pct = Math.min(100, u.month_bytes / FREE_EGRESS * 100);
+    $("uMonth").textContent = human(u.month_bytes);
+    $("uMeter").style.width = Math.max(pct, 0.5) + "%";
+    $("uMeter").className = "meter-fill" + (pct >= 90 ? " bad" : pct >= 70 ? " warn" : "");
+    $("uPct").textContent = pct.toFixed(pct < 10 ? 1 : 0).replace(".", ",") + "% do limite";
+    const now = new Date(); const day = now.getDate(); const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    $("uForecast").textContent = day > 1 ? "Previsão para o mês: " + human(u.month_bytes / day * daysInMonth) : "";
+    $("uDev24").textContent = u.devices_24h; $("uDev7").textContent = u.devices_7d;
+    $("uStarts").textContent = u.month_starts; $("uDb").textContent = human(u.db_bytes) + " / 500 MB";
+    $("uLibs").textContent = u.libraries; $("uLibAvg").textContent = u.libraries ? human(u.library_bytes / u.libraries) : "—";
+    drawUsageChart(u.days || []);
+  }
+  function drawUsageChart(days) {
+    const box = $("uChart"); box.replaceChildren();
+    const W = box.clientWidth || 600, H = 220, L = 44, B = 26, T = 10, R = 8;
+    const series = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 864e5); const key = d.toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
+      const row = days.find((x) => x.day === key);
+      series.push({ key, label: key.slice(8, 10) + "/" + key.slice(5, 7), mb: row ? mb(row.bytes) : 0, starts: row ? row.starts : 0 });
+    }
+    const max = Math.max(1, ...series.map((s) => s.mb)); const nice = Math.pow(10, Math.floor(Math.log10(max)));
+    const top = Math.ceil(max / nice) * nice;
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg"); svg.setAttribute("width", W); svg.setAttribute("height", H);
+    const mk = (tag, attrs) => { const e = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); svg.append(e); return e; };
+    const plotW = W - L - R, plotH = H - T - B;
+    for (let g = 0; g <= 2; g++) {
+      const y = T + plotH - plotH * g / 2;
+      mk("line", { x1: L, x2: W - R, y1: y, y2: y, stroke: "#241f27", "stroke-width": 1 });
+      const t = mk("text", { x: L - 8, y: y + 4, "text-anchor": "end", fill: "#6e6671", "font-size": 11 }); t.textContent = (top * g / 2).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
+    }
+    const slot = plotW / series.length, bw = Math.min(16, slot - 3);
+    series.forEach((s, i) => {
+      const x = L + i * slot + (slot - bw) / 2; const h = s.mb / top * plotH; const y = T + plotH - h;
+      if (h > 0.5) {
+        const r = Math.min(4, h, bw / 2);
+        mk("path", { d: `M${x},${T + plotH} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${T + plotH} Z`, fill: "#ff3d8a" });
+      }
+      if (i % Math.ceil(series.length / (W < 500 ? 5 : 10)) === 0 || i === series.length - 1) {
+        const last = i === series.length - 1;
+        const t = mk("text", { x: last ? x + bw : x + bw / 2, y: H - 8, "text-anchor": last ? "end" : "middle", fill: "#6e6671", "font-size": 11 }); t.textContent = s.label;
+      }
+      const hit = mk("rect", { x: L + i * slot, y: T, width: slot, height: plotH, fill: "transparent" });
+      const tip = $("uTip");
+      const show = (ev) => { tip.innerHTML = ""; tip.append(el("b", {}, s.mb.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + " MB"),
+        el("span", { class: "muted" }, s.label + " · " + s.starts + " aberturas")); tip.classList.remove("hidden");
+        const p = ev.touches ? ev.touches[0] : ev; tip.style.left = Math.min(window.innerWidth - 170, p.clientX + 12) + "px"; tip.style.top = (p.clientY - 54) + "px"; };
+      hit.addEventListener("mousemove", show); hit.addEventListener("touchstart", show, { passive: true });
+      hit.addEventListener("mouseleave", () => tip.classList.add("hidden"));
+    });
+    box.append(svg);
+  }
+  $("usoReload").addEventListener("click", loadUsage);
+  window.addEventListener("resize", () => { if (location.hash === "#uso") renderUsage(); });
+
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "pedidos", "addons", "categorias", "streamings"];
+  const PAGES = ["inicio", "codigos", "pedidos", "addons", "categorias", "streamings", "uso"];
   function go() {
     const page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "inicio";
     document.querySelectorAll("[data-section]").forEach((s) => {
       const on = s.dataset.section === page;
       s.classList.toggle("hidden", !on);
       if (on) { $("pageTitle").textContent = s.dataset.title; document.title = s.dataset.title + " · CloudPlay"; }
+      if (on && page === "uso") setTimeout(loadUsage, 0);
     });
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.page === page));
     document.querySelectorAll(".bottom-nav a").forEach((a) => a.classList.toggle("active", a.dataset.page.split(" ").includes(page)));
