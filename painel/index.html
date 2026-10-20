@@ -10,7 +10,7 @@
 <meta http-equiv="Expires" content="0">
 <title>CloudPlay · Painel</title>
 <link rel="icon" href="icon.png">
-<script src="config.js?v=4"></script>
+<script src="config.js?v=7"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -274,6 +274,53 @@
     .addon-form { grid-template-columns: 1fr; }
     .addon-form .btns button { flex: 1; }
   }
+  .meter-row { display: grid; gap: 10px; }
+  .meter-num b { font-size: 32px; font-weight: 600; letter-spacing: -.5px; margin-right: 8px; }
+  .meter-num span { color: var(--muted); font-size: 13.5px; }
+  .meter { height: 12px; border-radius: 99px; background: var(--panel2); border: 1px solid var(--line2); overflow: hidden; }
+  .meter-fill { height: 100%; width: 0; border-radius: 99px; background: var(--brand); transition: width .4s; }
+  .meter-fill.warn { background: var(--warn); } .meter-fill.bad { background: var(--bad); }
+  .meter-foot { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 12.5px; }
+  .chart { position: relative; width: 100%; height: 220px; }
+  .chart svg { display: block; }
+  .chart-tip { position: fixed; z-index: 60; pointer-events: none; background: #1f1b22; border: 1px solid var(--line2); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 6px 24px #0008; }
+  .chart-tip b { display: block; font-size: 14px; }
+  .quick-link { display: block; text-decoration: none; margin-bottom: 16px; }
+  .head-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .addon .test { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 12.5px; color: var(--muted); }
+  .addon .test:empty { display: none; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1px solid currentColor; white-space: nowrap; }
+  .pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .pill.good { color: var(--ok); } .pill.mid { color: var(--warn); } .pill.bad { color: var(--bad); } .pill.wait { color: var(--info); }
+  .st-list { display: grid; gap: 8px; }
+  .st { display: grid; grid-template-columns: minmax(0, 1.4fr) 110px repeat(3, minmax(0, 1fr)) 70px; gap: 14px; align-items: center;
+    padding: 12px 14px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; }
+  .st .nm b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .st .nm span, .st .k span { display: block; color: var(--faint); font-size: 12px; }
+  .st .k b { font-weight: 600; font-size: 15px; }
+  .st .bar { height: 6px; border-radius: 99px; background: var(--field); margin-top: 6px; overflow: hidden; }
+  .st .bar i { display: block; height: 100%; border-radius: 99px; background: var(--ok); }
+  .st .bar i.mid { background: var(--warn); } .st .bar i.bad { background: var(--bad); }
+  @media (max-width: 860px) {
+    .st { grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .st .nm { grid-column: 1 / 3; } .st .pill { justify-self: end; }
+  }
+  .online-card { padding: 18px 20px; }
+  .online-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .online-num { display: flex; align-items: center; gap: 14px; }
+  .online-num > b { font-size: 44px; font-weight: 600; letter-spacing: -1px; line-height: 1; }
+  .online-num strong { display: block; font-weight: 600; }
+  .online-num span:not(.live) { display: block; color: var(--muted); font-size: 12.5px; }
+  .live { width: 12px; height: 12px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 rgba(60, 207, 142, .6); animation: livepulse 2s infinite; flex: none; }
+  @keyframes livepulse { 0% { box-shadow: 0 0 0 0 rgba(60, 207, 142, .55); } 70% { box-shadow: 0 0 0 12px rgba(60, 207, 142, 0); } 100% { box-shadow: 0 0 0 0 rgba(60, 207, 142, 0); } }
+  .online-side { text-align: right; } .online-side b { display: block; font-size: 22px; font-weight: 600; } .online-side span { color: var(--muted); font-size: 12.5px; }
+  .online-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; margin-top: 14px; }
+  .online-list:empty { display: none; }
+  .on-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; min-width: 0; }
+  .on-item i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex: none; }
+  .on-item div { min-width: 0; } .on-item b { display: block; font-weight: 600; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .on-item span { display: block; color: var(--faint); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dot-on { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); margin-right: 6px; vertical-align: 1px; }
   .bottom-nav { display: none; }
   .top-logo, .gen-open, .gen-close, .code-cards { display: none; }
   @media (max-width: 720px) {
@@ -326,6 +373,9 @@
       background: var(--brand); color: #fff; font-size: 10.5px; line-height: 17px; text-align: center; }
     .topbar #menuBtn { display: none; }
     .topbar .lbl, .list-head .lbl, .card-head .lbl { display: none; }
+    .online-head { display: grid; grid-template-columns: 1fr auto; align-items: center; }
+    .online-num > b { font-size: 38px; }
+    .online-num span:not(.live) { display: none; }
     #reqReload { width: 36px; height: 36px; padding: 0; }
     .topbar #refreshAll, #reload { width: 36px; height: 36px; padding: 0; }
     .toast { bottom: calc(80px + env(safe-area-inset-bottom)); }
@@ -430,6 +480,8 @@
   <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
   <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></symbol>
 </svg>
 
@@ -472,6 +524,7 @@
       <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg>Addons padrão</a>
       <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-list"/></svg>Categorias</a>
       <a href="#streamings" data-page="streamings"><svg class="i"><use href="#i-tv"/></svg>Streamings</a>
+      <a href="#uso" data-page="uso"><svg class="i"><use href="#i-chart"/></svg>Uso do Supabase</a>
     </nav>
     <div class="side-foot">
       <div id="avatar" class="avatar">A</div>
@@ -486,7 +539,7 @@
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-inbox"/></svg><span>Pedidos</span><b id="bnPending" class="hidden">0</b></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg><span>Addons</span></a>
-    <a href="#mais" id="bnMore" data-page="categorias streamings"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span></a>
+    <a href="#mais" id="bnMore" data-page="categorias streamings uso"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span></a>
   </nav>
 
   <div class="content">
@@ -494,7 +547,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v4</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v7</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -502,6 +555,13 @@
 
     <!-- Visão geral -->
     <main class="page" data-section="inicio" data-title="Visão geral">
+      <div class="card online-card">
+        <div class="online-head">
+          <div class="online-num"><span class="live"></span><b id="onNow">0</b><div><strong>online agora</strong><span>aparelhos com o app aberto · atualiza a cada minuto</span></div></div>
+          <div class="online-side"><b id="onToday">0</b><span>aparelhos usaram hoje</span></div>
+        </div>
+        <div id="onList" class="online-list"></div>
+      </div>
       <div class="stats">
         <div class="stat" style="--dot: var(--brand)"><span>Códigos criados</span><b id="sTotal">0</b></div>
         <div class="stat" style="--dot: var(--info)"><span>Livres</span><b id="sFree">0</b></div>
@@ -643,10 +703,22 @@
       <div class="card">
         <div class="card-head">
           <div><h2>Addons instalados</h2><p class="sub">Vão para todos os aparelhos ao abrir o app, nesta ordem. No app cada um aparece como "Fonte 1", "Fonte 2"… com a bolinha da cor escolhida. Addons que o cliente adicionou sozinho não mudam.</p></div>
-          <button type="button" id="aNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Novo addon</button>
+          <div class="head-btns">
+            <button type="button" id="aTestAll" class="ghost small"><svg class="i"><use href="#i-bolt"/></svg>Testar todos</button>
+            <button type="button" id="aNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Novo addon</button>
+          </div>
         </div>
         <div id="addonList" class="addon-list"></div>
         <p id="addonEmpty" class="empty hidden">Nenhum addon padrão. Os aparelhos ficam só com os addons que cada cliente adicionar.</p>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Estabilidade nos aparelhos</h2><p class="sub">Medido nos aparelhos dos clientes a cada busca de fontes: quantas vezes o addon trouxe fontes, em quanto tempo, e quantos filmes foram assistidos por ele.</p></div>
+          <div id="stDays" class="seg"><button type="button" data-v="7" class="on">7 dias</button><button type="button" data-v="30">30 dias</button></div>
+        </div>
+        <div id="stMsg" class="msg"></div>
+        <div id="stList" class="st-list"></div>
+        <p id="stEmpty" class="empty hidden">Ainda sem dados. Os números aparecem conforme os clientes usam o app (versão nova).</p>
       </div>
       <div id="addonCard" class="card hidden">
         <div class="card-head"><div><h2 id="addonFormTitle">Novo addon</h2><p class="sub">Cole o link do manifest do addon (termina em manifest.json).</p></div></div>
@@ -677,6 +749,38 @@
         <div id="catList" class="cat-list"></div>
         <p id="catEmpty" class="empty hidden">Nenhuma categoria ainda. Abra o app em um aparelho (com a versão nova) para a lista aparecer aqui.</p>
       </div>
+    </main>
+
+    <!-- Uso do Supabase -->
+    <main class="page hidden" data-section="uso" data-title="Uso do Supabase">
+      <div class="card">
+        <div class="card-head" style="flex-wrap: nowrap">
+          <div><h2>Tráfego do app neste mês</h2><p class="sub">Estimativa medida pelo próprio banco: biblioteca dos clientes e aberturas do app. O número oficial fica no painel do Supabase.</p></div>
+          <button id="usoReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
+        </div>
+        <div id="usoMsg" class="msg"></div>
+        <div class="meter-row">
+          <div class="meter-num"><b id="uMonth">—</b><span id="uMonthOf">de 5 GB do plano grátis</span></div>
+          <div class="meter"><div id="uMeter" class="meter-fill"></div></div>
+          <div class="meter-foot"><span id="uPct">0%</span><span id="uForecast"></span></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat" style="--dot: var(--ok)"><span>Aparelhos ativos (24 h)</span><b id="uDev24">—</b></div>
+        <div class="stat" style="--dot: var(--info)"><span>Aparelhos ativos (7 dias)</span><b id="uDev7">—</b></div>
+        <div class="stat" style="--dot: var(--peach)"><span>Aberturas do app no mês</span><b id="uStarts">—</b></div>
+        <div class="stat" style="--dot: var(--coral)"><span>Tamanho do banco</span><b id="uDb">—</b></div>
+        <div class="stat" style="--dot: var(--brand)"><span>Bibliotecas salvas</span><b id="uLibs">—</b></div>
+        <div class="stat" style="--dot: var(--faint)"><span>Média por biblioteca</span><b id="uLibAvg">—</b></div>
+      </div>
+      <div class="card">
+        <h2>Tráfego por dia</h2>
+        <p class="sub">Últimos 30 dias, em MB.</p>
+        <div id="uChart" class="chart"></div>
+        <div id="uTip" class="chart-tip hidden"></div>
+      </div>
+      <a class="quick-link" href="https://supabase.com/dashboard/project/nrncfajbfmcztlwxakvc/usage" target="_blank" rel="noopener">
+        <button type="button" class="ghost" style="width:100%"><svg class="i"><use href="#i-ext"/></svg>Ver o uso oficial no Supabase</button></a>
     </main>
 
     <!-- Streamings -->
@@ -811,6 +915,7 @@
     $("sActive").textContent = counts.active; $("sExpired").textContent = counts.expired + counts.revoked;
     $("cFree").textContent = counts.free; $("cActive").textContent = counts.active; $("cTrial").textContent = trialActive;
     document.querySelectorAll("#filter [data-n]").forEach((n) => n.textContent = counts[n.dataset.n] || 0);
+    renderOnline();
 
     const list = codes.filter((c) => (!f || (f === "trial" ? isTrial(c) : statusOf(c) === f)) &&
       (!q || c.code.includes(q) || (c.note || "").toLowerCase().includes(q)));
@@ -823,7 +928,7 @@
       const devs = c.access_code_devices || [];
       const devBox = devs.length ? el("div", { class: "devices" }, devs.map((d) => el("div", {},
         el("span", { class: "dev-name", title: "Ativado em " + fmtTime(d.activated_at) + " · visto " + ago(d.last_seen) },
-          (d.device_name || "Aparelho")),
+          isOnline(d) ? el("i", { class: "dot-on", title: "Online agora" }) : "", (d.device_name || "Aparelho")),
         el("button", { class: "link", onclick: () => removeDevice(c, d) }, "Liberar")))) : "";
       const validity = c.expires_at
         ? el("div", {}, el("span", { class: "cell-main" }, "Vence " + (c.expires_on ? fmt(c.expires_at) : fmtTime(c.expires_at))),
@@ -854,7 +959,7 @@
         el("div", { class: "cc-line" }, icon("tv"), el("span", {}, el("b", {}, devs.length + " de " + c.max_devices), " aparelho" + (c.max_devices > 1 ? "s" : "")),
           c.activated_at ? el("span", { style: "margin-left:auto" }, "ativado " + fmt(c.activated_at)) : ""),
         devs.length ? el("div", { class: "cc-devs" }, devs.map((d) => el("div", {},
-          el("span", {}, (d.device_name || "Aparelho") + " · " + ago(d.last_seen)),
+          el("span", {}, isOnline(d) ? el("i", { class: "dot-on" }) : "", (d.device_name || "Aparelho") + " · " + (isOnline(d) ? "online agora" : ago(d.last_seen))),
           el("button", { class: "link", onclick: () => removeDevice(c, d) }, "Liberar")))) : "",
         el("div", { class: "cc-actions" },
           el("button", { class: "primary", onclick: (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada") }, icon("msg"), "Copiar mensagem"),
@@ -863,6 +968,28 @@
           iconBtn("trash", "Excluir", () => removeCode(c), "bad"))));
     });
   }
+
+  // A device is online when the app checked in during the last 5 minutes (it does every 2 while on screen).
+  const ONLINE_MS = 5 * 60 * 1000;
+  const isOnline = (d) => d.last_seen && Date.now() - new Date(d.last_seen) < ONLINE_MS;
+  function renderOnline() {
+    const startOfDay = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })); startOfDay.setHours(0, 0, 0, 0);
+    const offset = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })) - new Date();
+    const online = [], today = new Set();
+    codes.forEach((c) => (c.access_code_devices || []).forEach((d) => {
+      if (!d.last_seen) return;
+      if (new Date(new Date(d.last_seen).getTime() + offset) >= startOfDay) today.add(c.id + d.device_id);
+      if (isOnline(d)) online.push({ c, d });
+    }));
+    online.sort((x, y) => new Date(y.d.last_seen) - new Date(x.d.last_seen));
+    $("onNow").textContent = online.length; $("onToday").textContent = today.size;
+    const shown = online.slice(0, 12).map(({ c, d }) => el("div", { class: "on-item" }, el("i", {}),
+      el("div", {}, el("b", {}, (c.note || "Sem nome") + " · " + (d.device_name || "Aparelho")), el("span", {}, "Código " + c.code + " · " + ago(d.last_seen)))));
+    if (online.length > 12) shown.push(el("div", { class: "on-item" }, el("div", {}, el("b", {}, "+ " + (online.length - 12) + " aparelhos"))));
+    $("onList").replaceChildren(...shown);
+  }
+  // Keep the numbers fresh while the overview or the codes page is open.
+  setInterval(() => { if (!document.hidden && ["", "#inicio", "#codigos"].includes(location.hash)) load(); }, 60000);
 
   async function toggleRevoke(c) {
     const { error } = await sb.from("access_codes").update({ revoked: !c.revoked }).eq("id", c.id);
@@ -965,6 +1092,7 @@
     if (error) { $("addonMsg").textContent = "Erro ao carregar addons: " + error.message; return; }
     addons = data || [];
     renderAddons();
+    loadStats();
   }
 
   function renderAddons() {
@@ -983,11 +1111,81 @@
         el("div", { class: "meta" }, el("b", {}, a.name), el("span", { title: a.manifest_url }, a.manifest_url)),
         state,
         el("div", { class: "actions act" },
+          iconBtn("bolt", "Testar agora", () => testAddon(a)),
           iconBtn("copy", "Copiar link", (e) => copy(a.manifest_url, e.currentTarget, "Link copiado")),
           iconBtn("edit", "Editar", () => startEdit(a)),
-          iconBtn("trash", "Apagar", () => deleteAddon(a), "bad"))));
+          iconBtn("trash", "Apagar", () => deleteAddon(a), "bad")),
+        el("div", { class: "test", id: "test-" + a.id }, testResults[a.id] || "")));
     });
   }
+
+  // ── Addon test (from this browser) and stability (from the customers' devices) ──
+  const testResults = {};
+  const TEST_TITLES = [["movie", "tt0111161", "Um Sonho de Liberdade"], ["movie", "tt15239678", "Duna: Parte Dois"], ["series", "tt0903747:1:1", "Breaking Bad 1x1"]];
+  const normUrl = (u) => { const [b, q] = u.trim().split(/\?(.*)/s); const base = b.replace(/\/+$/, "").replace(/\/manifest\.json$/, "").replace(/\/+$/, ""); return q ? base + "?" + q : base; };
+  async function keyFor(u) {
+    const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(normUrl(u)));
+    return Array.from(new Uint8Array(h)).map((x) => x.toString(16).padStart(2, "0")).join("").slice(0, 16);
+  }
+  function grade(okRate, avgMs) {
+    if (okRate >= 0.95 && avgMs < 4000) return ["good", "Bom"];
+    if (okRate >= 0.8 && avgMs < 8000) return ["mid", "Instável"];
+    return ["bad", "Ruim"];
+  }
+  const secs = (ms) => (ms / 1000).toFixed(1).replace(".", ",") + " s";
+  async function testAddon(a) {
+    const box = $("test-" + a.id); if (!box) return;
+    box.replaceChildren(el("span", { class: "pill wait" }, "Testando…"));
+    const [b, q] = a.manifest_url.trim().split(/\?(.*)/s);
+    const base = b.replace(/\/+$/, "").replace(/\/manifest\.json$/, "");
+    const results = await Promise.all(TEST_TITLES.map(async ([type, id, label]) => {
+      const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 15000); const t0 = performance.now();
+      try {
+        const r = await fetch(base + "/stream/" + type + "/" + id + ".json" + (q ? "?" + q : ""), { signal: ctl.signal });
+        const j = r.ok ? await r.json() : null;
+        return { label, ok: !!j, ms: performance.now() - t0, n: (j && j.streams || []).length };
+      } catch (_) { return { label, ok: false, ms: performance.now() - t0, n: 0 }; } finally { clearTimeout(timer); }
+    }));
+    const answered = results.filter((r) => r.ok);
+    const withSources = results.filter((r) => r.n > 0);
+    const avg = answered.length ? answered.reduce((x, r) => x + r.ms, 0) / answered.length : 15000;
+    const [cls, word] = !answered.length ? ["bad", "Fora do ar"] : grade(withSources.length / results.length, avg);
+    const parts = [el("span", { class: "pill " + cls }, word), el("span", {}, answered.length ? "Resposta média " + secs(avg) : "Não respondeu")]
+      .concat(results.map((r) => el("span", {}, r.label + ": " + (r.ok ? r.n + " fontes" : "falhou"))));
+    testResults[a.id] = parts; box.replaceChildren(...parts);
+    return cls;
+  }
+  $("aTestAll").addEventListener("click", async () => { for (const a of addons) await testAddon(a); toast("Teste concluído"); });
+
+  let stats = [];
+  async function loadStats() {
+    const days = parseInt($("stDays").dataset.value || "7", 10);
+    const { data, error } = await sb.rpc("admin_addon_stats", { p_days: days });
+    if (error) { $("stMsg").textContent = "Para ver a estabilidade, rode antes o arquivo addon_stats.sql no Supabase."; return; }
+    $("stMsg").textContent = ""; stats = data || []; renderStats();
+  }
+  async function renderStats() {
+    const keys = {}; for (const a of addons) keys[await keyFor(a.manifest_url)] = a;
+    const enabled = addons.filter((x) => x.enabled);
+    $("stEmpty").classList.toggle("hidden", stats.length > 0);
+    $("stList").replaceChildren(...stats.map((st) => {
+      const okRate = st.requests ? st.ok / st.requests : 0;
+      const avgMs = st.requests ? st.total_ms / st.requests : 0;
+      const [cls, word] = grade(okRate, avgMs);
+      const a = keys[st.key];
+      const tag = a ? (a.enabled ? "Fonte " + (enabled.indexOf(a) + 1) + " · addon padrão" : "addon padrão (desativado)") : "adicionado pelo cliente";
+      const k = (label, value, extra) => el("div", { class: "k" }, el("b", {}, value), el("span", {}, label), extra || "");
+      const bar = el("div", { class: "bar" }, el("i", { class: cls, style: "width:" + Math.round(okRate * 100) + "%" }));
+      return el("div", { class: "st" },
+        el("div", { class: "nm" }, el("b", {}, (a && a.name) || st.name || "Addon"), el("span", {}, tag)),
+        el("span", { class: "pill " + cls }, word),
+        k("buscas com fontes", Math.round(okRate * 100) + "%", bar),
+        k("tempo médio", secs(avgMs)),
+        k("fontes por busca", st.ok ? Math.round(st.streams / st.ok) : 0),
+        k("assistidos", st.plays));
+    }));
+  }
+  seg("stDays", loadStats);
 
   function resetAddonForm() {
     editingAddon = null;
@@ -1205,14 +1403,86 @@
   seg("reqFilter", loadRequests);
   $("reqReload").addEventListener("click", () => { loadRequests(); loadPendingSummary(); });
 
+  // ── Supabase usage ──
+  const FREE_EGRESS = 5 * 1024 ** 3;
+  const mb = (b) => b / 1024 / 1024;
+  const human = (b) => b >= 1024 ** 3 ? (b / 1024 ** 3).toFixed(2).replace(".", ",") + " GB"
+    : b >= 1024 ** 2 ? mb(b).toFixed(1).replace(".", ",") + " MB" : Math.round(b / 1024) + " KB";
+  let usage = null;
+  async function loadUsage() {
+    const { data, error } = await sb.rpc("admin_usage_stats");
+    if (error) { $("usoMsg").textContent = "Para ver o uso, rode antes os arquivos code_library_since.sql e usage_stats.sql no Supabase."; return; }
+    $("usoMsg").textContent = "";
+    usage = data; renderUsage();
+  }
+  function renderUsage() {
+    if (!usage) return;
+    const u = usage;
+    const pct = Math.min(100, u.month_bytes / FREE_EGRESS * 100);
+    $("uMonth").textContent = human(u.month_bytes);
+    $("uMeter").style.width = Math.max(pct, 0.5) + "%";
+    $("uMeter").className = "meter-fill" + (pct >= 90 ? " bad" : pct >= 70 ? " warn" : "");
+    $("uPct").textContent = pct.toFixed(pct < 10 ? 1 : 0).replace(".", ",") + "% do limite";
+    const now = new Date(); const day = now.getDate(); const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    $("uForecast").textContent = day > 1 ? "Previsão para o mês: " + human(u.month_bytes / day * daysInMonth) : "";
+    $("uDev24").textContent = u.devices_24h; $("uDev7").textContent = u.devices_7d;
+    $("uStarts").textContent = u.month_starts; $("uDb").textContent = human(u.db_bytes) + " / 500 MB";
+    $("uLibs").textContent = u.libraries; $("uLibAvg").textContent = u.libraries ? human(u.library_bytes / u.libraries) : "—";
+    drawUsageChart(u.days || []);
+  }
+  function drawUsageChart(days) {
+    const box = $("uChart"); box.replaceChildren();
+    const W = box.clientWidth || 600, H = 220, L = 44, B = 26, T = 10, R = 8;
+    const series = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 864e5); const key = d.toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
+      const row = days.find((x) => x.day === key);
+      series.push({ key, label: key.slice(8, 10) + "/" + key.slice(5, 7), mb: row ? mb(row.bytes) : 0, starts: row ? row.starts : 0 });
+    }
+    const max = Math.max(1, ...series.map((s) => s.mb)); const nice = Math.pow(10, Math.floor(Math.log10(max)));
+    const top = Math.ceil(max / nice) * nice;
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg"); svg.setAttribute("width", W); svg.setAttribute("height", H);
+    const mk = (tag, attrs) => { const e = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); svg.append(e); return e; };
+    const plotW = W - L - R, plotH = H - T - B;
+    for (let g = 0; g <= 2; g++) {
+      const y = T + plotH - plotH * g / 2;
+      mk("line", { x1: L, x2: W - R, y1: y, y2: y, stroke: "#241f27", "stroke-width": 1 });
+      const t = mk("text", { x: L - 8, y: y + 4, "text-anchor": "end", fill: "#6e6671", "font-size": 11 }); t.textContent = (top * g / 2).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
+    }
+    const slot = plotW / series.length, bw = Math.min(16, slot - 3);
+    series.forEach((s, i) => {
+      const x = L + i * slot + (slot - bw) / 2; const h = s.mb / top * plotH; const y = T + plotH - h;
+      if (h > 0.5) {
+        const r = Math.min(4, h, bw / 2);
+        mk("path", { d: `M${x},${T + plotH} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${T + plotH} Z`, fill: "#ff3d8a" });
+      }
+      if (i % Math.ceil(series.length / (W < 500 ? 5 : 10)) === 0 || i === series.length - 1) {
+        const last = i === series.length - 1;
+        const t = mk("text", { x: last ? x + bw : x + bw / 2, y: H - 8, "text-anchor": last ? "end" : "middle", fill: "#6e6671", "font-size": 11 }); t.textContent = s.label;
+      }
+      const hit = mk("rect", { x: L + i * slot, y: T, width: slot, height: plotH, fill: "transparent" });
+      const tip = $("uTip");
+      const show = (ev) => { tip.innerHTML = ""; tip.append(el("b", {}, s.mb.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + " MB"),
+        el("span", { class: "muted" }, s.label + " · " + s.starts + " aberturas")); tip.classList.remove("hidden");
+        const p = ev.touches ? ev.touches[0] : ev; tip.style.left = Math.min(window.innerWidth - 170, p.clientX + 12) + "px"; tip.style.top = (p.clientY - 54) + "px"; };
+      hit.addEventListener("mousemove", show); hit.addEventListener("touchstart", show, { passive: true });
+      hit.addEventListener("mouseleave", () => tip.classList.add("hidden"));
+    });
+    box.append(svg);
+  }
+  $("usoReload").addEventListener("click", loadUsage);
+  window.addEventListener("resize", () => { if (location.hash === "#uso") renderUsage(); });
+
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "pedidos", "addons", "categorias", "streamings"];
+  const PAGES = ["inicio", "codigos", "pedidos", "addons", "categorias", "streamings", "uso"];
   function go() {
     const page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "inicio";
     document.querySelectorAll("[data-section]").forEach((s) => {
       const on = s.dataset.section === page;
       s.classList.toggle("hidden", !on);
       if (on) { $("pageTitle").textContent = s.dataset.title; document.title = s.dataset.title + " · CloudPlay"; }
+      if (on && page === "uso") setTimeout(loadUsage, 0);
     });
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.page === page));
     document.querySelectorAll(".bottom-nav a").forEach((a) => a.classList.toggle("active", a.dataset.page.split(" ").includes(page)));
