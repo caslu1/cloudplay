@@ -1,18 +1,11 @@
 [
   {
-    "version": "2.2",
-    "date": null,
-    "items": [
-      "Listas M3U do painel: filmes e séries da lista aparecem como fontes dentro de cada título (sem canais)",
-      "Filtro de gêneros sem o texto explicativo do E/OU"
-    ]
-  },
-  {
     "version": "2.1",
     "date": null,
     "items": [
       "Tela do filme/série mostra todas as legendas disponíveis (ex.: PT · EN)",
       "Pesquisa no celular em rolagem vertical, 2 títulos por linha",
+      "Listas M3U do painel: filmes e séries da lista aparecem como fontes dentro de cada título (sem canais)",
       "Filtros mais simples: sem o \"E/OU\" nos gêneros; Ordenar com Populares, Bem avaliados e Recentes",
       "Nova numeração das versões (2.1, 2.2…)"
     ]
