@@ -1,12 +1,13 @@
 [
   {
-    "version": "2.6",
+    "version": "2.7",
     "date": null,
     "items": [
       "O app manda para o painel os erros dos addons e do app, e quando fecha sozinho",
       "O painel pode exigir uma versão mínima: versões antigas pedem para atualizar antes de abrir",
       "O app informa ao painel qual versão está instalada em cada aparelho",
-      "Versões novas do app ficam prontas mais rápido"
+      "Versões novas do app ficam prontas mais rápido",
+      "O painel mostra o que cada aparelho está assistindo e há quanto tempo o app está aberto"
     ]
   },
   {

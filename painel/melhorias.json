@@ -40,7 +40,7 @@
       "area": "Diagnóstico",
       "impact": "medio",
       "status": "andamento",
-      "version": "2.6",
+      "version": "2.7",
       "detail": "O app passa a mandar para o painel os addons que falham, os erros que ele pega e as vezes em que fecha sozinho. Com isso a IA consegue apontar o que mais acontece de verdade."
     },
     {

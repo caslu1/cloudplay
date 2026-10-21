@@ -390,6 +390,17 @@
   .cn span { display: block; color: var(--muted); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .cn .when { text-align: right; color: var(--muted); font-size: 12.5px; white-space: nowrap; }
   .cn .when.on { color: var(--ok); font-weight: 600; }
+  .cn .watch { grid-column: 2 / -1; display: flex; gap: 14px; align-items: center; padding-top: 10px; border-top: 1px dashed var(--line2); }
+  .w-poster { width: 34px; height: 51px; border-radius: 6px; object-fit: cover; background: var(--field); flex: none; }
+  .w-info { flex: 1; min-width: 0; }
+  .cn .w-info b { font-size: 13.5px; }
+  .cn .w-state { font-size: 11.5px; font-weight: 600; color: var(--faint); text-transform: uppercase; letter-spacing: .6px; }
+  .cn .w-state.playing { color: var(--pink); } .cn .w-state.paused { color: var(--peach); }
+  .w-bar { height: 5px; border-radius: 99px; background: var(--field); overflow: hidden; margin: 6px 0 3px; max-width: 360px; }
+  .w-bar i { display: block; height: 100%; border-radius: 99px; background: var(--grad); }
+  .cn .w-time { font-size: 12px; }
+  .w-session { flex: none; text-align: right; padding-left: 14px; border-left: 1px solid var(--line2); }
+  .cn .w-session span { font-size: 11.5px; } .cn .w-session b { font-size: 16px; }
   @media (max-width: 720px) {
     .stats.stats-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .stats.stats-4 { grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -404,6 +415,8 @@
     .cn { grid-template-columns: 10px minmax(0, 1fr) auto; gap: 10px; }
     .cn .c-dev, .cn .c-code { display: none; }
     .cn span.c-sub { display: block; }
+    .cn .watch { grid-column: 1 / -1; flex-wrap: wrap; }
+    .w-session { width: 100%; text-align: left; border-left: 0; padding-left: 0; display: flex; gap: 8px; align-items: baseline; }
     .list-head > div > .sub { display: none; }
     .list-head { align-items: center; }
   }
@@ -1224,7 +1237,7 @@
           <select id="minVer"><option value="">Desligado (qualquer versão abre)</option></select>
           <p id="minVerInfo" class="hint"></p>
           <button id="minVerSave" type="button" class="ver-save"><svg class="i"><use href="#i-check"/></svg>Salvar</button>
-          <p class="hint">Vale a partir da versão 2.6: as anteriores ainda não sabem bloquear.</p>
+          <p class="hint">Vale a partir da versão 2.7: as anteriores ainda não sabem bloquear.</p>
         </div>
       </div>
       <div class="card">
@@ -1667,7 +1680,7 @@
     online.sort((x, y) => new Date(y.d.last_seen) - new Date(x.d.last_seen));
     $("onNow").textContent = online.length; $("onToday").textContent = today.size;
     const shown = online.slice(0, 12).map(({ c, d }) => el("div", { class: "on-item" }, el("i", {}),
-      el("div", {}, el("b", {}, (c.note || "Sem nome") + " · " + (d.device_name || "Aparelho")), el("span", {}, "Código " + c.code + " · " + ago(d.last_seen)))));
+      el("div", {}, el("b", {}, (c.note || "Sem nome") + " · " + (d.device_name || "Aparelho")), el("span", {}, watchState(d, true) === "playing" ? "▶ " + d.now_title + (d.now_detail ? " · " + d.now_detail.split(" · ")[0] : "") : "Código " + c.code + " · " + ago(d.last_seen)))));
     if (online.length > 12) shown.push(el("div", { class: "on-item" }, el("div", {}, el("b", {}, "+ " + (online.length - 12) + " aparelhos"))));
     $("onList").replaceChildren(...shown);
   }
@@ -1778,7 +1791,35 @@
         el("span", { class: "c-sub" }, (d.device_name || "Aparelho") + " · " + c.code)),
       el("div", { class: "c-dev" }, el("b", {}, d.device_name || "Aparelho"), el("span", {}, "ativado " + fmt(d.activated_at))),
       el("div", { class: "c-code" }, el("b", {}, c.code), el("span", {}, statusLabel[statusOf(c)])),
-      el("div", { class: "when" + (on ? " on" : "") }, on ? "Online agora" : d.last_seen ? ago(d.last_seen) : "—"))));
+      el("div", { class: "when" + (on ? " on" : "") }, on ? "Online agora" : d.last_seen ? ago(d.last_seen) : "—"),
+      watchStrip(d, on))));
+  }
+
+  // What a device is watching (report_now_playing) and how long the app has been open.
+  const mins = (s) => { const m = Math.round(s / 60); return m < 60 ? m + " min" : Math.floor(m / 60) + " h" + (m % 60 ? " " + (m % 60) + " min" : ""); };
+  function watchState(d, on) {
+    if (!d.now_title) return null;
+    const fresh = d.now_at && Date.now() - new Date(d.now_at) < 4 * 60e3;
+    return d.now_playing && fresh && on ? "playing" : fresh && on ? "paused" : "last";
+  }
+  function watchStrip(d, on) {
+    const st = watchState(d, on);
+    const session = on && d.session_since ? (Date.now() - new Date(d.session_since)) / 1000 : 0;
+    if (!st && !session) return "";
+    const kids = [];
+    if (st) {
+      const pct = d.now_duration > 0 ? Math.min(100, Math.round(d.now_position / d.now_duration * 100)) : 0;
+      kids.push(d.now_poster ? el("img", { class: "w-poster", src: d.now_poster.replace("/original/", "/w92/"), alt: "", loading: "lazy" }) : el("span", { class: "w-poster" }));
+      kids.push(el("div", { class: "w-info" },
+        el("span", { class: "w-state " + st }, st === "playing" ? "▶ Assistindo agora" : st === "paused" ? "❚❚ Pausado" : "Assistiu por último · " + ago(d.now_at)),
+        el("b", {}, d.now_title + (d.now_detail ? " · " + d.now_detail : "")),
+        d.now_duration > 0 ? el("div", { class: "w-bar" }, el("i", { style: "width:" + pct + "%" })) : "",
+        el("span", { class: "w-time" }, d.now_duration > 0 ? mins(d.now_position) + " de " + mins(d.now_duration) + " (" + pct + "%)"
+          : "") ));
+    }
+    if (session) kids.push(el("div", { class: "w-session" }, el("span", {}, "Sessão"), el("b", {}, mins(session)),
+      st === "playing" && d.now_since ? el("span", {}, "neste título há " + mins((Date.now() - new Date(d.now_since)) / 1000)) : ""));
+    return el("div", { class: "watch" }, ...kids);
   }
   seg("cnFilter", renderConnected);
   $("cnSearch").addEventListener("input", renderConnected);
@@ -1788,7 +1829,7 @@
   // merged into the codes already loaded.
   async function refreshOnline() {
     const since = new Date(todaySP() + "T00:00:00-03:00").toISOString();
-    const { data, error } = await sb.from("access_code_devices").select("code_id, device_id, device_name, activated_at, last_seen").gte("last_seen", since);
+    const { data, error } = await sb.from("access_code_devices").select("*").gte("last_seen", since);
     if (error || !data) return;
     const byCode = new Map(codes.map((c) => [c.id, c]));
     data.forEach((d) => {
@@ -2542,7 +2583,7 @@
     const rows = Object.keys(groups).sort((a, b) => (a === "") - (b === "") || cmpVer(b, a));
     const max = Math.max(1, ...Object.values(groups));
     $("verBars").replaceChildren(...rows.map((v) => el("div", { class: "ver-row" + (v === latest ? " cur" : v ? "" : " old") },
-      el("b", {}, v ? v + (v === latest ? " · atual" : "") : "Antes da 2.6"),
+      el("b", {}, v ? v + (v === latest ? " · atual" : "") : "Antes da 2.7"),
       el("div", { class: "bar" }, el("i", { style: "width:" + Math.max(3, groups[v] / max * 100) + "%" })),
       el("span", {}, Math.round(groups[v] / total * 100) + "% · " + groups[v]))));
     // The minimum version choice: the published versions, newest first.
@@ -2594,6 +2635,8 @@
     clearInterval(buildTick); clearTimeout(buildPoll); buildTick = buildPoll = null;
     const box = $("buildCard");
     const building = b?.status === "building";
+    // A build stopped on purpose (sent again together with the next one) is not shown.
+    if (b?.status === "cancelled") b = null;
     const fresh = b && (building ? Date.now() - new Date(b.started_at) < 3 * 3600e3 : b.finished_at && Date.now() - new Date(b.finished_at) < 6 * 3600e3);
     box.classList.toggle("hidden", !fresh);
     if (!fresh) return;
