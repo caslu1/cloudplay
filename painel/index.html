@@ -1284,11 +1284,14 @@
     <main class="page hidden" data-section="recentes" data-title="Conteúdos recentes">
       <div class="card">
         <div class="card-head">
-          <div><h2>O que entrou nos addons</h2><p class="sub">O painel lê os catálogos dos addons padrão e mostra o que apareceu de novo desde a leitura anterior. Lê sozinho quando você abre esta página (no máximo 1 vez por hora).</p></div>
+          <div><h2>O que entrou nos addons</h2><p class="sub"><b>Lançamentos</b>: os títulos mais novos que os addons padrão têm, pela data de lançamento e pelos catálogos de novidades. <b>Novos desde a última leitura</b>: o que apareceu nos catálogos depois da leitura anterior. Lê sozinho quando você abre esta página (no máximo 1 vez por hora).</p></div>
           <button type="button" id="rcScan" class="small"><svg class="i"><use href="#i-refresh"/></svg>Procurar novidades</button>
         </div>
         <div class="er-tools">
-          <div id="rcType" class="seg"><button type="button" data-v="" class="on">Todos</button><button type="button" data-v="movie">Filmes</button><button type="button" data-v="series">Séries</button></div>
+          <div class="rc-right">
+            <div id="rcView" class="seg"><button type="button" data-v="latest" class="on">Lançamentos</button><button type="button" data-v="new">Novos desde a última leitura</button></div>
+            <div id="rcType" class="seg"><button type="button" data-v="" class="on">Todos</button><button type="button" data-v="movie">Filmes</button><button type="button" data-v="series">Séries</button></div>
+          </div>
           <div class="rc-right">
             <select id="rcAddon"><option value="">Todos os addons</option></select>
             <div id="rcDays" class="seg"><button type="button" data-v="1">Hoje</button><button type="button" data-v="7" class="on">7 dias</button><button type="button" data-v="30">30 dias</button></div>
@@ -2157,8 +2160,8 @@
   // time, 15 s each, and keeps the result in Supabase so each addon shows its last tests.
   let testPool = null, testHistory = {};
   const CINEMETA = "https://v3-cinemeta.strem.io";
-  async function metasOf(url) {
-    try { const j = await (await fetch(url, { signal: AbortSignal.timeout(12000) })).json(); return Array.isArray(j.metas) ? j.metas : []; } catch (_) { return []; }
+  async function metasOf(url, ms = 12000) {
+    try { const j = await (await fetch(url, { signal: AbortSignal.timeout(ms) })).json(); return Array.isArray(j.metas) ? j.metas : []; } catch (_) { return []; }
   }
   async function loadTestPool() {
     if (testPool) return testPool;
@@ -2814,11 +2817,15 @@
   // ── Conteúdos recentes: new items in the default addons' catalogs (admin_catalog_seen) ──
   let rcItems = [], rcScanning = false;
   async function loadRecent() {
-    const { data, error } = await sb.rpc("admin_recent_catalog_items", { p_days: parseInt($("rcDays").dataset.value || "7", 10) });
+    const latest = ($("rcView").dataset.value || "latest") === "latest";
+    $("rcDays").classList.toggle("hidden", latest);
+    const { data, error } = latest
+      ? await sb.rpc("admin_latest_catalog_items", { p_days: 120 })
+      : await sb.rpc("admin_recent_catalog_items", { p_days: parseInt($("rcDays").dataset.value || "7", 10) });
     if (error) {
       rcItems = [];
       $("rcList").replaceChildren(); $("rcEmpty").classList.remove("hidden");
-      $("rcEmpty").textContent = /admin_recent_catalog_items|function/i.test(error.message) ? "Para usar esta página, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível carregar: " + error.message;
+      $("rcEmpty").textContent = /admin_(recent|latest)_catalog_items|function/i.test(error.message) ? "Para usar esta página, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível carregar: " + error.message;
       return;
     }
     rcItems = data || [];
@@ -2834,20 +2841,26 @@
     }
     const list = rcItems.filter((r) => (!t || (t === "series" ? /series|tv|show/i.test(r.type || "") : (r.type || "movie") === t)) && (!sel.value || r.addon_name === sel.value));
     let last = null; try { last = localStorage.getItem("rcLastScan"); } catch (_) {}
-    if (!rcScanning) $("rcInfo").replaceChildren(el("b", {}, list.length + (list.length === 1 ? " título novo" : " títulos novos")),
+    const latest = ($("rcView").dataset.value || "latest") === "latest";
+    if (!rcScanning) $("rcInfo").replaceChildren(el("b", {}, list.length + (list.length === 1 ? " título" : " títulos")),
       last ? " · última leitura " + ago(new Date(Number(last)).toISOString()) : " · ainda não leu os catálogos");
     $("rcEmpty").classList.toggle("hidden", list.length > 0);
-    $("rcEmpty").textContent = last ? "Nada novo no período. Conforme os addons colocarem títulos, eles aparecem aqui." : "Toque em Procurar novidades para a primeira leitura. Ela vira a base: a partir dela, o que os addons adicionarem aparece aqui.";
+    $("rcEmpty").textContent = rcScanning ? "Lendo os catálogos dos addons…"
+      : !last ? "Toque em Procurar novidades para ler os catálogos dos addons."
+      : latest ? "Os addons padrão não têm catálogos com lançamentos. Os títulos aparecem aqui quando algum addon tiver um catálogo de novidades ou datas de lançamento."
+      : "Nada novo desde a leitura anterior. Conforme os addons colocarem títulos, eles aparecem aqui.";
     $("rcList").replaceChildren(...list.map((r) => el("div", { class: "rc" },
       el("div", { class: "rc-poster" }, r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, r.name || ""),
-        el("span", { class: "rc-new" }, "NOVO")),
+        latest ? "" : el("span", { class: "rc-new" }, "NOVO")),
       el("b", { title: r.name || "" }, r.name || r.item_id),
-      el("span", {}, (/series|tv|show/i.test(r.type || "") ? "Série" : "Filme") + (r.year ? " · " + r.year : "") + " · " + ago(r.first_seen)),
+      el("span", {}, (/series|tv|show/i.test(r.type || "") ? "Série" : "Filme") + (r.year ? " · " + r.year : "") +
+        (latest ? (r.released ? " · " + new Date(r.released).toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "2-digit" }) : "") : " · " + ago(r.first_seen))),
       el("span", { title: (r.addon_name || "") + " · " + (r.catalog_name || r.catalog) }, (r.addon_name || "Addon") + " · " + (r.catalog_name || r.catalog)))));
   }
   async function scanCatalogs() {
     if (rcScanning) return;
     rcScanning = true; $("rcScan").disabled = true;
+    if (!rcItems.length) { $("rcEmpty").textContent = "Lendo os catálogos dos addons…"; $("rcEmpty").classList.remove("hidden"); }
     const say = (t) => $("rcInfo").replaceChildren(t);
     say("Lendo os addons…");
     const jobs = [];
@@ -2860,18 +2873,23 @@
         .forEach((c) => jobs.push({ a, key, base, q, c }));
     }
     const take = jobs.slice(0, 60), rows = [];
-    let next = 0, done = 0;
+    let next = 0, done = 0, failedCats = 0;
     const worker = async () => {
       while (next < take.length) {
         const j = take[next++];
-        const metas = await metasOf(j.base + "/catalog/" + encodeURIComponent(j.c.type) + "/" + encodeURIComponent(j.c.id) + ".json" + j.q);
-        metas.slice(0, 100).forEach((m) => { if (m && m.id) rows.push({ k: j.key, an: j.a.name, c: j.c.type + "/" + j.c.id, cn: j.c.name || j.c.id,
+        let metas = [];
+        try {
+          const res = await fetch(j.base + "/catalog/" + encodeURIComponent(j.c.type) + "/" + encodeURIComponent(j.c.id) + ".json" + j.q, { signal: AbortSignal.timeout(8000) });
+          metas = res.ok ? ((await res.json()).metas || []) : [];
+          if (!res.ok) failedCats++;
+        } catch (_) { failedCats++; }
+        metas.slice(0, 100).forEach((m, i) => { if (m && m.id) rows.push({ k: j.key, an: j.a.name, c: j.c.type + "/" + j.c.id, cn: j.c.name || j.c.id,
           id: String(m.id), t: m.type || j.c.type, n: m.name || "", p: typeof m.poster === "string" && m.poster.startsWith("https://") ? m.poster : null,
-          y: String(m.releaseInfo || m.year || "").slice(0, 12) }); });
+          y: String(m.releaseInfo || m.year || "").slice(0, 12), r: typeof m.released === "string" ? m.released : null, o: String(i) }); });
         done++; say("Lendo catálogos: " + done + " de " + take.length + "…");
       }
     };
-    await Promise.all([worker(), worker(), worker(), worker()]);
+    await Promise.all([worker(), worker(), worker(), worker(), worker(), worker()]);
     let added = 0, failed = null;
     for (let i = 0; i < rows.length; i += 1500) {
       const { data, error } = await sb.rpc("admin_catalog_seen", { p_rows: rows.slice(i, i + 1500) });
@@ -2881,7 +2899,9 @@
     rcScanning = false; $("rcScan").disabled = false;
     if (failed) { toast(/admin_catalog_seen|function/i.test(failed.message) ? "Rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível salvar: " + failed.message); renderRecent(); return; }
     try { localStorage.setItem("rcLastScan", String(Date.now())); } catch (_) {}
-    toast(added ? added + (added === 1 ? " título novo" : " títulos novos") : "Nada novo desde a última leitura");
+    toast((take.length ? take.length + " catálogos lidos" : "Nenhum addon padrão tem catálogo") + " · " +
+      (added ? added + (added === 1 ? " título novo" : " títulos novos") : "nada novo desde a última leitura") +
+      (failedCats ? " · " + failedCats + " não abriram" : ""));
     loadRecent();
   }
   function openRecent() {
@@ -2890,7 +2910,7 @@
       if (addons.length && Date.now() - last > 3600e3) scanCatalogs();
     });
   }
-  seg("rcType", renderRecent); seg("rcDays", loadRecent);
+  seg("rcType", renderRecent); seg("rcDays", loadRecent); seg("rcView", loadRecent);
   $("rcAddon").addEventListener("change", renderRecent);
   $("rcScan").addEventListener("click", scanCatalogs);
 
