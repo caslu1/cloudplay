@@ -235,6 +235,13 @@
   .count { display: inline-block; padding: 1px 8px; border-radius: 6px; background: var(--brand-soft); color: var(--text); font-size: 12px; font-weight: 600; white-space: nowrap; }
   .table-wrap { overflow-x: auto; margin: 0 -10px; }
   .empty { text-align: center; padding: 28px 10px; color: var(--muted); }
+  .upd-list { display: flex; flex-direction: column; gap: 10px; }
+  .upd { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .upd-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .upd-head b { font-size: 15px; }
+  .upd-head .tag { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: var(--line2); color: var(--text); margin-left: 8px; }
+  .upd-when { color: var(--muted); font-size: 13px; }
+  .upd ul { margin: 8px 0 0; padding-left: 18px; color: var(--text); font-size: 14px; line-height: 1.55; }
 
   /* ── Codes page ── */
   .gen { display: grid; gap: 18px; grid-template-columns: 1fr 300px; }
@@ -640,6 +647,7 @@
       <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-list"/></svg>Categorias</a>
       <a href="#streamings" data-page="streamings"><svg class="i"><use href="#i-tv"/></svg>Streamings</a>
       <a href="#uso" data-page="uso"><svg class="i"><use href="#i-chart"/></svg>Uso do Supabase</a>
+      <a href="#atualizacoes" data-page="atualizacoes"><svg class="i"><use href="#i-renew"/></svg>Atualizações</a>
     </nav>
     <div class="side-foot">
       <div id="avatar" class="avatar">A</div>
@@ -697,7 +705,7 @@
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg><span>Conectados</span></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg><span>Addons</span></a>
-    <a href="#mais" id="bnMore" data-page="pedidos categorias streamings uso"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#mais" id="bnMore" data-page="pedidos categorias streamings uso atualizacoes"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
   </nav>
 
   <div class="content">
@@ -705,7 +713,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v20</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v21</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -981,6 +989,18 @@
       </div>
       <a class="quick-link" href="https://supabase.com/dashboard/project/nrncfajbfmcztlwxakvc/usage" target="_blank" rel="noopener">
         <button type="button" class="ghost" style="width:100%"><svg class="i"><use href="#i-ext"/></svg>Ver o uso oficial no Supabase</button></a>
+    </main>
+
+    <!-- Atualizações -->
+    <main class="page hidden" data-section="atualizacoes" data-title="Atualizações">
+      <div class="card">
+        <div class="card-head" style="flex-wrap: nowrap">
+          <div><h2>Versões do aplicativo</h2><p class="sub">O que mudou em cada versão, com a data e a hora em que foi publicada.</p></div>
+          <button id="updReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
+        </div>
+        <div id="updList" class="upd-list"></div>
+        <p id="updEmpty" class="empty hidden">Nenhuma atualização encontrada.</p>
+      </div>
     </main>
 
     <!-- Streamings -->
@@ -2061,8 +2081,32 @@
   $("usoReload").addEventListener("click", loadUsage);
   window.addEventListener("resize", () => { if (location.hash === "#uso") renderUsage(); });
 
+  // ── Atualizações: the history in atualizacoes.json, timed by the GitHub releases when known ──
+  async function loadUpdates() {
+    const list = $("updList");
+    list.replaceChildren(el("p", { class: "empty" }, "Carregando…"));
+    let entries = [];
+    try { entries = await (await fetch("atualizacoes.json?t=" + Date.now(), { cache: "no-store" })).json(); } catch (_) { entries = []; }
+    const published = {};
+    try {
+      const rel = await (await fetch("https://api.github.com/repos/caslu1/cloudplay/releases?per_page=20")).json();
+      (Array.isArray(rel) ? rel : []).forEach((r) => { published[String(r.tag_name || "").replace(/^v/, "")] = r.published_at; });
+    } catch (_) { /* offline or rate limited: the file's own dates are used */ }
+    const fmt = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    const newest = Object.keys(published).sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))[0];
+    list.replaceChildren(...entries.map((u) => {
+      const when = published[u.version] || u.date;
+      const head = el("div", { class: "upd-head" },
+        el("div", {}, el("b", {}, "Versão " + u.version), u.version === newest ? el("span", { class: "tag" }, "Atual") : ""),
+        el("span", { class: "upd-when" }, when ? fmt.format(new Date(when)).replace(",", " às") : "Ainda não publicada"));
+      return el("div", { class: "upd" }, head, el("ul", {}, (u.items || []).map((t) => el("li", {}, t))));
+    }));
+    $("updEmpty").classList.toggle("hidden", entries.length > 0);
+  }
+  $("updReload").addEventListener("click", loadUpdates);
+
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "categorias", "streamings", "uso"];
+  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "categorias", "streamings", "uso", "atualizacoes"];
   function go() {
     const page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "inicio";
     document.querySelectorAll("[data-section]").forEach((s) => {
@@ -2072,6 +2116,7 @@
       if (on && page === "uso" && !$("app").classList.contains("hidden")) setTimeout(loadUsage, 0);
       if (on && page === "inicio") setTimeout(drawActiveHistory, 0);
       if (on && page === "conectados" && !$("app").classList.contains("hidden")) setTimeout(loadPeaks, 0);
+      if (on && page === "atualizacoes" && !$("app").classList.contains("hidden")) setTimeout(loadUpdates, 0);
     });
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.page === page));
     document.querySelectorAll(".bottom-nav a").forEach((a) => a.classList.toggle("active", a.dataset.page.split(" ").includes(page)));
@@ -2083,7 +2128,7 @@
   $("menuBtn").addEventListener("click", () => document.body.classList.add("nav-open"));
   $("bnMore").addEventListener("click", (e) => { e.preventDefault(); document.body.classList.add("nav-open"); });
   $("backdrop").addEventListener("click", () => document.body.classList.remove("nav-open"));
-  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); };
+  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") loadUpdates(); };
   $("refreshAll").addEventListener("click", loadAll);
 
   $("search").addEventListener("input", render);
