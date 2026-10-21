@@ -245,6 +245,34 @@
   .pl-row .state { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--muted); font-size: 12.5px; user-select: none; }
   .pl-row .state.on .switch { background: var(--ok); } .pl-row .state.on .switch::after { left: 18px; }
   @media (max-width: 640px) { .pl-row { flex-wrap: wrap; } .pl-meta { flex-basis: 100%; } .pl-row .actions { margin-left: auto; } }
+  .rc-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .rc-right select { width: 200px; }
+  .rc-info { color: var(--muted); font-size: 12.5px; margin: -4px 0 14px; }
+  .rc-info b { color: var(--text); }
+  .rc-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .rc { min-width: 0; }
+  .rc-poster { position: relative; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; background: var(--field); border: 1px solid var(--line); }
+  .rc-poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .rc-poster .np { position: absolute; inset: 0; display: grid; place-items: center; color: var(--faint); font-size: 12px; padding: 10px; text-align: center; }
+  .rc-new { position: absolute; top: 8px; left: 8px; font-size: 10.5px; font-weight: 700; letter-spacing: .5px; padding: 3px 8px; border-radius: 99px; background: rgba(10, 10, 15, .78); color: var(--pink); backdrop-filter: blur(6px); }
+  .rc b { display: block; margin-top: 8px; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rc span { display: block; color: var(--faint); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  @media (max-width: 720px) { .rc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; } .rc-right { width: 100%; } .rc-right select { flex: 1; width: auto; } }
+  .tst { grid-column: 1 / -1; }
+  .tst-sum { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 12.5px; color: var(--muted); }
+  .tst-sum b { color: var(--text); font-weight: 600; }
+  .tst-bar { height: 6px; border-radius: 99px; background: var(--field); overflow: hidden; margin: 8px 0 2px; }
+  .tst-bar i { display: block; height: 100%; background: var(--grad); transition: width .3s; }
+  .tst-hist { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .tst-hist span { font-size: 11.5px; padding: 2px 8px; border-radius: 99px; background: var(--field); border: 1px solid var(--line); color: var(--muted); }
+  .tst-hist span.good { color: var(--ok); } .tst-hist span.mid { color: var(--warn); } .tst-hist span.bad { color: #ff8a8e; }
+  .tst details { margin-top: 8px; } .tst summary { cursor: pointer; color: var(--muted); font-size: 12.5px; }
+  .tst-rows { display: grid; gap: 4px; margin-top: 8px; }
+  .tst-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto auto; gap: 10px; align-items: center; font-size: 12.5px; padding: 4px 6px; border-radius: 8px; background: var(--field); }
+  .tst-row img, .tst-row .ph { width: 26px; height: 39px; border-radius: 4px; object-fit: cover; background: var(--panel2); }
+  .tst-row b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+  .tst-row .r { white-space: nowrap; } .tst-row .r.ok { color: var(--ok); } .tst-row .r.mid { color: var(--warn); } .tst-row .r.bad { color: #ff8a8e; }
+  .tst-row .ms { color: var(--faint); white-space: nowrap; font-variant-numeric: tabular-nums; }
   .er-tools { display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-between; margin-bottom: 14px; }
   .er-list, .ai-list { display: flex; flex-direction: column; gap: 8px; }
   .er { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--field); }
@@ -785,6 +813,7 @@
   <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v13c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8v-13M4.5 12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19z"/><path d="M12 10v4.5M12 17.5h.01"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
+  <symbol id="i-new" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M12 9v6M9 12h6"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
   <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8.6 19z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.6-2-1-1 .9a5 5 0 0 1-2.8-2.8l.9-1-1-2z"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
@@ -832,6 +861,7 @@
       <a href="#listas" data-page="listas"><svg class="i"><use href="#i-list"/></svg>Listas M3U</a>
       <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-tag"/></svg>Categorias</a>
       <a href="#streamings" data-page="streamings"><svg class="i"><use href="#i-tvplay"/></svg>Fontes de conteúdo</a>
+      <a href="#recentes" data-page="recentes"><svg class="i"><use href="#i-new"/></svg>Conteúdos recentes</a>
       <div class="nav-sep"></div>
       <div class="nav-label">Sistema</div>
       <a href="#uso" data-page="uso"><svg class="i"><use href="#i-db"/></svg>Banco de dados</a>
@@ -895,7 +925,7 @@
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg><span>Conectados</span></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg><span>Addons</span></a>
-    <a href="#mais" id="bnMore" data-page="pedidos listas categorias streamings uso atualizacoes erros melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#mais" id="bnMore" data-page="pedidos listas categorias streamings recentes uso atualizacoes erros melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
   </nav>
 
   <div class="content">
@@ -1247,6 +1277,26 @@
         </div>
         <div id="updList" class="upd-list"></div>
         <p id="updEmpty" class="empty hidden">Nenhuma atualização encontrada.</p>
+      </div>
+    </main>
+
+    <!-- Conteúdos recentes -->
+    <main class="page hidden" data-section="recentes" data-title="Conteúdos recentes">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>O que entrou nos addons</h2><p class="sub">O painel lê os catálogos dos addons padrão e mostra o que apareceu de novo desde a leitura anterior. Lê sozinho quando você abre esta página (no máximo 1 vez por hora).</p></div>
+          <button type="button" id="rcScan" class="small"><svg class="i"><use href="#i-refresh"/></svg>Procurar novidades</button>
+        </div>
+        <div class="er-tools">
+          <div id="rcType" class="seg"><button type="button" data-v="" class="on">Todos</button><button type="button" data-v="movie">Filmes</button><button type="button" data-v="series">Séries</button></div>
+          <div class="rc-right">
+            <select id="rcAddon"><option value="">Todos os addons</option></select>
+            <div id="rcDays" class="seg"><button type="button" data-v="1">Hoje</button><button type="button" data-v="7" class="on">7 dias</button><button type="button" data-v="30">30 dias</button></div>
+          </div>
+        </div>
+        <p id="rcInfo" class="rc-info"></p>
+        <div id="rcList" class="rc-grid"></div>
+        <p id="rcEmpty" class="empty hidden"></p>
       </div>
     </main>
 
@@ -2062,6 +2112,7 @@
     addons = data || [];
     renderAddons();
     loadStats();
+    loadTestHistory();
   }
 
   function renderAddons() {
@@ -2090,7 +2141,6 @@
 
   // ── Addon test (from this browser) and stability (from the customers' devices) ──
   const testResults = {};
-  const TEST_TITLES = [["movie", "tt0111161", "Um Sonho de Liberdade"], ["movie", "tt15239678", "Duna: Parte Dois"], ["series", "tt0903747:1:1", "Breaking Bad 1x1"]];
   const normUrl = (u) => { const [b, q] = u.trim().split(/\?(.*)/s); const base = b.replace(/\/$/, "").replace(/\/manifest\.json$/, "").replace(/\/$/, ""); return q !== undefined ? base + "?" + q : base; };
   async function keyFor(u) {
     const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(normUrl(u)));
@@ -2102,32 +2152,126 @@
     return ["bad", "Ruim"];
   }
   const secs = (ms) => (ms / 1000).toFixed(1).replace(".", ",") + " s";
+  // CloudPlay: the full test. Picks random titles (popular films and series from Cinemeta, or the
+  // addon's own catalog when it lists titles of its own), asks the addon for their sources 3 at a
+  // time, 15 s each, and keeps the result in Supabase so each addon shows its last tests.
+  let testPool = null, testHistory = {};
+  const CINEMETA = "https://v3-cinemeta.strem.io";
+  async function metasOf(url) {
+    try { const j = await (await fetch(url, { signal: AbortSignal.timeout(12000) })).json(); return Array.isArray(j.metas) ? j.metas : []; } catch (_) { return []; }
+  }
+  async function loadTestPool() {
+    if (testPool) return testPool;
+    const page = () => Math.floor(Math.random() * 6) * 50;
+    const [m1, m2, s1] = await Promise.all([metasOf(CINEMETA + "/catalog/movie/top.json"),
+      metasOf(CINEMETA + "/catalog/movie/top/skip=" + page() + ".json"), metasOf(CINEMETA + "/catalog/series/top/skip=" + page() + ".json")]);
+    const ok = (m) => m && /^tt\d+$/.test(m.id || "");
+    const uniq = (list) => [...new Map(list.filter(ok).map((m) => [m.id, m])).values()];
+    testPool = { movie: uniq([...m1, ...m2]), series: uniq(s1) };
+    return testPool;
+  }
+  const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  function addonParts(url) {
+    const [b, q] = url.trim().split("#")[0].split(/\?(.*)/s);
+    return { base: b.replace(/\/$/, "").replace(/\/manifest\.json$/, "").replace(/\/$/, ""), q: q ? "?" + q : "" };
+  }
+  async function testTitlesFor(a, manifest) {
+    const types = Array.isArray(manifest?.types) ? manifest.types : ["movie", "series"];
+    const prefixes = (manifest?.resources || []).map((r) => typeof r === "object" && r.name === "stream" ? r.idPrefixes : null).find(Boolean) || manifest?.idPrefixes;
+    const usesImdb = !prefixes || prefixes.some((p) => p.startsWith("tt"));
+    if (usesImdb) {
+      const pool = await loadTestPool();
+      const wantSeries = types.includes("series") ? (types.includes("movie") ? 4 : 12) : 0;
+      const wantMovies = types.includes("movie") ? 12 - wantSeries : 0;
+      return [...shuffle(pool.movie).slice(0, wantMovies).map((m) => ({ type: "movie", id: m.id, name: m.name, poster: m.poster })),
+        ...shuffle(pool.series).slice(0, wantSeries).map((m) => ({ type: "series", id: m.id + ":1:1", name: m.name + " 1x1", poster: m.poster }))];
+    }
+    // An addon with titles of its own: the first catalog it has.
+    const { base, q } = addonParts(a.manifest_url);
+    const cat = (manifest?.catalogs || []).find((c) => !(c.extra || []).some((e) => e.isRequired) && !(c.extraRequired || []).length);
+    if (!cat) return [];
+    const metas = await metasOf(base + "/catalog/" + encodeURIComponent(cat.type) + "/" + encodeURIComponent(cat.id) + ".json" + q);
+    return shuffle(metas).slice(0, 12).map((m) => ({ type: m.type || cat.type, id: m.id, name: m.name, poster: m.poster }));
+  }
+  function gradeRun(r) {
+    if (!r.answered) return ["bad", "Fora do ar"];
+    if (!r.with_streams) return ["mid", "Sem fontes"];
+    const [cls, word] = grade(r.answered / r.tested, r.avg_ms);
+    return r.with_streams / r.tested < 0.5 && cls === "good" ? ["mid", "Poucas fontes"] : [cls, word];
+  }
+  function histChips(key) {
+    const runs = (testHistory[key] || []).slice(0, 6);
+    if (!runs.length) return "";
+    const hm = (iso) => new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).replace(",", "");
+    return el("div", { class: "tst-hist" }, el("span", {}, "Últimos testes:"), ...runs.map((r) => {
+      const [cls] = gradeRun(r);
+      return el("span", { class: cls, title: hm(r.at) }, Math.round(r.with_streams / Math.max(1, r.tested) * 100) + "% · " + secs(r.avg_ms || 0) + " · " + hm(r.at));
+    }));
+  }
+  async function loadTestHistory() {
+    const { data, error } = await sb.rpc("admin_addon_tests", { p_per_addon: 6 });
+    if (error) return;
+    testHistory = {};
+    (data || []).forEach((r) => (testHistory[r.addon_key] = testHistory[r.addon_key] || []).push(r));
+    for (const a of addons) {
+      const key = await keyFor(a.manifest_url);
+      if (!testResults[a.id] && testHistory[key]) { testResults[a.id] = [histChips(key)]; const box = $("test-" + a.id); if (box) box.replaceChildren(...testResults[a.id]); }
+    }
+  }
   async function testAddon(a) {
     const box0 = $("test-" + a.id); if (!box0) return;
-    box0.replaceChildren(el("span", { class: "pill wait" }, "Testando…"));
-    const [b, q] = a.manifest_url.trim().split("#")[0].split(/\?(.*)/s);
-    const base = b.replace(/\/$/, "").replace(/\/manifest\.json$/, "").replace(/\/$/, "");
-    // Only ask for the kinds the addon says it serves.
-    let types = null;
-    try {
-      const m = await (await fetch(base + "/manifest.json" + (q ? "?" + q : ""), { signal: AbortSignal.timeout(15000) })).json();
-      types = Array.isArray(m.types) ? m.types : null;
-    } catch (_) {}
-    const titles = TEST_TITLES.filter(([type]) => !types || types.includes(type));
-    const results = await Promise.all((titles.length ? titles : TEST_TITLES).map(async ([type, id, label]) => {
-      const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 15000); const t0 = performance.now();
-      try {
-        const r = await fetch(base + "/stream/" + type + "/" + id + ".json" + (q ? "?" + q : ""), { signal: ctl.signal });
-        const j = r.ok ? await r.json() : null;
-        return { label, ok: !!j, ms: performance.now() - t0, n: (j && j.streams || []).length };
-      } catch (_) { return { label, ok: false, ms: performance.now() - t0, n: 0 }; } finally { clearTimeout(timer); }
-    }));
+    const bar = el("i", { style: "width:0%" });
+    const line = el("span", {}, "Escolhendo títulos…");
+    box0.replaceChildren(el("div", { class: "tst" }, el("div", { class: "tst-sum" }, el("span", { class: "pill wait" }, "Testando…"), line), el("div", { class: "tst-bar" }, bar)));
+    const { base, q } = addonParts(a.manifest_url);
+    let manifest = null;
+    try { manifest = await (await fetch(base + "/manifest.json" + q, { signal: AbortSignal.timeout(15000) })).json(); } catch (_) {}
+    const titles = manifest ? await testTitlesFor(a, manifest) : [];
+    const results = [];
+    if (!manifest) {
+      results.push({ name: "manifest.json", ok: false, status: "Não abriu o manifest", ms: 15000, n: 0 });
+    } else {
+      let next = 0, done = 0;
+      const worker = async () => {
+        while (next < titles.length) {
+          const t = titles[next++];
+          const t0 = performance.now();
+          let r;
+          try {
+            const res = await fetch(base + "/stream/" + t.type + "/" + encodeURIComponent(t.id).replace(/%3A/g, ":") + ".json" + q, { signal: AbortSignal.timeout(15000) });
+            if (!res.ok) r = { ok: false, status: "Erro HTTP " + res.status, n: 0 };
+            else { const j = await res.json(); const n = (j.streams || []).length; r = { ok: true, status: n ? n + " fontes" : "Sem fontes", n }; }
+          } catch (e) { r = { ok: false, status: e?.name === "TimeoutError" || e?.name === "AbortError" ? "Não respondeu em 15 s" : "Erro de rede", n: 0 }; }
+          results.push({ ...t, ...r, ms: Math.round(performance.now() - t0) });
+          done++; bar.style.width = Math.round(done / titles.length * 100) + "%"; line.textContent = "Testando " + done + " de " + titles.length + "…";
+        }
+      };
+      await Promise.all([worker(), worker(), worker()]);
+    }
     const answered = results.filter((r) => r.ok);
-    const withSources = results.filter((r) => r.n > 0);
-    const avg = answered.length ? answered.reduce((x, r) => x + r.ms, 0) / answered.length : 15000;
-    const [cls, word] = !answered.length ? ["bad", "Fora do ar"] : !withSources.length ? ["mid", "Sem fontes"] : grade(answered.length / results.length, avg);
-    const parts = [el("span", { class: "pill " + cls }, word), el("span", {}, answered.length ? "Resposta média " + secs(avg) : "Não respondeu")]
-      .concat(results.map((r) => el("span", {}, r.label + ": " + (r.ok ? r.n + " fontes" : "falhou"))));
+    const run = { tested: results.length, answered: answered.length, with_streams: results.filter((r) => r.n > 0).length,
+      avg_ms: answered.length ? Math.round(answered.reduce((x, r) => x + r.ms, 0) / answered.length) : 15000,
+      max_ms: results.length ? Math.max(...results.map((r) => r.ms)) : 0, at: new Date().toISOString() };
+    const key = await keyFor(a.manifest_url);
+    sb.rpc("admin_save_addon_test", { p_key: key, p_name: a.name, p_tested: run.tested, p_answered: run.answered, p_with_streams: run.with_streams,
+      p_avg_ms: run.avg_ms, p_max_ms: run.max_ms, p_details: results.map((r) => ({ n: r.name, s: r.status, ms: r.ms })) }).then(() => {});
+    (testHistory[key] = testHistory[key] || []).unshift({ ...run, addon_key: key });
+    const [cls, word] = gradeRun(run);
+    const order = (r) => (r.ok ? (r.n ? 2 : 1) : 0);
+    const rows = results.slice().sort((x, y) => order(x) - order(y) || y.ms - x.ms).map((r) => el("div", { class: "tst-row" },
+      r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy" }) : el("span", { class: "ph" }),
+      el("b", {}, r.name || r.id || "?"),
+      el("span", { class: "r " + (r.n ? "ok" : r.ok ? "mid" : "bad") }, r.status),
+      el("span", { class: "ms" }, secs(r.ms))));
+    const fails = results.filter((r) => !r.ok).length;
+    const parts = [el("div", { class: "tst" },
+      el("div", { class: "tst-sum" }, el("span", { class: "pill " + cls }, word),
+        el("span", {}, el("b", {}, run.answered + " de " + run.tested), " responderam"),
+        el("span", {}, el("b", {}, String(run.with_streams)), " com fontes"),
+        run.answered ? el("span", {}, "média ", el("b", {}, secs(run.avg_ms)), " · mais lento ", el("b", {}, secs(run.max_ms))) : "",
+        fails ? el("span", { style: "color:#ff8a8e" }, fails + (fails === 1 ? " falha" : " falhas")) : ""),
+      el("details", {}, el("summary", {}, "Ver os " + results.length + " títulos testados"), el("div", { class: "tst-rows" }, ...rows)),
+      histChips(key))];
     testResults[a.id] = parts; const box = $("test-" + a.id); if (box) box.replaceChildren(...parts);
     return cls;
   }
@@ -2667,6 +2811,89 @@
     }
   }
 
+  // ── Conteúdos recentes: new items in the default addons' catalogs (admin_catalog_seen) ──
+  let rcItems = [], rcScanning = false;
+  async function loadRecent() {
+    const { data, error } = await sb.rpc("admin_recent_catalog_items", { p_days: parseInt($("rcDays").dataset.value || "7", 10) });
+    if (error) {
+      rcItems = [];
+      $("rcList").replaceChildren(); $("rcEmpty").classList.remove("hidden");
+      $("rcEmpty").textContent = /admin_recent_catalog_items|function/i.test(error.message) ? "Para usar esta página, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível carregar: " + error.message;
+      return;
+    }
+    rcItems = data || [];
+    renderRecent();
+  }
+  function renderRecent() {
+    const t = $("rcType").dataset.value || "", ad = $("rcAddon").value;
+    const names = [...new Set(rcItems.map((r) => r.addon_name).filter(Boolean))].sort();
+    const sel = $("rcAddon");
+    if (sel.dataset.filled !== names.join("|")) {
+      sel.replaceChildren(el("option", { value: "" }, "Todos os addons"), ...names.map((n) => el("option", { value: n }, n)));
+      sel.value = names.includes(ad) ? ad : ""; sel.dataset.filled = names.join("|");
+    }
+    const list = rcItems.filter((r) => (!t || (t === "series" ? /series|tv|show/i.test(r.type || "") : (r.type || "movie") === t)) && (!sel.value || r.addon_name === sel.value));
+    let last = null; try { last = localStorage.getItem("rcLastScan"); } catch (_) {}
+    if (!rcScanning) $("rcInfo").replaceChildren(el("b", {}, list.length + (list.length === 1 ? " título novo" : " títulos novos")),
+      last ? " · última leitura " + ago(new Date(Number(last)).toISOString()) : " · ainda não leu os catálogos");
+    $("rcEmpty").classList.toggle("hidden", list.length > 0);
+    $("rcEmpty").textContent = last ? "Nada novo no período. Conforme os addons colocarem títulos, eles aparecem aqui." : "Toque em Procurar novidades para a primeira leitura. Ela vira a base: a partir dela, o que os addons adicionarem aparece aqui.";
+    $("rcList").replaceChildren(...list.map((r) => el("div", { class: "rc" },
+      el("div", { class: "rc-poster" }, r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, r.name || ""),
+        el("span", { class: "rc-new" }, "NOVO")),
+      el("b", { title: r.name || "" }, r.name || r.item_id),
+      el("span", {}, (/series|tv|show/i.test(r.type || "") ? "Série" : "Filme") + (r.year ? " · " + r.year : "") + " · " + ago(r.first_seen)),
+      el("span", { title: (r.addon_name || "") + " · " + (r.catalog_name || r.catalog) }, (r.addon_name || "Addon") + " · " + (r.catalog_name || r.catalog)))));
+  }
+  async function scanCatalogs() {
+    if (rcScanning) return;
+    rcScanning = true; $("rcScan").disabled = true;
+    const say = (t) => $("rcInfo").replaceChildren(t);
+    say("Lendo os addons…");
+    const jobs = [];
+    for (const a of addons.filter((x) => x.enabled)) {
+      const { base, q } = addonParts(a.manifest_url);
+      let m = null;
+      try { m = await (await fetch(base + "/manifest.json" + q, { signal: AbortSignal.timeout(12000) })).json(); } catch (_) {}
+      const key = await keyFor(a.manifest_url);
+      (m?.catalogs || []).filter((c) => !(c.extra || []).some((e) => e.isRequired) && !(c.extraRequired || []).length)
+        .forEach((c) => jobs.push({ a, key, base, q, c }));
+    }
+    const take = jobs.slice(0, 60), rows = [];
+    let next = 0, done = 0;
+    const worker = async () => {
+      while (next < take.length) {
+        const j = take[next++];
+        const metas = await metasOf(j.base + "/catalog/" + encodeURIComponent(j.c.type) + "/" + encodeURIComponent(j.c.id) + ".json" + j.q);
+        metas.slice(0, 100).forEach((m) => { if (m && m.id) rows.push({ k: j.key, an: j.a.name, c: j.c.type + "/" + j.c.id, cn: j.c.name || j.c.id,
+          id: String(m.id), t: m.type || j.c.type, n: m.name || "", p: typeof m.poster === "string" && m.poster.startsWith("https://") ? m.poster : null,
+          y: String(m.releaseInfo || m.year || "").slice(0, 12) }); });
+        done++; say("Lendo catálogos: " + done + " de " + take.length + "…");
+      }
+    };
+    await Promise.all([worker(), worker(), worker(), worker()]);
+    let added = 0, failed = null;
+    for (let i = 0; i < rows.length; i += 1500) {
+      const { data, error } = await sb.rpc("admin_catalog_seen", { p_rows: rows.slice(i, i + 1500) });
+      if (error) { failed = error; break; }
+      added += data?.added || 0;
+    }
+    rcScanning = false; $("rcScan").disabled = false;
+    if (failed) { toast(/admin_catalog_seen|function/i.test(failed.message) ? "Rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível salvar: " + failed.message); renderRecent(); return; }
+    try { localStorage.setItem("rcLastScan", String(Date.now())); } catch (_) {}
+    toast(added ? added + (added === 1 ? " título novo" : " títulos novos") : "Nada novo desde a última leitura");
+    loadRecent();
+  }
+  function openRecent() {
+    loadRecent().then(() => {
+      let last = 0; try { last = Number(localStorage.getItem("rcLastScan") || 0); } catch (_) {}
+      if (addons.length && Date.now() - last > 3600e3) scanCatalogs();
+    });
+  }
+  seg("rcType", renderRecent); seg("rcDays", loadRecent);
+  $("rcAddon").addEventListener("change", renderRecent);
+  $("rcScan").addEventListener("click", scanCatalogs);
+
   // ── Erros: what the customers' devices ran into (report_app_errors) ──
   let errRows = [];
   const ER_KIND = { addon: "Addon", app: "App", crash: "Fechou" };
@@ -2742,7 +2969,7 @@
   seg("aiFilter", renderImprovements);
 
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "listas", "categorias", "streamings", "uso", "atualizacoes", "erros", "melhorias"];
+  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "listas", "categorias", "streamings", "recentes", "uso", "atualizacoes", "erros", "melhorias"];
   function go() {
     const page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "inicio";
     document.querySelectorAll("[data-section]").forEach((s) => {
@@ -2754,6 +2981,7 @@
       if (on && page === "conectados" && !$("app").classList.contains("hidden")) setTimeout(loadPeaks, 0);
       if (on && page === "atualizacoes" && !$("app").classList.contains("hidden")) setTimeout(() => { loadUpdates(); loadBuild(); }, 0);
       if (on && page === "erros" && !$("app").classList.contains("hidden")) setTimeout(loadErrors, 0);
+      if (on && page === "recentes" && !$("app").classList.contains("hidden")) setTimeout(openRecent, 300);
       if (on && page === "melhorias" && !$("app").classList.contains("hidden")) setTimeout(loadImprovements, 0);
     });
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.page === page));
@@ -2766,7 +2994,7 @@
   $("menuBtn").addEventListener("click", () => document.body.classList.add("nav-open"));
   $("bnMore").addEventListener("click", (e) => { e.preventDefault(); document.body.classList.add("nav-open"); });
   $("backdrop").addEventListener("click", () => document.body.classList.remove("nav-open"));
-  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); } loadErrors(); if (location.hash === "#melhorias") loadImprovements(); loadPlaylists(); };
+  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); } loadErrors(); if (location.hash === "#recentes") setTimeout(openRecent, 800); if (location.hash === "#melhorias") loadImprovements(); loadPlaylists(); };
   $("refreshAll").addEventListener("click", loadAll);
 
   $("search").addEventListener("input", render);
