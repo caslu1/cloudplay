@@ -1,5 +1,18 @@
 [
   {
+    "version": "2.3",
+    "date": null,
+    "items": [
+      "Nova logo e novo ícone do app, com o C refeito",
+      "Cores do app e do painel nas cores da nova logo",
+      "TV: ao baixar uma atualização pelo aviso, o instalador abre sozinho",
+      "Banner novo para a lista de apps da TV e do Fire TV",
+      "Código vencido não é mais apagado: depois de renovar, é só tocar em Entrar",
+      "Celular: Favoritos e Configurações sem o título grande no topo",
+      "Celular: nova opção Perfil nas Configurações, para adicionar ou remover perfil e pular a seleção"
+    ]
+  },
+  {
     "version": "2.2",
     "date": null,
     "items": [

@@ -21,7 +21,7 @@
     --line: #232326; --line2: #2e2e33; --hover: #3a3a40;
     --text: #f4f4f5; --muted: #a1a1aa; --faint: #6b6b73;
     --brand: #ececee; --brand-hi: #ffffff; --brand-soft: rgba(255, 255, 255, .07); --brand-ring: rgba(255, 255, 255, .16);
-    --coral: #ff6f7f; --peach: #ffa07a;
+    --coral: #ff9a9c; --peach: #ffb08c;
     --ok: #3ccf8e; --warn: #f5a524; --bad: #f2555a; --info: #8fa3b8;
     --side-w: 236px;
   }
@@ -944,7 +944,7 @@
         <form id="addonForm" class="addon-form">
           <div><label for="aName">Nome</label><input id="aName" placeholder="Ex.: Torrentio" maxlength="60" required></div>
           <div><label for="aUrl">Link do manifest</label><input id="aUrl" type="url" placeholder="https://.../manifest.json" required></div>
-          <div><label for="aColor">Cor da bolinha</label><input id="aColor" type="color" value="#ff3d8a"></div>
+          <div><label for="aColor">Cor da bolinha</label><input id="aColor" type="color" value="#ff74a8"></div>
           <div class="btns"><button type="button" id="aCancel" class="ghost">Cancelar</button><button type="submit" id="aSubmit">Adicionar</button></div>
         </form>
         <div id="addonMsg" class="msg"></div>
@@ -1798,7 +1798,7 @@
 
   function resetAddonForm() {
     editingAddon = null;
-    $("aName").value = ""; $("aUrl").value = ""; $("aColor").value = "#ff3d8a";
+    $("aName").value = ""; $("aUrl").value = ""; $("aColor").value = "#ff74a8";
     $("aSubmit").textContent = "Adicionar";
     $("addonFormTitle").textContent = "Novo addon";
     $("addonCard").classList.add("hidden");
@@ -1806,7 +1806,7 @@
 
   function startEdit(a) {
     editingAddon = a;
-    $("aName").value = a.name; $("aUrl").value = a.manifest_url; $("aColor").value = a.color || "#ff3d8a";
+    $("aName").value = a.name; $("aUrl").value = a.manifest_url; $("aColor").value = a.color || "#ff74a8";
     $("aSubmit").textContent = "Salvar";
     $("addonFormTitle").textContent = "Editar addon";
     $("addonCard").classList.remove("hidden");
