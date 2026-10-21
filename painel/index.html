@@ -280,6 +280,20 @@
   .build-card.ok .build-bar i { background: var(--ok); } .build-card.bad .build-bar i { background: var(--bad); }
   .build-card.ok .build-pct { color: var(--ok); } .build-card.bad .build-pct { color: #ff8a8e; }
   .build-text { margin: 10px 0 0; color: var(--muted); font-size: 13.5px; }
+  .ver-two { grid-template-columns: 1.3fr 1fr; margin-bottom: 0; }
+  .ver-two .card { margin-bottom: 16px; }
+  .ver-head { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 14px; flex-wrap: wrap; }
+  .ver-pct { font-size: 34px; font-weight: 600; letter-spacing: -1px; line-height: 1; }
+  .ver-bars { display: flex; flex-direction: column; gap: 10px; }
+  .ver-row { display: grid; grid-template-columns: 110px minmax(0, 1fr) 70px; gap: 12px; align-items: center; font-size: 13.5px; }
+  .ver-row .bar { height: 10px; border-radius: 99px; background: var(--field); border: 1px solid var(--line); overflow: hidden; }
+  .ver-row .bar i { display: block; height: 100%; border-radius: 99px; background: rgba(255, 255, 255, .22); }
+  .ver-row.cur .bar i { background: var(--grad); }
+  .ver-row.old b { color: var(--muted); font-weight: 500; }
+  .ver-row span { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .ver-save { margin-top: 12px; width: 100%; }
+  @media (max-width: 980px) { .ver-two { grid-template-columns: 1fr; } }
+  @media (max-width: 720px) { .ver-row { grid-template-columns: 96px minmax(0, 1fr) 58px; } }
   .upd-list { display: flex; flex-direction: column; gap: 10px; }
   .upd { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
   .upd-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
@@ -1196,6 +1210,23 @@
         <div class="build-bar"><i id="buildBar"></i></div>
         <p id="buildText" class="build-text"></p>
       </div>
+      <div class="two ver-two">
+        <div class="card">
+          <h2>Versões nos aparelhos</h2>
+          <p class="sub">Aparelhos que abriram o app nos últimos 7 dias.</p>
+          <div class="ver-head"><b id="verPct" class="ver-pct">—</b><span id="verPctText" class="muted"></span></div>
+          <div id="verBars" class="ver-bars"></div>
+        </div>
+        <div class="card">
+          <h2>Versão mínima</h2>
+          <p class="sub">Quem estiver numa versão mais antiga só vê a tela "Atualização obrigatória", com o botão para baixar a nova.</p>
+          <label for="minVer">Versão mínima</label>
+          <select id="minVer"><option value="">Desligado (qualquer versão abre)</option></select>
+          <p id="minVerInfo" class="hint"></p>
+          <button id="minVerSave" type="button" class="ver-save"><svg class="i"><use href="#i-check"/></svg>Salvar</button>
+          <p class="hint">Vale a partir da versão 2.6: as anteriores ainda não sabem bloquear.</p>
+        </div>
+      </div>
       <div class="card">
         <div class="card-head" style="flex-wrap: nowrap">
           <div><h2>Versões do aplicativo</h2><p class="sub">O que mudou em cada versão, com a data e a hora em que foi publicada.</p></div>
@@ -1389,11 +1420,12 @@
 
   async function load(quiet) {
     const { data, error } = await sb.from("access_codes")
-      .select("*, access_code_devices(device_id, device_name, activated_at, last_seen)")
+      .select("*, access_code_devices(*)")
       .order("created_at", { ascending: false });
     if (error) { if (!quiet) alert("Erro ao carregar: " + error.message); return; }
     codes = data || [];
     render();
+    renderVersions();
   }
 
   function render() {
@@ -2169,7 +2201,7 @@
     const { data, error } = await sb.from("app_settings").select("key,value");
     if (error) { $("serviceToggles").textContent = "Rode o arquivo app_settings.sql no Supabase para usar esta seção."; return; }
     (data || []).forEach((r) => {
-      settings[r.key] = r.key === "category_overrides"
+      settings[r.key] = r.key === "min_version" ? (typeof r.value === "string" ? r.value : null) : r.key === "category_overrides"
         ? (r.value && typeof r.value === "object" && !Array.isArray(r.value) ? r.value : {})
         : (Array.isArray(r.value) ? r.value : []);
     });
@@ -2477,6 +2509,9 @@
     } catch (_) { /* offline or rate limited: the file's own dates are used */ }
     const fmt = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
     const newest = Object.keys(published).sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))[0];
+    releaseVersions = Object.keys(published).sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+    if (!releaseVersions.length) releaseVersions = entries.map((u) => u.version);
+    renderVersions();
     list.replaceChildren(...entries.map((u) => {
       const when = published[u.version] || u.date;
       const head = el("div", { class: "upd-head" },
@@ -2487,6 +2522,64 @@
     $("updEmpty").classList.toggle("hidden", entries.length > 0);
   }
   $("updReload").addEventListener("click", () => { loadUpdates(); loadBuild(); });
+
+  // ── Versões nos aparelhos + versão mínima (app_settings "min_version") ──
+  let releaseVersions = [];
+  const cmpVer = (a, b) => String(a).localeCompare(String(b), undefined, { numeric: true });
+  function renderVersions() {
+    if (!$("verBars")) return;
+    const since = Date.now() - 7 * 24 * 3600e3;
+    const devices = [];
+    codes.forEach((c) => (c.access_code_devices || []).forEach((d) => { if (d.last_seen && new Date(d.last_seen) > since) devices.push(d); }));
+    const latest = releaseVersions[0] || null;
+    const groups = {};
+    devices.forEach((d) => { const v = d.app_version || ""; groups[v] = (groups[v] || 0) + 1; });
+    const total = devices.length;
+    const onLatest = latest ? devices.filter((d) => d.app_version && cmpVer(d.app_version, latest) >= 0).length : 0;
+    $("verPct").textContent = total ? Math.round(onLatest / total * 100) + "%" : "—";
+    $("verPctText").textContent = !total ? "Nenhum aparelho nos últimos 7 dias."
+      : latest ? "já estão na " + latest + " (" + onLatest + " de " + total + ")" : total + " aparelhos";
+    const rows = Object.keys(groups).sort((a, b) => (a === "") - (b === "") || cmpVer(b, a));
+    const max = Math.max(1, ...Object.values(groups));
+    $("verBars").replaceChildren(...rows.map((v) => el("div", { class: "ver-row" + (v === latest ? " cur" : v ? "" : " old") },
+      el("b", {}, v ? v + (v === latest ? " · atual" : "") : "Antes da 2.6"),
+      el("div", { class: "bar" }, el("i", { style: "width:" + Math.max(3, groups[v] / max * 100) + "%" })),
+      el("span", {}, Math.round(groups[v] / total * 100) + "% · " + groups[v]))));
+    // The minimum version choice: the published versions, newest first.
+    const sel = $("minVer"), current = settings.min_version || "";
+    const opts = releaseVersions.length ? releaseVersions : (current ? [current] : []);
+    if (sel.dataset.filled !== opts.join(",") + "|" + current) {
+      sel.replaceChildren(el("option", { value: "" }, "Desligado (qualquer versão abre)"),
+        ...opts.map((v) => el("option", { value: v }, "Versão " + v + (v === latest ? " (atual)" : ""))));
+      if (current && !opts.includes(current)) sel.append(el("option", { value: current }, "Versão " + current));
+      sel.value = current;
+      sel.dataset.filled = opts.join(",") + "|" + current;
+    }
+    minVerInfo();
+  }
+  function minVerInfo() {
+    const v = $("minVer").value;
+    if (!v) { $("minVerInfo").textContent = "Desligado: qualquer versão abre normalmente."; return; }
+    const since = Date.now() - 7 * 24 * 3600e3;
+    let blocked = 0;
+    codes.forEach((c) => (c.access_code_devices || []).forEach((d) => {
+      if (d.last_seen && new Date(d.last_seen) > since && d.app_version && cmpVer(d.app_version, v) < 0) blocked++;
+    }));
+    $("minVerInfo").textContent = blocked ? blocked + (blocked === 1 ? " aparelho vai ter" : " aparelhos vão ter") + " que atualizar antes de usar."
+      : "Nenhum aparelho com versão informada está abaixo da " + v + ".";
+  }
+  $("minVer").addEventListener("change", minVerInfo);
+  $("minVerSave").addEventListener("click", async (e) => {
+    const v = $("minVer").value, btn = e.currentTarget;
+    btn.disabled = true;
+    const { error } = v
+      ? await sb.from("app_settings").upsert({ key: "min_version", value: v, updated_at: new Date().toISOString() })
+      : await sb.from("app_settings").delete().eq("key", "min_version");
+    btn.disabled = false;
+    if (error) { toast("Não foi possível salvar: " + error.message); return; }
+    settings.min_version = v || null;
+    toast(v ? "Versão mínima: " + v + ". Vale na próxima vez que o app abrir." : "Versão mínima desligada");
+  });
 
   // How far along the next version is: the APK build writes status/build.json in the public
   // repository (started, published or failed); the percentage is the time it has run against

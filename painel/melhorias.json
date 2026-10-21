@@ -3,21 +3,66 @@
   "next": "toda segunda às 8h",
   "summary": "Primeira revisão. O app abre rápido e mostra o início com o que ficou salvo; o que mais pesava era a quantidade de consultas para montar as fileiras de addons e a espera por addons fora do ar. Isso foi resolvido na v2.4. Agora a página Erros vai mostrar o que acontece nos aparelhos, e as próximas revisões usam esses erros para achar o que ainda atrapalha.",
   "items": [
-    { "title": "Capas das fileiras de addons com menos consultas", "area": "Início", "impact": "alto", "status": "feita", "version": "2.4",
-      "detail": "Cada capa fazia cerca de 4 consultas (TMDB, ids e nota do IMDb). Agora aproveita a nota e o id que o addon já manda: 1 a 2 consultas por capa." },
-    { "title": "Addon fora do ar não segura mais o início", "area": "Início", "impact": "alto", "status": "feita", "version": "2.4",
-      "detail": "Cada consulta de catálogo espera no máximo 10 s e cada fileira 20 s; a TV carrega 4 fileiras ao mesmo tempo." },
-    { "title": "Listas M3U guardadas na memória", "area": "Fontes", "impact": "alto", "status": "feita", "version": "2.4",
-      "detail": "Com mais de uma lista, a busca de fontes relia os arquivos grandes do disco a cada filme. Agora cada lista fica na memória." },
-    { "title": "Menos sincronizações ao abrir e voltar para o app", "area": "Nuvem", "impact": "medio", "status": "feita", "version": "2.4",
-      "detail": "A nuvem não sincroniza mais 2 ou 3 vezes seguidas, e as consultas ao painel rodam juntas." },
-    { "title": "Registro de erros dos aparelhos", "area": "Diagnóstico", "impact": "medio", "status": "andamento", "version": "2.5",
-      "detail": "O app passa a mandar para o painel os addons que falham, os erros que ele pega e as vezes em que fecha sozinho. Com isso a IA consegue apontar o que mais acontece de verdade." },
-    { "title": "Mostrar as fontes do cache e dos addons ao mesmo tempo", "area": "Fontes", "impact": "medio", "status": "sugerida",
-      "detail": "Hoje o app ainda espera até 0,8 s pelo cache compartilhado antes de perguntar aos addons. Dá para perguntar aos dois juntos e mostrar quem responder primeiro." },
-    { "title": "Pré-carregar as fontes do título em destaque", "area": "Fontes", "impact": "medio", "status": "sugerida",
-      "detail": "Quando o cliente fica alguns segundos parado num título da tela inicial, o app pode já buscar as fontes; ao abrir o título, a lista aparece na hora." },
-    { "title": "Capas menores em aparelhos fracos", "area": "Imagens", "impact": "baixo", "status": "sugerida",
-      "detail": "Em TV box com pouca memória, pedir as capas um tamanho abaixo deixa a rolagem mais leve sem perder qualidade visível." }
+    {
+      "title": "Capas das fileiras de addons com menos consultas",
+      "area": "Início",
+      "impact": "alto",
+      "status": "feita",
+      "version": "2.4",
+      "detail": "Cada capa fazia cerca de 4 consultas (TMDB, ids e nota do IMDb). Agora aproveita a nota e o id que o addon já manda: 1 a 2 consultas por capa."
+    },
+    {
+      "title": "Addon fora do ar não segura mais o início",
+      "area": "Início",
+      "impact": "alto",
+      "status": "feita",
+      "version": "2.4",
+      "detail": "Cada consulta de catálogo espera no máximo 10 s e cada fileira 20 s; a TV carrega 4 fileiras ao mesmo tempo."
+    },
+    {
+      "title": "Listas M3U guardadas na memória",
+      "area": "Fontes",
+      "impact": "alto",
+      "status": "feita",
+      "version": "2.4",
+      "detail": "Com mais de uma lista, a busca de fontes relia os arquivos grandes do disco a cada filme. Agora cada lista fica na memória."
+    },
+    {
+      "title": "Menos sincronizações ao abrir e voltar para o app",
+      "area": "Nuvem",
+      "impact": "medio",
+      "status": "feita",
+      "version": "2.4",
+      "detail": "A nuvem não sincroniza mais 2 ou 3 vezes seguidas, e as consultas ao painel rodam juntas."
+    },
+    {
+      "title": "Registro de erros dos aparelhos",
+      "area": "Diagnóstico",
+      "impact": "medio",
+      "status": "andamento",
+      "version": "2.6",
+      "detail": "O app passa a mandar para o painel os addons que falham, os erros que ele pega e as vezes em que fecha sozinho. Com isso a IA consegue apontar o que mais acontece de verdade."
+    },
+    {
+      "title": "Mostrar as fontes do cache e dos addons ao mesmo tempo",
+      "area": "Fontes",
+      "impact": "medio",
+      "status": "sugerida",
+      "detail": "Hoje o app ainda espera até 0,8 s pelo cache compartilhado antes de perguntar aos addons. Dá para perguntar aos dois juntos e mostrar quem responder primeiro."
+    },
+    {
+      "title": "Pré-carregar as fontes do título em destaque",
+      "area": "Fontes",
+      "impact": "medio",
+      "status": "sugerida",
+      "detail": "Quando o cliente fica alguns segundos parado num título da tela inicial, o app pode já buscar as fontes; ao abrir o título, a lista aparece na hora."
+    },
+    {
+      "title": "Capas menores em aparelhos fracos",
+      "area": "Imagens",
+      "impact": "baixo",
+      "status": "sugerida",
+      "detail": "Em TV box com pouca memória, pedir as capas um tamanho abaixo deixa a rolagem mais leve sem perder qualidade visível."
+    }
   ]
 }
