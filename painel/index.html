@@ -673,6 +673,7 @@
   /* Phones: the new-code form is a full screen sheet, the button stays at the bottom. */
   @media (max-width: 720px) {
     body.gen-visible { overflow: hidden; }
+    body.gen-visible .bottom-nav { display: none; }
     .gen-card.open { position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 80; margin: 0; border: 0; border-radius: 22px 22px 0 0;
       max-height: 92vh; overflow-y: auto; overscroll-behavior: contain; padding: 0 20px; box-shadow: 0 -20px 60px rgba(0, 0, 0, .6);
       animation: sheetUp .22s ease-out; }
@@ -726,7 +727,9 @@
      pink only as a quiet accent (active menu item, icons, the main button). ── */
   :root { --bg: #0a0a0f; --side: #0d0d12; --panel: #121218; --panel2: #18181f; --field: #0e0e13; --line: #1f1f27; --line2: #2a2a33;
     --pink: #FF74A8; --pink-soft: rgba(255, 116, 168, .10); --grad: linear-gradient(90deg, #FF74A8, #FF9A9C, #FFB08C); }
-  .content { position: relative; isolation: isolate; }
+  /* No isolation here: it made .content its own layer, so the new-code sheet (fixed, inside it)
+     ended up under the phone's bottom bar and its "Gerar código" button could not be tapped. */
+  .content { position: relative; }
   .content::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 0; height: 340px; pointer-events: none;
     background: radial-gradient(60% 100% at 25% 0%, rgba(255, 116, 168, .10), transparent 70%),
                 radial-gradient(45% 80% at 80% 0%, rgba(255, 176, 140, .06), transparent 70%); }
