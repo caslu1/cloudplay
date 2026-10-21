@@ -235,6 +235,16 @@
   .count { display: inline-block; padding: 1px 8px; border-radius: 6px; background: var(--brand-soft); color: var(--text); font-size: 12px; font-weight: 600; white-space: nowrap; }
   .table-wrap { overflow-x: auto; margin: 0 -10px; }
   .empty { text-align: center; padding: 28px 10px; color: var(--muted); }
+  .pl-list { display: flex; flex-direction: column; gap: 8px; }
+  .pl-row { display: flex; align-items: center; gap: 14px; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .pl-row.off { opacity: .6; }
+  .pl-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .pl-meta b { font-size: 14.5px; }
+  .pl-meta span { color: var(--muted); font-size: 12.5px; font-family: ui-monospace, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pl-row .actions { display: flex; gap: 4px; flex-wrap: nowrap; }
+  .pl-row .state { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--muted); font-size: 12.5px; user-select: none; }
+  .pl-row .state.on .switch { background: var(--ok); } .pl-row .state.on .switch::after { left: 18px; }
+  @media (max-width: 640px) { .pl-row { flex-wrap: wrap; } .pl-meta { flex-basis: 100%; } .pl-row .actions { margin-left: auto; } }
   .upd-list { display: flex; flex-direction: column; gap: 10px; }
   .upd { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
   .upd-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
@@ -644,6 +654,7 @@
       <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-inbox"/></svg>Pedidos<span id="navPending" class="pill count-pill hidden">0</span></a>
       <div class="nav-label">Aplicativo</div>
       <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg>Addons padrão</a>
+      <a href="#listas" data-page="listas"><svg class="i"><use href="#i-list"/></svg>Listas M3U</a>
       <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-list"/></svg>Categorias</a>
       <a href="#streamings" data-page="streamings"><svg class="i"><use href="#i-tv"/></svg>Streamings</a>
       <a href="#uso" data-page="uso"><svg class="i"><use href="#i-chart"/></svg>Uso do Supabase</a>
@@ -705,7 +716,7 @@
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg><span>Conectados</span></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg><span>Addons</span></a>
-    <a href="#mais" id="bnMore" data-page="pedidos categorias streamings uso atualizacoes"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#mais" id="bnMore" data-page="pedidos listas categorias streamings uso atualizacoes"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
   </nav>
 
   <div class="content">
@@ -713,7 +724,7 @@
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v21</span></div>
+        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v22</span></div>
         <h1 id="pageTitle">Visão geral</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
@@ -937,6 +948,27 @@
           <div class="btns"><button type="button" id="aCancel" class="ghost">Cancelar</button><button type="submit" id="aSubmit">Adicionar</button></div>
         </form>
         <div id="addonMsg" class="msg"></div>
+      </div>
+    </main>
+
+    <!-- Listas M3U -->
+    <main class="page hidden" data-section="listas" data-title="Listas M3U">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Listas M3U</h2><p class="sub">Só filmes e séries (sem canais). O conteúdo da lista aparece como mais uma fonte dentro de cada filme e episódio, em todos os aparelhos. Até 5 listas.</p></div>
+          <div class="head-btns"><button type="button" id="plNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Nova lista</button></div>
+        </div>
+        <div id="plList" class="pl-list"></div>
+        <p id="plEmpty" class="empty hidden">Nenhuma lista. Adicione o link M3U da sua lista IPTV.</p>
+      </div>
+      <div id="plCard" class="card hidden">
+        <div class="card-head"><div><h2 id="plFormTitle">Nova lista</h2><p class="sub">Cole o link M3U completo, do tipo http://servidor/get.php?username=…&amp;password=…&amp;type=m3u_plus</p></div></div>
+        <form id="plForm" class="addon-form">
+          <div><label for="plName">Nome (aparece nas fontes)</label><input id="plName" placeholder="Ex.: Lista VOD" maxlength="40" required></div>
+          <div><label for="plUrl">Link M3U</label><input id="plUrl" type="url" placeholder="http://servidor/get.php?username=...&password=...&type=m3u_plus" required></div>
+          <div class="btns"><button type="button" id="plCancel" class="ghost">Cancelar</button><button type="submit" id="plSubmit">Adicionar</button></div>
+        </form>
+        <div id="plMsg" class="msg"></div>
       </div>
     </main>
 
@@ -2081,6 +2113,60 @@
   $("usoReload").addEventListener("click", loadUsage);
   window.addEventListener("resize", () => { if (location.hash === "#uso") renderUsage(); });
 
+  // ── Listas M3U (default_playlists): films and series for every device ──
+  let playlists = []; let plEditing = null;
+  const maskUrl = (u) => u.replace(/(password|pass|pwd)=([^&]+)/i, "$1=••••").replace(/\/(movie|series|live)\/([^/]+)\/([^/]+)\//i, "/$1/$2/••••/");
+  async function loadPlaylists() {
+    const { data, error } = await sb.from("default_playlists").select("*").order("position").order("created_at");
+    if (error) { $("plEmpty").textContent = "Para usar listas, rode antes o arquivo cloudplay_functions.sql no Supabase."; $("plEmpty").classList.remove("hidden"); $("plList").replaceChildren(); return; }
+    playlists = data || []; renderPlaylists();
+  }
+  function renderPlaylists() {
+    $("plEmpty").textContent = "Nenhuma lista. Adicione o link M3U da sua lista IPTV.";
+    $("plEmpty").classList.toggle("hidden", playlists.length > 0);
+    $("plNew").disabled = playlists.length >= 5;
+    $("plList").replaceChildren(...playlists.map((p) => {
+      const state = el("div", { class: "state" + (p.enabled ? " on" : ""), title: p.enabled ? "Desativar" : "Ativar", onclick: () => togglePlaylist(p) },
+        el("span", { class: "switch" }), p.enabled ? "Ativa" : "Desativada");
+      return el("div", { class: "pl-row" + (p.enabled ? "" : " off") },
+        el("div", { class: "pl-meta" }, el("b", {}, p.name), el("span", { title: "Link com senha oculta" }, maskUrl(p.url))),
+        state,
+        el("div", { class: "actions" },
+          iconBtn("copy", "Copiar link", (e) => copy(p.url, e.currentTarget, "Link copiado")),
+          iconBtn("edit", "Editar", () => editPlaylist(p)),
+          iconBtn("trash", "Apagar", () => deletePlaylist(p), "bad")));
+    }));
+  }
+  function openPlaylistForm(p) {
+    plEditing = p || null;
+    $("plFormTitle").textContent = p ? "Editar lista" : "Nova lista";
+    $("plSubmit").textContent = p ? "Salvar" : "Adicionar";
+    $("plName").value = p ? p.name : ""; $("plUrl").value = p ? p.url : ""; $("plMsg").textContent = "";
+    $("plCard").classList.remove("hidden"); $("plName").focus();
+  }
+  const editPlaylist = (p) => openPlaylistForm(p);
+  $("plNew").addEventListener("click", () => openPlaylistForm(null));
+  $("plCancel").addEventListener("click", () => $("plCard").classList.add("hidden"));
+  $("plForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const row = { name: $("plName").value.trim(), url: $("plUrl").value.trim() };
+    if (!/^https?:\/\//i.test(row.url)) { $("plMsg").textContent = "O link precisa começar com http:// ou https://"; return; }
+    const { error } = plEditing
+      ? await sb.from("default_playlists").update(row).eq("id", plEditing.id)
+      : await sb.from("default_playlists").insert({ ...row, position: playlists.length });
+    if (error) { $("plMsg").textContent = "Erro: " + error.message; return; }
+    $("plCard").classList.add("hidden"); toast(plEditing ? "Lista salva" : "Lista adicionada"); loadPlaylists();
+  });
+  async function togglePlaylist(p) {
+    const { error } = await sb.from("default_playlists").update({ enabled: !p.enabled }).eq("id", p.id);
+    if (error) { toast("Erro: " + error.message); return; } loadPlaylists();
+  }
+  async function deletePlaylist(p) {
+    if (!confirm("Apagar a lista \"" + p.name + "\"? Ela sai de todos os aparelhos na próxima vez que o app abrir.")) return;
+    const { error } = await sb.from("default_playlists").delete().eq("id", p.id);
+    if (error) { toast("Erro: " + error.message); return; } toast("Lista apagada"); loadPlaylists();
+  }
+
   // ── Atualizações: the history in atualizacoes.json, timed by the GitHub releases when known ──
   async function loadUpdates() {
     const list = $("updList");
@@ -2106,7 +2192,7 @@
   $("updReload").addEventListener("click", loadUpdates);
 
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "categorias", "streamings", "uso", "atualizacoes"];
+  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "listas", "categorias", "streamings", "uso", "atualizacoes"];
   function go() {
     const page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "inicio";
     document.querySelectorAll("[data-section]").forEach((s) => {
@@ -2128,7 +2214,7 @@
   $("menuBtn").addEventListener("click", () => document.body.classList.add("nav-open"));
   $("bnMore").addEventListener("click", (e) => { e.preventDefault(); document.body.classList.add("nav-open"); });
   $("backdrop").addEventListener("click", () => document.body.classList.remove("nav-open"));
-  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") loadUpdates(); };
+  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") loadUpdates(); loadPlaylists(); };
   $("refreshAll").addEventListener("click", loadAll);
 
   $("search").addEventListener("input", render);
