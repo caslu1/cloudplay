@@ -1,5 +1,14 @@
 [
   {
+    "version": "2.2",
+    "date": null,
+    "items": [
+      "Nova tela de acesso: capas em alta do TMDB no fundo, teclado novo na TV e login só ao tocar em Entrar",
+      "Nova barra de navegação no celular (flutuante, aba aberta em branco com linha rosa)",
+      "Removido o botão \"Trocar fonte\" do player no celular"
+    ]
+  },
+  {
     "version": "2.1",
     "date": null,
     "items": [
