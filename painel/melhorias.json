@@ -40,7 +40,7 @@
       "area": "Diagnóstico",
       "impact": "medio",
       "status": "andamento",
-      "version": "2.7",
+      "version": "2.8",
       "detail": "O app passa a mandar para o painel os addons que falham, os erros que ele pega e as vezes em que fecha sozinho. Com isso a IA consegue apontar o que mais acontece de verdade."
     },
     {
@@ -54,8 +54,9 @@
       "title": "Pré-carregar as fontes do título em destaque",
       "area": "Fontes",
       "impact": "medio",
-      "status": "sugerida",
-      "detail": "Quando o cliente fica alguns segundos parado num título da tela inicial, o app pode já buscar as fontes; ao abrir o título, a lista aparece na hora."
+      "status": "feita",
+      "detail": "Quando o cliente para uns segundos num filme da tela inicial, o app já busca as fontes em segundo plano; ao abrir o filme, a lista aparece na hora. Não roda em dados móveis no celular.",
+      "version": "2.8"
     },
     {
       "title": "Capas menores em aparelhos fracos",

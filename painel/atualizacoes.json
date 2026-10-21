@@ -1,8 +1,9 @@
 [
   {
-    "version": "2.7",
+    "version": "2.8",
     "date": null,
     "items": [
+      "Fontes prontas ao abrir: parando alguns segundos num filme do início, o app já busca as fontes",
       "O app manda para o painel os erros dos addons e do app, e quando fecha sozinho",
       "O painel pode exigir uma versão mínima: versões antigas pedem para atualizar antes de abrir",
       "O app informa ao painel qual versão está instalada em cada aparelho",

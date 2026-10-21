@@ -1237,7 +1237,7 @@
           <select id="minVer"><option value="">Desligado (qualquer versão abre)</option></select>
           <p id="minVerInfo" class="hint"></p>
           <button id="minVerSave" type="button" class="ver-save"><svg class="i"><use href="#i-check"/></svg>Salvar</button>
-          <p class="hint">Vale a partir da versão 2.7: as anteriores ainda não sabem bloquear.</p>
+          <p class="hint">Vale a partir da versão 2.8: as anteriores ainda não sabem bloquear.</p>
         </div>
       </div>
       <div class="card">
@@ -2583,7 +2583,7 @@
     const rows = Object.keys(groups).sort((a, b) => (a === "") - (b === "") || cmpVer(b, a));
     const max = Math.max(1, ...Object.values(groups));
     $("verBars").replaceChildren(...rows.map((v) => el("div", { class: "ver-row" + (v === latest ? " cur" : v ? "" : " old") },
-      el("b", {}, v ? v + (v === latest ? " · atual" : "") : "Antes da 2.7"),
+      el("b", {}, v ? v + (v === latest ? " · atual" : "") : "Antes da 2.8"),
       el("div", { class: "bar" }, el("i", { style: "width:" + Math.max(3, groups[v] / max * 100) + "%" })),
       el("span", {}, Math.round(groups[v] / total * 100) + "% · " + groups[v]))));
     // The minimum version choice: the published versions, newest first.
