@@ -620,6 +620,70 @@
     .stat { padding: 12px 14px; }
     .stat b { font-size: 22px; }
   }
+
+  /* ── CloudPlay skin: darker brand background, soft pink glow at the top, rounder cards,
+     pink only as a quiet accent (active menu item, icons, the main button). ── */
+  :root { --bg: #0a0a0f; --side: #0d0d12; --panel: #121218; --panel2: #18181f; --field: #0e0e13; --line: #1f1f27; --line2: #2a2a33;
+    --pink: #FF74A8; --pink-soft: rgba(255, 116, 168, .10); --grad: linear-gradient(90deg, #FF74A8, #FF9A9C, #FFB08C); }
+  .content { position: relative; isolation: isolate; }
+  .content::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 0; height: 340px; pointer-events: none;
+    background: radial-gradient(60% 100% at 25% 0%, rgba(255, 116, 168, .10), transparent 70%),
+                radial-gradient(45% 80% at 80% 0%, rgba(255, 176, 140, .06), transparent 70%); }
+  .topbar { background: transparent; backdrop-filter: none; border-bottom: 0; padding: 24px 32px 8px; position: relative; }
+  .topbar h1 { font-size: 24px; font-weight: 600; letter-spacing: -.5px; }
+  .topbar .crumb { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; }
+  .sidebar { background: var(--side); border-right: 1px solid var(--line); padding: 22px 14px; }
+  .nav-label { text-transform: uppercase; font-size: 10.5px; letter-spacing: 1.3px; padding: 20px 12px 8px; }
+  .nav a { height: 40px; padding: 0 12px; border-radius: 10px; margin-bottom: 2px; }
+  .nav a.active { background: linear-gradient(90deg, rgba(255, 116, 168, .16), rgba(255, 176, 140, .05)); color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(255, 116, 168, .18); }
+  .nav a.active::before { content: none; }
+  .nav a.active svg { color: var(--pink); }
+  .nav .pill.count-pill { background: var(--pink); color: #fff; }
+  :root { --side-w: 284px; }
+  .nav { overflow-y: auto; scrollbar-width: none; }
+  .nav a { white-space: nowrap; }
+  .nav a { height: 42px; gap: 13px; font-size: 14px; color: #d4d4d8; }
+  .nav a svg.i { width: 20px; height: 20px; stroke-width: 1.7; color: #e4e4e7; }
+  .nav a.active { background: linear-gradient(90deg, rgba(255, 116, 168, .14), rgba(255, 116, 168, .03)); box-shadow: inset 0 0 0 1px rgba(255, 116, 168, .12); }
+  .nav a.active::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 3px; background: var(--pink); }
+  .nav .pill.count-pill { background: var(--grad); min-width: 22px; height: 22px; line-height: 22px; text-align: center; border-radius: 99px; padding: 0 6px; font-size: 11.5px; border: 0; }
+  .nav .pill.count-pill::before { content: none; }
+  .nav-sep { height: 1px; background: var(--line); margin: 18px 12px 0; }
+  .nav-label { color: #8b8b95; font-weight: 600; }
+  .side-foot { display: block; border-top: 1px solid var(--line); padding: 12px 0 0; margin: 10px 0 0; }
+  .who-row { display: flex; align-items: center; gap: 10px; padding: 0 4px 0 12px; }
+  .who-row .avatar { width: 30px; height: 30px; font-size: 13px; }
+  .nav-out { width: 100%; height: 42px; justify-content: flex-start; gap: 14px; padding: 0 12px; border-radius: 10px; background: transparent; color: #d4d4d8; font-weight: 500; font-size: 14px; }
+  .nav-out svg.i { width: 20px; height: 20px; stroke-width: 1.7; }
+  .nav-out:hover { background: rgba(242, 85, 90, .08); color: #ff8a8e; }
+  .avatar { background: var(--grad); color: #fff; }
+  .card { background: linear-gradient(180deg, rgba(255, 255, 255, .018), transparent 120px), var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
+  .stat { position: relative; background: linear-gradient(180deg, rgba(255, 255, 255, .02), transparent), var(--panel); border-radius: 16px; padding: 18px 20px; }
+  .stat span { font-size: 13px; }
+  .stat b { font-size: 30px; margin-top: 10px; }
+  .stat .st-ic { position: absolute; top: 16px; right: 16px; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+    background: var(--pink-soft); color: var(--pink); }
+  .stat .st-ic svg { width: 17px; height: 17px; }
+  .quick a { border-radius: 12px; background: var(--field); }
+  .quick a svg { color: var(--pink); }
+  .hist-ic { background: var(--pink-soft); color: var(--pink); }
+  .gen-open { background: var(--grad) !important; color: #fff !important; box-shadow: 0 8px 24px rgba(255, 116, 168, .2); }
+  table th, thead td { text-transform: uppercase; font-size: 11px; letter-spacing: 1px; color: var(--faint); font-weight: 600; }
+  tbody tr { transition: background .12s; }
+  tbody tr:hover { background: rgba(255, 255, 255, .02); }
+  .seg { border-radius: 10px; } .seg button { border-radius: 8px; }
+  input, select, .stepper { border-radius: 10px; }
+  @media (max-width: 860px) {
+    .topbar { padding: 14px 16px 6px; }
+    .topbar h1 { font-size: 16px; }
+    .card { border-radius: 16px; padding: 18px; }
+    .stat { padding: 14px 16px; }
+    .stat b { font-size: 26px; }
+    .stat .st-ic { display: none; }
+    .bottom-nav { background: rgba(13, 13, 18, .96); }
+    .bottom-nav a.active svg { color: var(--pink); }
+  }
 </style>
 </head>
 <body>
@@ -652,6 +716,11 @@
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
   <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11h10.2L20 8H6.2"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></symbol>
+  <symbol id="i-tvplay" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="m8 2 4 4 4-4M10.5 10.5v5l4-2.5z"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v13c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8v-13M4.5 12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
   <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8.6 19z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.6-2-1-1 .9a5 5 0 0 1-2.8-2.8l.9-1-1-2z"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
@@ -688,24 +757,26 @@
   <aside class="sidebar">
     <div class="brand"><img src="logo.png" alt="CloudPlay"></div>
     <nav class="nav">
-      <div class="nav-label">Geral</div>
-      <a href="#inicio" data-page="inicio"><svg class="i"><use href="#i-home"/></svg>Visão geral</a>
-      <div class="nav-label">Clientes</div>
+      <div class="nav-label">Visão geral</div>
+      <a href="#inicio" data-page="inicio"><svg class="i"><use href="#i-grid"/></svg>Dashboard</a>
+      <div class="nav-label">Gestão de clientes</div>
       <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg>Códigos de acesso</a>
-      <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg>Conectados<span id="navOnline" class="pill count-pill hidden">0</span></a>
-      <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-inbox"/></svg>Pedidos<span id="navPending" class="pill count-pill hidden">0</span></a>
-      <div class="nav-label">Aplicativo</div>
-      <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg>Addons padrão</a>
+      <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg>Dispositivos conectados<span id="navOnline" class="pill count-pill hidden">0</span></a>
+      <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-cart"/></svg>Pedidos<span id="navPending" class="pill count-pill hidden">0</span></a>
+      <div class="nav-label">Conteúdo do aplicativo</div>
+      <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg>Add-ons padrão</a>
       <a href="#listas" data-page="listas"><svg class="i"><use href="#i-list"/></svg>Listas M3U</a>
-      <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-list"/></svg>Categorias</a>
-      <a href="#streamings" data-page="streamings"><svg class="i"><use href="#i-tv"/></svg>Streamings</a>
-      <a href="#uso" data-page="uso"><svg class="i"><use href="#i-chart"/></svg>Uso do Supabase</a>
+      <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-tag"/></svg>Categorias</a>
+      <a href="#streamings" data-page="streamings"><svg class="i"><use href="#i-tvplay"/></svg>Fontes de conteúdo</a>
+      <div class="nav-sep"></div>
+      <div class="nav-label">Sistema</div>
+      <a href="#uso" data-page="uso"><svg class="i"><use href="#i-db"/></svg>Banco de dados</a>
       <a href="#atualizacoes" data-page="atualizacoes"><svg class="i"><use href="#i-renew"/></svg>Atualizações</a>
     </nav>
     <div class="side-foot">
-      <div id="avatar" class="avatar">A</div>
-      <div class="who"><b>Administrador</b><span id="who"></span></div>
-      <button id="logout" class="icon-btn" title="Sair"><svg class="i"><use href="#i-logout"/></svg></button>
+      <div class="who-row"><div id="avatar" class="avatar">A</div>
+        <div class="who"><b>Administrador</b><span id="who"></span></div>
+        <button id="logout" class="icon-btn" title="Sair"><svg class="i"><use href="#i-logout"/></svg></button></div>
     </div>
   </aside>
   <div id="backdrop" class="backdrop"></div>
@@ -767,13 +838,13 @@
       <img class="top-logo" src="logo.png" alt="CloudPlay">
       <div class="grow">
         <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v22</span></div>
-        <h1 id="pageTitle">Visão geral</h1>
+        <h1 id="pageTitle">Dashboard</h1>
       </div>
       <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
     </div>
 
     <!-- Visão geral -->
-    <main class="page" data-section="inicio" data-title="Visão geral">
+    <main class="page" data-section="inicio" data-title="Dashboard">
       <div class="card online-card">
         <div class="online-head">
           <div class="online-num"><span class="live"></span><b id="onNow">0</b><div><strong>online agora</strong><span>aparelhos com o app aberto · atualiza a cada 10 segundos</span></div></div>
@@ -921,7 +992,7 @@
     </main>
 
     <!-- Conectados -->
-    <main class="page hidden" data-section="conectados" data-title="Conectados">
+    <main class="page hidden" data-section="conectados" data-title="Dispositivos conectados">
       <div class="stats stats-4">
         <div class="stat"><span>Online agora</span><b id="cnNow">0</b></div>
         <div class="stat"><span>Pico de hoje</span><b id="cnPeak">—</b><small id="cnPeakAt" class="stat-sub"></small></div>
@@ -971,7 +1042,7 @@
     </main>
 
     <!-- Addons -->
-    <main class="page hidden" data-section="addons" data-title="Addons padrão">
+    <main class="page hidden" data-section="addons" data-title="Add-ons padrão">
       <div class="card">
         <div class="card-head">
           <div><h2>Addons instalados</h2><p class="sub">Instalados em todos os aparelhos. No app, o mais estável dos últimos 7 dias vira "Fonte 1".</p></div>
@@ -1045,7 +1116,7 @@
     </main>
 
     <!-- Uso do Supabase -->
-    <main class="page hidden" data-section="uso" data-title="Uso do Supabase">
+    <main class="page hidden" data-section="uso" data-title="Banco de dados">
       <div class="card">
         <div class="card-head" style="flex-wrap: nowrap">
           <div><h2>Tráfego do app neste mês</h2><p class="sub">Estimativa medida pelo próprio banco: biblioteca dos clientes e aberturas do app. O número oficial fica no painel do Supabase.</p></div>
@@ -1089,7 +1160,7 @@
     </main>
 
     <!-- Streamings -->
-    <main class="page hidden" data-section="streamings" data-title="Streamings">
+    <main class="page hidden" data-section="streamings" data-title="Fontes de conteúdo">
       <div class="card">
         <div class="card-head">
           <div><h2>Fileira "Streamings"</h2><p class="sub">Os streamings da fileira "Streamings" da tela Início do app. Apague os que não quer mostrar. Vale na próxima vez que o app abrir.</p></div>
@@ -1487,33 +1558,69 @@
     const ns = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(ns, "svg"); svg.setAttribute("width", W); svg.setAttribute("height", H);
     const mk = (tag, attrs, text) => { const e = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); if (text != null) e.textContent = text; svg.append(e); return e; };
-    // Phones show the last 14 days so every bar keeps its number.
+    // Phones show the last 14 days.
     const shown = W < 560 ? data.slice(-14) : data;
-    const max = Math.max(1, ...shown.map((d) => d.n));
-    const plotH = H - T - B, slot = (W - L - R) / shown.length, bw = Math.max(8, Math.min(26, slot - 6));
-    for (let g = 1; g <= 3; g++) { const y = T + plotH - plotH * g / 3; mk("line", { x1: L, x2: W - R, y1: y, y2: y, stroke: "#232326", "stroke-dasharray": "3 4" }); }
+    // Whole-number steps on the side, so no label repeats.
+    const step = Math.max(1, Math.ceil(Math.max(1, ...shown.map((d) => d.n)) / 3)), max = step * 3;
+    const plotH = H - T - B, n = shown.length;
+    const px = (i) => L + 8 + i * (W - L - R - 16) / Math.max(1, n - 1);
+    const py = (v) => T + plotH - v / max * (plotH - 14);
+    const defs = mk("defs", {});
+    defs.innerHTML = '<linearGradient id="hcLine" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#FF74A8"/><stop offset=".55" stop-color="#FF9A9C"/><stop offset="1" stop-color="#FFB08C"/></linearGradient>'
+      + '<linearGradient id="hcFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FF74A8" stop-opacity=".22"/><stop offset="1" stop-color="#FF74A8" stop-opacity="0"/></linearGradient>';
+    for (let g = 0; g <= 3; g++) { const y = T + plotH - (plotH - 14) * g / 3; mk("line", { x1: L, x2: W - R, y1: y, y2: y, stroke: "#1f1f27" });
+      if (g) mk("text", { x: L, y: y - 5, fill: "#55555d", "font-size": 10 }, step * g); }
+    const pts = shown.map((d, i) => [px(i), py(d.n)]);
+    // A smooth line through the points (Catmull-Rom, kept inside the chart).
+    let line = "M" + pts[0][0] + "," + pts[0][1];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, Math.min(T + plotH, p1[1] + (p2[1] - p0[1]) / 6)];
+      const c2 = [p2[0] - (p3[0] - p1[0]) / 6, Math.min(T + plotH, p2[1] - (p3[1] - p1[1]) / 6)];
+      line += " C" + c1 + " " + c2 + " " + p2;
+    }
+    mk("path", { d: line + " L" + pts[n - 1][0] + "," + (T + plotH) + " L" + pts[0][0] + "," + (T + plotH) + "Z", fill: "url(#hcFill)" });
+    mk("path", { d: line, fill: "none", stroke: "url(#hcLine)", "stroke-width": 2.2, "stroke-linecap": "round" });
+    const last = pts[n - 1];
+    mk("circle", { cx: last[0], cy: last[1], r: 4.5, fill: "#FFB08C", stroke: "#121218", "stroke-width": 2 });
+    mk("text", { x: last[0] - 8, y: last[1] - 10, "text-anchor": "end", fill: "#f4f4f5", "font-size": 12, "font-weight": 600 }, shown[n - 1].n);
+    const every = n > 15 ? 4 : 2;
+    shown.forEach((d, i) => { if ((n - 1 - i) % every === 0) mk("text", { x: px(i), y: H - 10, "text-anchor": "middle", fill: "#6b6b73", "font-size": 11 }, d.key.slice(8, 10) + "/" + d.key.slice(5, 7)); });
     const tip = $("histTip");
+    const cross = mk("line", { x1: 0, x2: 0, y1: T, y2: T + plotH, stroke: "rgba(255,255,255,.18)", "stroke-dasharray": "3 3", visibility: "hidden" });
+    const dot = mk("circle", { r: 4.5, fill: "#FF74A8", stroke: "#121218", "stroke-width": 2, visibility: "hidden" });
+    const slot = (W - L - R) / n;
     shown.forEach((d, i) => {
-      const prev = i > 0 ? shown[i - 1].n : (data[data.length - shown.length - 1] || d).n;
-      const x = L + i * slot + (slot - bw) / 2, h = Math.max(2, d.n / max * (plotH - 18)), y = T + plotH - h;
-      mk("rect", { x, y, width: bw, height: h, rx: 4, fill: "rgba(255, 61, 138, .28)", stroke: "rgba(255, 111, 159, .75)", "stroke-width": 1.2 });
-      mk("text", { x: x + bw / 2, y: y - 14, "text-anchor": "middle", fill: "#d4d4d8", "font-size": 11, "font-weight": 600 }, d.n);
-      if (d.n !== prev) mk("text", { x: x + bw / 2, y: y - 3, "text-anchor": "middle", fill: d.n > prev ? "#3ccf8e" : "#f2555a", "font-size": 8 }, d.n > prev ? "▲" : "▼");
-      const every = shown.length > 15 ? 3 : 2;
-      if ((shown.length - 1 - i) % every === 0) mk("text", { x: x + bw / 2, y: H - 10, "text-anchor": "middle", fill: "#6b6b73", "font-size": 11 }, d.key.slice(8, 10) + "/" + d.key.slice(5, 7));
-      const hit = mk("rect", { x: L + i * slot, y: T - 20, width: slot, height: plotH + 20, fill: "transparent" });
+      const [x, y] = pts[i];
+      const hit = mk("rect", { x: x - slot / 2, y: T - 20, width: slot, height: plotH + 20, fill: "transparent" });
       const show = () => {
+        cross.setAttribute("x1", x); cross.setAttribute("x2", x); cross.setAttribute("visibility", "visible");
+        dot.setAttribute("cx", x); dot.setAttribute("cy", y); dot.setAttribute("visibility", "visible");
         tip.replaceChildren(el("b", {}, d.key.slice(8, 10) + "/" + d.key.slice(5, 7)), el("span", {}, d.n + (d.n === 1 ? " cliente ativo" : " clientes ativos")));
         tip.classList.remove("hidden");
-        const bx = box.getBoundingClientRect(), cx = x + bw / 2;
-        tip.style.left = Math.min(bx.width - 150, Math.max(0, cx - 75)) + "px"; tip.style.top = (y - 76 + box.offsetTop) + "px";
+        const bx = box.getBoundingClientRect();
+        tip.style.left = Math.min(bx.width - 150, Math.max(0, x - 75)) + "px"; tip.style.top = (y - 76 + box.offsetTop) + "px";
       };
       hit.addEventListener("mouseenter", show); hit.addEventListener("click", show);
-      hit.addEventListener("mouseleave", () => tip.classList.add("hidden"));
+      hit.addEventListener("mouseleave", () => { tip.classList.add("hidden"); cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden"); });
     });
     box.replaceChildren(svg);
   }
   window.addEventListener("resize", () => { if (["", "#inicio"].includes(location.hash)) drawActiveHistory(); });
+  // CloudPlay: a small icon in the corner of each number card.
+  (function statIcons() {
+    const pick = (t) => /online|ativos em|usaram|pico/i.test(t) ? "tv" : /pedido/i.test(t) ? "inbox" : /addon/i.test(t) ? "puzzle"
+      : /vencid/i.test(t) ? "clock" : /livre/i.test(t) ? "unlock" : /em uso/i.test(t) ? "check" : /banco|biblioteca|aberturas/i.test(t) ? "chart"
+      : /cadastrad/i.test(t) ? "list" : "key";
+    document.querySelectorAll(".stat").forEach((st) => {
+      if (st.querySelector(".st-ic")) return;
+      const t = (st.querySelector("span") || {}).textContent || "";
+      const box = document.createElement("i"); box.className = "st-ic";
+      box.innerHTML = '<svg class="i"><use href="#i-' + pick(t) + '"/></svg>';
+      st.append(box);
+    });
+  })();
+
 
   // ── Conectados: every device of every code, online ones first ──
   function renderConnected() {
