@@ -1,5 +1,13 @@
 [
   {
+    "version": "2.9",
+    "date": null,
+    "items": [
+      "TV box que abria no modo celular agora abre no modo TV",
+      "O painel pode mandar um aparelho abrir no modo TV (Dispositivos conectados)"
+    ]
+  },
+  {
     "version": "2.8",
     "date": null,
     "items": [

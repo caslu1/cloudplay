@@ -418,6 +418,11 @@
   .cn span { display: block; color: var(--muted); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .cn .when { text-align: right; color: var(--muted); font-size: 12.5px; white-space: nowrap; }
   .cn .when.on { color: var(--ok); font-weight: 600; }
+  .cn .when { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .fm-btn { height: 26px; padding: 0 9px; font-size: 11.5px; font-weight: 500; border-radius: 7px; background: transparent; color: var(--muted); border: 1px solid var(--line2); gap: 5px; }
+  .fm-btn svg.i { width: 13px; height: 13px; }
+  .fm-btn:hover { color: var(--text); background: var(--panel2); }
+  .cn .fm-wait { font-size: 11.5px; font-weight: 500; color: var(--peach); }
   .cn .watch { grid-column: 2 / -1; display: flex; gap: 14px; align-items: center; padding-top: 10px; border-top: 1px dashed var(--line2); }
   .w-poster { width: 34px; height: 51px; border-radius: 6px; object-fit: cover; background: var(--field); flex: none; }
   .w-info { flex: 1; min-width: 0; }
@@ -1853,8 +1858,21 @@
         el("span", { class: "c-sub" }, (d.device_name || "Aparelho") + " · " + c.code)),
       el("div", { class: "c-dev" }, el("b", {}, d.device_name || "Aparelho"), el("span", {}, "ativado " + fmt(d.activated_at))),
       el("div", { class: "c-code" }, el("b", {}, c.code), el("span", {}, statusLabel[statusOf(c)])),
-      el("div", { class: "when" + (on ? " on" : "") }, on ? "Online agora" : d.last_seen ? ago(d.last_seen) : "—"),
+      el("div", { class: "when" + (on ? " on" : "") }, on ? "Online agora" : d.last_seen ? ago(d.last_seen) : "—",
+        d.force_mode ? el("span", { class: "fm-wait" }, "Vai abrir em modo " + (d.force_mode === "tv" ? "TV" : "celular"))
+          : el("button", { type: "button", class: "fm-btn", title: "Para TV box que abriu no modo celular", onclick: (ev) => forceMode(c, d, "tv", ev.currentTarget) }, icon("tv"), "Forçar modo TV")),
       watchStrip(d, on))));
+  }
+
+  // "Forçar modo TV": the app switches the next time it opens (report_app_version hands it over).
+  async function forceMode(c, d, mode, btn) {
+    if (!confirm("Mudar \"" + (d.device_name || "Aparelho") + "\" para o modo " + (mode === "tv" ? "TV" : "celular") + "? Vale na próxima vez que o app abrir nesse aparelho.")) return;
+    btn.disabled = true;
+    const { error } = await sb.from("access_code_devices").update({ force_mode: mode }).eq("code_id", c.id).eq("device_id", d.device_id);
+    btn.disabled = false;
+    if (error) { toast(/force_mode/i.test(error.message) ? "Rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível: " + error.message); return; }
+    d.force_mode = mode; renderConnected();
+    toast("Pronto: o aparelho abre em modo " + (mode === "tv" ? "TV" : "celular") + " na próxima vez (versão 2.9 ou mais nova).");
   }
 
   // What a device is watching (report_now_playing) and how long the app has been open.
