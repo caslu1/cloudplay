@@ -273,8 +273,22 @@
   .chip-code svg { color: var(--faint); }
   .list-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
 
-  .date-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
-  .date-row input { max-width: 220px; color-scheme: dark; }
+  .fl { display: flex; align-items: center; gap: 7px; }
+  .fl .i { width: 15px; height: 15px; color: var(--pink, #FF74A8); opacity: .85; }
+  .fl .opt { color: var(--faint); font-weight: 400; }
+  .gen-title { display: flex; align-items: center; gap: 12px; }
+  .gen-badge { flex: none; width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #FF74A8, #FF9A9C 55%, #FFB08C); color: #fff; }
+  .gen-badge .i { width: 20px; height: 20px; }
+  .due-field { position: relative; }
+  .due-field #gDueText { width: 100%; padding-right: 44px; font-variant-numeric: tabular-nums; }
+  .due-field #gDuePick { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; padding: 0;
+    background: transparent; color: var(--muted); border: 0; display: flex; align-items: center; justify-content: center; }
+  /* The real calendar sits under the button; the button opens it. */
+  .due-field #gDate { position: absolute; right: 4px; bottom: 0; width: 36px; height: 36px; opacity: 0; pointer-events: none; color-scheme: dark; }
+  #genBtn { background: linear-gradient(90deg, #FF74A8, #FF9A9C, #FFB08C); color: #fff; border: 0; font-weight: 700; box-shadow: 0 8px 24px rgba(255, 116, 168, .22); }
+  #genBtn:hover { filter: brightness(1.05); }
+  .sum-line { display: none; }
   .msg-box { margin-top: 14px; background: var(--field); border: 1px solid var(--line2); border-radius: 10px; padding: 14px 16px; white-space: pre-wrap; font-size: 13.5px; line-height: 1.55; color: var(--text); }
   .msg-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; }
   .msg-head b { font-size: 13px; }
@@ -555,7 +569,34 @@
     h1 { font-size: 18px; }
     .card { padding: 16px; }
   }
+  /* Phones: the new-code form is a full screen sheet, the button stays at the bottom. */
   @media (max-width: 720px) {
+    body.gen-visible { overflow: hidden; }
+    .gen-card.open { position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 80; margin: 0; border: 0; border-radius: 22px 22px 0 0;
+      max-height: 92vh; overflow-y: auto; overscroll-behavior: contain; padding: 0 20px; box-shadow: 0 -20px 60px rgba(0, 0, 0, .6);
+      animation: sheetUp .22s ease-out; }
+    @keyframes sheetUp { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } }
+    .gen-backdrop { display: none; position: fixed; inset: 0; z-index: 79; background: rgba(0, 0, 0, .6); }
+    body.gen-visible .gen-backdrop { display: block; }
+    .gen-card .card-head { margin: 0 -20px; padding: 22px 20px 14px; display: flex; flex-direction: column; align-items: stretch; gap: 14px;
+      border-bottom: 1px solid var(--line); }
+    .gen-card .card-head h2 { font-size: 19px; }
+    .gen-card .card-head .sub { display: block; margin-top: 2px; }
+    .gen-card .gen-close { position: absolute; top: 14px; right: 12px; z-index: 3; }
+    #gType { display: flex; width: 100%; align-self: stretch; }
+    #gType button { flex: 1 1 0; justify-content: center; }
+    .gen-card .gen { gap: 0; }
+    .gen-card .gen-fields { grid-template-columns: 1fr 1fr; gap: 16px 12px; padding: 16px 0 14px; }
+    .gen-card .gen-fields .full { grid-column: 1 / -1; }
+    .gen-card #gCountBox.solo { grid-column: 1 / -1; }
+    #gStart button { flex: 1 1 0; }
+    .gen-card .hint { font-size: 12px; }
+    .gen-card .gen-side { position: sticky; bottom: 0; z-index: 2; background: var(--panel); margin: 0 -20px; padding: 6px 20px calc(16px + env(safe-area-inset-bottom));
+      gap: 8px; }
+    .gen-card #genBtn { height: 50px; border-radius: 14px; font-size: 15.5px; }
+    .sum-line { display: block; text-align: center; color: var(--muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gen-card #genMsg:empty { display: none; }
+    .gen-card #newBox { margin-bottom: 20px; }
     .gen-fields { grid-template-columns: 1fr; }
     .seg { display: flex; }
     .seg button { flex: 1 1 auto; }
@@ -611,6 +652,7 @@
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
   <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
   <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8.6 19z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.6-2-1-1 .9a5 5 0 0 1-2.8-2.8l.9-1-1-2z"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
   <symbol id="i-renew" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.6-4.5M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.5M20 19v-4h-4"/></symbol>
@@ -780,7 +822,8 @@
       <div id="genCard" class="card gen-card">
         <button type="button" id="genClose" class="icon gen-close" title="Fechar" aria-label="Fechar"><svg class="i"><use href="#i-x"/></svg></button>
         <div class="card-head">
-          <div><h2>Novo código</h2><p class="sub">6 dígitos. Escolha a validade em dias ou uma data de vencimento.</p></div>
+          <div class="gen-title"><span class="gen-badge"><svg class="i"><use href="#i-key"/></svg></span>
+            <div><h2>Novo código</h2><p class="sub">Preencha os dados do novo código.</p></div></div>
           <div id="gType" class="seg accent">
             <button type="button" data-v="client" class="on">Cliente</button>
             <button type="button" data-v="trial"><svg class="i"><use href="#i-bolt"/></svg>Teste 24h</button>
@@ -788,35 +831,44 @@
         </div>
         <form id="genForm" class="gen">
           <div class="gen-fields">
-            <div class="full"><label for="gNote">Cliente ou observação</label>
+            <div class="full"><label for="gNote" class="fl"><svg class="i"><use href="#i-user"/></svg>Cliente ou observação</label>
               <input id="gNote" placeholder="Ex.: João · TV da sala" maxlength="80" autocomplete="off"></div>
-            <div class="full"><label for="gPhone">WhatsApp do cliente <span style="color:var(--faint)">(opcional)</span></label>
+            <div class="full"><label for="gPhone" class="fl"><svg class="i"><use href="#i-wa"/></svg>WhatsApp <span class="opt">(opcional)</span></label>
               <input id="gPhone" type="tel" inputmode="tel" placeholder="(11) 91234-5678" maxlength="20" autocomplete="off"></div>
-            <div class="full client-only"><label>Validade</label>
-              <div id="gDays" class="seg">
+            <div class="client-only"><label for="gDaysSel" class="fl"><svg class="i"><use href="#i-clock"/></svg>Validade</label>
+              <select id="gDaysSel">
+                <option value="30" selected>30 dias</option><option value="90">90 dias</option><option value="180">6 meses</option>
+                <option value="365">1 ano</option><option value="">Sem validade</option><option value="date">Outra data</option>
+              </select>
+              <!-- The choice itself; the select above drives it. -->
+              <div id="gDays" class="seg hidden">
                 <button type="button" data-v="30" class="on">30 dias</button><button type="button" data-v="90">90 dias</button>
                 <button type="button" data-v="180">6 meses</button><button type="button" data-v="365">1 ano</button>
-                <button type="button" data-v="">Sem validade</button>
-                <button type="button" data-v="date"><svg class="i"><use href="#i-calendar"/></svg>Escolher data</button>
-              </div>
-              <div id="dateRow" class="date-row hidden"><input id="gDate" type="date"><span class="hint" style="margin:0">Vale até as 23:59 desse dia, mesmo antes de ativar.</span></div>
-              </div>
-            <div id="startRow" class="full"><label>Começa a contar</label>
+                <button type="button" data-v="">Sem validade</button><button type="button" data-v="date">Outra data</button>
+              </div></div>
+            <div class="client-only"><label for="gDueText" class="fl"><svg class="i"><use href="#i-calendar"/></svg>Vencimento</label>
+              <div class="due-field">
+                <input id="gDueText" inputmode="numeric" placeholder="DD/MM/AAAA" maxlength="10" autocomplete="off">
+                <button type="button" id="gDuePick" title="Abrir calendário" aria-label="Abrir calendário"><svg class="i"><use href="#i-calendar"/></svg></button>
+                <input id="gDate" type="date" tabindex="-1" aria-hidden="true">
+              </div></div>
+            <div id="startRow" class="full hidden"><label>Começa a contar</label>
               <div id="gStart" class="seg">
-                <button type="button" data-v="activate" class="on">Quando o cliente ativar</button>
-                <button type="button" data-v="now">Agora, ao gerar</button>
+                <button type="button" data-v="activate">Quando ativar</button>
+                <button type="button" data-v="now" class="on">Agora</button>
               </div>
               <span id="daysHint" class="hint">A validade começa a contar quando o cliente ativa no aparelho.</span></div>
             <div class="full trial-only hidden"><div class="trial-note"><svg class="i"><use href="#i-clock"/></svg>
               <div>O teste vale <b>24 horas</b> <span id="trialFrom">a partir da ativação</span>, em <b>1 aparelho</b>. Depois disso o app pede um novo código.</div></div></div>
-            <div class="client-only"><label for="gDevices">Aparelhos por código</label>
+            <div class="client-only"><label for="gDevices" class="fl"><svg class="i"><use href="#i-tv"/></svg>Aparelhos</label>
               <div class="stepper"><button type="button" data-step="-1" data-for="gDevices">−</button>
                 <input id="gDevices" type="number" min="1" max="5" value="1"><button type="button" data-step="1" data-for="gDevices">+</button></div>
-              <span class="hint">De 1 a 5 aparelhos ao mesmo tempo.</span></div>
-            <div><label for="gCount">Quantidade</label>
+              </div>
+            <div id="gCountBox"><label for="gCount" class="fl"><svg class="i"><use href="#i-list"/></svg>Quantidade</label>
               <div class="stepper"><button type="button" data-step="-1" data-for="gCount">−</button>
                 <input id="gCount" type="number" min="1" max="100" value="1"><button type="button" data-step="1" data-for="gCount">+</button></div>
-              <span class="hint">Até 100 por vez.</span></div>
+              </div>
+            <div id="dueHint" class="full hint client-only" style="margin-top:-6px">Vale até as 23:59 do dia do vencimento.</div>
           </div>
           <div class="gen-side">
             <h3>Resumo</h3>
@@ -827,6 +879,7 @@
               <div>Aparelhos<b id="sumDevices">1</b></div>
               <div>Quantidade<b id="sumCount">1</b></div>
             </div>
+            <div id="sumLine" class="sum-line"></div>
             <button type="submit" id="genBtn"><svg class="i"><use href="#i-plus"/></svg><span>Gerar código</span></button>
           </div>
         </form>
@@ -1567,7 +1620,7 @@
     if (error) alert(error.message); else load();
   }
 
-  const DAY_LABEL = { "30": "30 dias", "90": "90 dias", "180": "6 meses", "365": "1 ano", "": "Sem validade", date: "Escolher data" };
+  const DAY_LABEL = { "30": "30 dias", "90": "90 dias", "180": "6 meses", "365": "1 ano", "": "Sem validade", date: "Data" };
   const fmtDay = (v) => v ? v.split("-").reverse().join("/") : "";
   function genType() { return $("gType").dataset.value || "client"; }
   function startChoice() { return $("gStart").dataset.value || "activate"; }
@@ -1583,12 +1636,16 @@
     const count = Math.min(100, Math.max(1, parseInt($("gCount").value || "1", 10)));
     $("sumType").textContent = trial ? "Teste" : "Cliente";
     const daysChoice = $("gDays").dataset.value ?? "30";
-    $("dateRow").classList.toggle("hidden", daysChoice !== "date");
+    $("gDaysSel").value = daysChoice;
+    // A preset shows the day it ends on; "Sem validade" leaves the date empty.
+    if (daysChoice !== "date") { $("gDueText").value = daysChoice ? fmtDay(addDaysSP(parseInt(daysChoice, 10))) : ""; $("gDate").value = ""; }
+    $("gDueText").placeholder = daysChoice === "" ? "Sem vencimento" : "DD/MM/AAAA";
+    $("gCountBox").classList.toggle("solo", trial);
     // "Sem validade" and a chosen date have nothing to count from.
     const startApplies = trial || (daysChoice !== "date" && daysChoice !== "");
     const now = startApplies && startChoice() === "now";
-    $("startRow").classList.toggle("hidden", !startApplies);
-    $("sumStartRow").classList.toggle("hidden", !startApplies);
+    // CloudPlay: a code always starts counting when it is made, so the choice stays hidden.
+    $("sumStartRow").classList.add("hidden");
     $("sumStart").textContent = now ? "Agora" : "Ao ativar";
     $("daysHint").textContent = now
       ? (trial ? "As 24 horas começam agora, mesmo que o cliente ainda não tenha ativado."
@@ -1596,7 +1653,11 @@
       : "A validade começa a contar quando o cliente ativa no aparelho.";
     $("trialFrom").textContent = now ? "a partir de agora" : "a partir da ativação";
     $("sumDays").textContent = trial ? "24 horas"
-      : daysChoice === "date" ? ($("gDate").value ? "Até " + fmtDay($("gDate").value) : "Escolha a data") : DAY_LABEL[daysChoice];
+      : daysChoice === "date" ? ($("gDate").value ? "Até " + fmtDay($("gDate").value) : "Digite a data") : DAY_LABEL[daysChoice];
+    const devicesN = trial ? 1 : Math.min(5, Math.max(1, parseInt($("gDevices").value, 10) || 1));
+    const until = !trial && now ? "até " + fmtDay(addDaysSP(parseInt(daysChoice, 10))) : null;
+    $("sumLine").textContent = [trial ? "Teste" : "Cliente", $("sumDays").textContent, until,
+      devicesN + (devicesN > 1 ? " aparelhos" : " aparelho")].filter(Boolean).join(" · ");
     $("sumDevices").textContent = trial ? "1" : Math.min(5, Math.max(1, parseInt($("gDevices").value, 10) || 1));
     $("sumCount").textContent = count;
     $("genBtn").querySelector("span").textContent = (trial ? "Gerar teste" : "Gerar código") + (count > 1 ? "s" : "");
@@ -1609,7 +1670,33 @@
   $("genOpen").addEventListener("click", () => { $("gDate").min = todaySP(); setGen(true); });
   $("genClose").addEventListener("click", () => setGen(false));
   $("quickGen").addEventListener("click", () => setTimeout(() => { $("gDate").min = todaySP(); setGen(true); }, 50));
-  $("gDate").addEventListener("input", updateSummary);
+  // The due date: typed as DD/MM/AAAA or picked on the calendar; either one picks "date" as the validity.
+  const pickDays = (v) => $("gDays").querySelector('[data-v="' + v + '"]').click();
+  $("gDaysSel").addEventListener("change", () => {
+    const v = $("gDaysSel").value;
+    pickDays(v);
+    if (v === "date") { $("gDueText").value = ""; $("gDate").value = ""; updateSummary(); $("gDueText").focus(); }
+  });
+  $("gDueText").addEventListener("input", () => {
+    // Typing a date of your own turns the validity into "Outra data".
+    if ($("gDays").dataset.value !== "date") pickDays("date");
+    const digits = $("gDueText").value.replace(/\D/g, "").slice(0, 8);
+    $("gDueText").value = [digits.slice(0, 2), digits.slice(2, 4), digits.slice(4)].filter(Boolean).join("/");
+    let iso = "";
+    if (digits.length === 8) {
+      const d = +digits.slice(0, 2), m = +digits.slice(2, 4), y = +digits.slice(4);
+      const t = new Date(Date.UTC(y, m - 1, d));
+      if (t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d) iso = t.toISOString().slice(0, 10);
+    }
+    $("gDate").value = iso;
+    updateSummary();
+  });
+  $("gDuePick").addEventListener("click", () => { try { $("gDate").showPicker(); } catch (_) { $("gDate").focus(); $("gDate").click(); } });
+  $("gDate").addEventListener("input", () => {
+    if ($("gDays").dataset.value !== "date") pickDays("date");
+    $("gDueText").value = fmtDay($("gDate").value);
+    updateSummary();
+  });
   $("gDate").min = todaySP();
   updateSummary();
 
@@ -1626,7 +1713,8 @@
     const days = $("gDays").dataset.value;
     const byDate = !trial && days === "date";
     if (byDate && (!$("gDate").value || $("gDate").value < todaySP())) {
-      $("genMsg").textContent = "Escolha uma data de vencimento a partir de hoje."; return;
+      $("genMsg").textContent = $("gDueText").value && !$("gDate").value ? "Data inválida. Use DD/MM/AAAA, por exemplo 25/12/2026."
+        : "Escolha uma data de vencimento a partir de hoje."; return;
     }
     const devices = Math.min(5, Math.max(1, parseInt($("gDevices").value, 10) || 1));
     const startNow = startChoice() === "now" && (trial || (days !== "" && days !== "date"));
@@ -1678,6 +1766,7 @@
       return b;
     }));
     $("newBox").classList.remove("hidden");
+    if (window.innerWidth <= 720) $("newBox").scrollIntoView({ behavior: "smooth", block: "center" });
     $("gNote").value = ""; $("gPhone").value = "";
     load();
   });
