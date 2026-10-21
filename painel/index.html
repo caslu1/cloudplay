@@ -455,13 +455,19 @@
   table.codes col.c-valid { width: 24%; } table.codes col.c-dev { width: 20%; } table.codes col.c-act { width: 150px; }
   .cell-main { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .addon-list { display: grid; gap: 8px; }
-  .addon { display: grid; grid-template-columns: 64px 92px minmax(0, 1fr) 110px auto; gap: 14px; align-items: center;
+  .addon-sec { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin: 10px 2px 2px; }
+  .addon-sec:first-child { margin-top: 0; }
+  .addon-sec b { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .addon-sec .n { font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 99px; background: var(--panel2); color: var(--muted); }
+  .addon-sec span:last-child { flex-basis: 100%; color: var(--faint); font-size: 12.5px; }
+  .addon { display: grid; grid-template-columns: 64px 112px minmax(0, 1fr) 110px auto; gap: 14px; align-items: center;
     padding: 12px 14px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; }
   .addon.off { opacity: .6; }
   .addon .order { display: flex; align-items: center; gap: 2px; }
   .addon .order b { width: 22px; text-align: center; color: var(--faint); font-weight: 600; }
   .addon .fonte { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; white-space: nowrap; }
-  .addon .fonte i { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,.35); display: inline-block; }
+  .addon .icon-gap { display: inline-block; width: 30px; }
+  .addon .fonte i { flex: none; width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,.35); display: inline-block; }
   .addon .meta { min-width: 0; }
   .addon .meta b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .addon .meta span { display: block; color: var(--faint); font: 12px ui-monospace, Menlo, Consolas, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1165,6 +1171,9 @@
           <div><label for="aName">Nome</label><input id="aName" placeholder="Ex.: Torrentio" maxlength="60" required></div>
           <div><label for="aUrl">Link do manifest</label><input id="aUrl" type="url" placeholder="https://.../manifest.json" required></div>
           <div><label for="aColor">Cor da bolinha</label><input id="aColor" type="color" value="#ff74a8"></div>
+          <div><label for="aKind">Tipo</label><select id="aKind">
+            <option value="">Automático (pelo manifest)</option><option value="content">Conteúdo (traz fontes)</option><option value="info">Informação (catálogos e detalhes)</option>
+          </select></div>
           <div class="btns"><button type="button" id="aCancel" class="ghost">Cancelar</button><button type="submit" id="aSubmit">Adicionar</button></div>
         </form>
         <div id="addonMsg" class="msg"></div>
@@ -2116,29 +2125,55 @@
     renderAddons();
     loadStats();
     loadTestHistory();
+    detectKinds();
   }
 
+  // Content addons bring sources; info addons only titles and details (catalogs, metadata). The
+  // panel's choice wins, otherwise the manifest decides (it lists a "stream" resource or not).
+  const detectedKind = {};
+  const kindOf = (a) => a.kind || detectedKind[a.manifest_url] || "content";
+  async function detectKinds() {
+    let changed = false;
+    await Promise.all(addons.filter((a) => !a.kind && !detectedKind[a.manifest_url]).map(async (a) => {
+      const { base, q } = addonParts(a.manifest_url);
+      try {
+        const m = await (await fetch(base + "/manifest.json" + q, { signal: AbortSignal.timeout(10000) })).json();
+        const res = Array.isArray(m.resources) ? m.resources : [];
+        const kind = res.some((r) => (typeof r === "string" ? r : r && r.name) === "stream") ? "content" : "info";
+        detectedKind[a.manifest_url] = kind; changed = true;
+        // Kept on the addon so the next visit (and other devices) know it at once.
+        sb.from("default_addons").update({ kind }).eq("id", a.id).then(({ error }) => { if (!error) a.kind = kind; });
+      } catch (_) { /* unreachable now: stays as content until it answers */ }
+    }));
+    if (changed) renderAddons();
+  }
   function renderAddons() {
     const list = $("addonList"); list.replaceChildren();
     $("addonEmpty").classList.toggle("hidden", addons.length > 0);
     $("sAddons").textContent = addons.filter((a) => a.enabled).length;
-    const enabled = addons.filter((x) => x.enabled);
-    addons.forEach((a, i) => {
+    const enabled = addons.filter((x) => x.enabled && kindOf(x) === "content");
+    const contents = addons.filter((a) => kindOf(a) === "content"), infos = addons.filter((a) => kindOf(a) === "info");
+    const section = (title, sub, n) => el("div", { class: "addon-sec" }, el("b", {}, title + " "), el("span", { class: "n" }, String(n)), el("span", {}, sub));
+    if (addons.length) list.append(section("Addons de conteúdo", "Trazem as fontes para assistir. São testados e mostram o que entrou em Conteúdos recentes.", contents.length));
+    [...contents, ...(infos.length ? [null] : []), ...infos].forEach((a) => {
+      if (a === null) { list.append(section("Addons de informação", "Só catálogos e detalhes dos títulos (capas, sinopse, elenco). Não trazem fontes, então não são testados.", infos.length)); return; }
+      const i = addons.indexOf(a);
+      const info = kindOf(a) === "info";
       const state = el("div", { class: "state" + (a.enabled ? " on" : ""), title: a.enabled ? "Desativar" : "Ativar", onclick: () => toggleAddon(a) },
         el("span", { class: "switch" }), a.enabled ? "Ativo" : "Desativado");
       const up = iconBtn("up", "Subir", () => moveAddon(i, -1)); if (i === 0) up.disabled = true;
       const down = iconBtn("down", "Descer", () => moveAddon(i, 1)); if (i === addons.length - 1) down.disabled = true;
       list.append(el("div", { class: "addon" + (a.enabled ? "" : " off") },
         el("div", { class: "order" }, up, down),
-        el("span", { class: "fonte" }, el("i", { style: "background:" + (a.color || "transparent") }), a.enabled ? "Fonte " + (enabled.indexOf(a) + 1) : "—"),
+        el("span", { class: "fonte" }, el("i", { style: "background:" + (a.color || "transparent") }), info ? "Informação" : a.enabled ? "Fonte " + (enabled.indexOf(a) + 1) : "—"),
         el("div", { class: "meta" }, el("b", {}, a.name), el("span", { title: a.manifest_url }, a.manifest_url)),
         state,
         el("div", { class: "actions act" },
-          iconBtn("bolt", "Testar agora", () => testAddon(a)),
+          info ? el("span", { class: "icon-gap" }) : iconBtn("bolt", "Testar agora", () => testAddon(a)),
           iconBtn("copy", "Copiar link", (e) => copy(a.manifest_url, e.currentTarget, "Link copiado")),
           iconBtn("edit", "Editar", () => startEdit(a)),
           iconBtn("trash", "Apagar", () => deleteAddon(a), "bad")),
-        el("div", { class: "test", id: "test-" + a.id }, testResults[a.id] || "")));
+        info ? "" : el("div", { class: "test", id: "test-" + a.id }, testResults[a.id] || "")));
     });
   }
 
@@ -2278,7 +2313,7 @@
     testResults[a.id] = parts; const box = $("test-" + a.id); if (box) box.replaceChildren(...parts);
     return cls;
   }
-  $("aTestAll").addEventListener("click", async () => { for (const a of addons) await testAddon(a); toast("Teste concluído"); });
+  $("aTestAll").addEventListener("click", async () => { for (const a of addons.filter((x) => kindOf(x) === "content")) await testAddon(a); toast("Teste concluído"); });
 
   let stats = [];
   async function loadStats() {
@@ -2315,7 +2350,7 @@
 
   function resetAddonForm() {
     editingAddon = null;
-    $("aName").value = ""; $("aUrl").value = ""; $("aColor").value = "#ff74a8";
+    $("aName").value = ""; $("aUrl").value = ""; $("aColor").value = "#ff74a8"; $("aKind").value = "";
     $("aSubmit").textContent = "Adicionar";
     $("addonFormTitle").textContent = "Novo addon";
     $("addonCard").classList.add("hidden");
@@ -2323,7 +2358,7 @@
 
   function startEdit(a) {
     editingAddon = a;
-    $("aName").value = a.name; $("aUrl").value = a.manifest_url; $("aColor").value = a.color || "#ff74a8";
+    $("aName").value = a.name; $("aUrl").value = a.manifest_url; $("aColor").value = a.color || "#ff74a8"; $("aKind").value = a.kind || "";
     $("aSubmit").textContent = "Salvar";
     $("addonFormTitle").textContent = "Editar addon";
     $("addonCard").classList.remove("hidden");
@@ -2344,11 +2379,15 @@
     const url = $("aUrl").value.trim();
     if (!/^https?:\/\//i.test(url)) { $("addonMsg").textContent = "O link precisa começar com http:// ou https://"; return; }
     const color = $("aColor").value.toLowerCase();
+    const row = { name, manifest_url: url, color };
+    if ($("aKind").value || editingAddon?.kind) row.kind = $("aKind").value || null;
     const { error } = editingAddon
-      ? await sb.from("default_addons").update({ name, manifest_url: url, color }).eq("id", editingAddon.id)
-      : await sb.from("default_addons").insert({ name, manifest_url: url, color, position: addons.length });
+      ? await sb.from("default_addons").update(row).eq("id", editingAddon.id)
+      : await sb.from("default_addons").insert({ ...row, position: addons.length });
     if (error) {
-      $("addonMsg").textContent = /color/i.test(error.message)
+      $("addonMsg").textContent = /kind/i.test(error.message)
+        ? "Para salvar o tipo, rode antes o arquivo cloudplay_functions.sql no Supabase."
+        : /color/i.test(error.message)
         ? "Para salvar a cor, rode antes o arquivo code_library.sql no Supabase."
         : "Não foi possível salvar: " + error.message;
       return;
@@ -2864,7 +2903,8 @@
     const say = (t) => $("rcInfo").replaceChildren(t);
     say("Lendo os addons…");
     const jobs = [];
-    for (const a of addons.filter((x) => x.enabled)) {
+    // Only the content addons: info addons' catalogs are TMDB/Cinemeta lists, not what can be watched.
+    for (const a of addons.filter((x) => x.enabled && kindOf(x) === "content")) {
       const { base, q } = addonParts(a.manifest_url);
       let m = null;
       try { m = await (await fetch(base + "/manifest.json" + q, { signal: AbortSignal.timeout(12000) })).json(); } catch (_) {}
