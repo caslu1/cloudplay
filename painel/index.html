@@ -245,6 +245,41 @@
   .pl-row .state { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--muted); font-size: 12.5px; user-select: none; }
   .pl-row .state.on .switch { background: var(--ok); } .pl-row .state.on .switch::after { left: 18px; }
   @media (max-width: 640px) { .pl-row { flex-wrap: wrap; } .pl-meta { flex-basis: 100%; } .pl-row .actions { margin-left: auto; } }
+  .er-tools { display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-between; margin-bottom: 14px; }
+  .er-list, .ai-list { display: flex; flex-direction: column; gap: 8px; }
+  .er { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--field); }
+  .er-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--panel2); color: var(--muted); }
+  .er-ic.er-crash { color: #ff8a8e; background: rgba(242, 85, 90, .1); } .er-ic.er-addon { color: var(--warn); background: rgba(245, 165, 36, .1); }
+  .er b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .er .msg-t { display: block; color: var(--text); font-size: 13.5px; opacity: .85; word-break: break-word; }
+  .er .meta { display: block; color: var(--faint); font-size: 12px; margin-top: 2px; }
+  .er .cnt { text-align: right; } .er .cnt b { font-size: 18px; } .er .cnt span { display: block; color: var(--faint); font-size: 11.5px; }
+  .er .cnt button { margin-top: 6px; }
+  .ai-hero { display: flex; gap: 16px; align-items: flex-start; background: linear-gradient(120deg, rgba(255, 116, 168, .08), rgba(255, 176, 140, .03) 60%), var(--panel); }
+  .ai-when { color: var(--faint); font-size: 12.5px; margin: 8px 0 0; }
+  .ai { padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--field); }
+  .ai-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .ai-top b { font-size: 14.5px; margin-right: auto; }
+  .ai p { margin: 6px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.55; }
+  .chip-s { font-size: 11.5px; font-weight: 600; padding: 2px 9px; border-radius: 99px; background: var(--panel2); color: var(--muted); white-space: nowrap; }
+  .chip-s.alto { color: #ff8ab5; background: rgba(255, 116, 168, .12); } .chip-s.medio { color: var(--peach); background: rgba(255, 176, 140, .1); }
+  .chip-s.feita { color: var(--ok); background: rgba(60, 207, 142, .1); } .chip-s.andamento { color: var(--info); background: rgba(143, 163, 184, .12); }
+  @media (max-width: 720px) {
+    .er { grid-template-columns: auto minmax(0, 1fr); } .er .cnt { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; text-align: left; }
+    .er .cnt span { display: inline; } .er .cnt button { margin: 0 0 0 auto; }
+    .er-tools { flex-direction: column; }
+    #aiFilter { width: 100%; }
+    .ai-hero { flex-direction: column; gap: 12px; }
+  }
+  .build-card { background: linear-gradient(120deg, rgba(255, 116, 168, .07), rgba(255, 176, 140, .02) 60%), var(--panel); }
+  .build-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+  .build-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--faint); margin-bottom: 4px; }
+  .build-pct { font-size: 34px; font-weight: 600; letter-spacing: -1px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .build-bar { height: 10px; border-radius: 99px; background: var(--field); border: 1px solid var(--line); overflow: hidden; margin-top: 14px; }
+  .build-bar i { display: block; height: 100%; width: 0; border-radius: 99px; background: var(--grad); transition: width .9s ease; }
+  .build-card.ok .build-bar i { background: var(--ok); } .build-card.bad .build-bar i { background: var(--bad); }
+  .build-card.ok .build-pct { color: var(--ok); } .build-card.bad .build-pct { color: #ff8a8e; }
+  .build-text { margin: 10px 0 0; color: var(--muted); font-size: 13.5px; }
   .upd-list { display: flex; flex-direction: column; gap: 10px; }
   .upd { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
   .upd-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
@@ -721,6 +756,8 @@
   <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></symbol>
   <symbol id="i-tvplay" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="m8 2 4 4 4-4M10.5 10.5v5l4-2.5z"/></symbol>
   <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v13c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8v-13M4.5 12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19z"/><path d="M12 10v4.5M12 17.5h.01"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
   <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8.6 19z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.6-2-1-1 .9a5 5 0 0 1-2.8-2.8l.9-1-1-2z"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
@@ -772,6 +809,8 @@
       <div class="nav-label">Sistema</div>
       <a href="#uso" data-page="uso"><svg class="i"><use href="#i-db"/></svg>Banco de dados</a>
       <a href="#atualizacoes" data-page="atualizacoes"><svg class="i"><use href="#i-renew"/></svg>Atualizações</a>
+      <a href="#erros" data-page="erros"><svg class="i"><use href="#i-alert"/></svg>Erros<span id="navErrors" class="pill count-pill hidden">0</span></a>
+      <a href="#melhorias" data-page="melhorias"><svg class="i"><use href="#i-spark"/></svg>Melhorias com IA</a>
     </nav>
     <div class="side-foot">
       <div class="who-row"><div id="avatar" class="avatar">A</div>
@@ -829,7 +868,7 @@
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg><span>Conectados</span></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg><span>Addons</span></a>
-    <a href="#mais" id="bnMore" data-page="pedidos listas categorias streamings uso atualizacoes"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#mais" id="bnMore" data-page="pedidos listas categorias streamings uso atualizacoes erros melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
   </nav>
 
   <div class="content">
@@ -1149,6 +1188,14 @@
 
     <!-- Atualizações -->
     <main class="page hidden" data-section="atualizacoes" data-title="Atualizações">
+      <div id="buildCard" class="card build-card hidden">
+        <div class="build-top">
+          <div><span class="build-label">Próxima versão</span><h2 id="buildTitle">Versão</h2></div>
+          <b id="buildPct" class="build-pct">0%</b>
+        </div>
+        <div class="build-bar"><i id="buildBar"></i></div>
+        <p id="buildText" class="build-text"></p>
+      </div>
       <div class="card">
         <div class="card-head" style="flex-wrap: nowrap">
           <div><h2>Versões do aplicativo</h2><p class="sub">O que mudou em cada versão, com a data e a hora em que foi publicada.</p></div>
@@ -1156,6 +1203,60 @@
         </div>
         <div id="updList" class="upd-list"></div>
         <p id="updEmpty" class="empty hidden">Nenhuma atualização encontrada.</p>
+      </div>
+    </main>
+
+    <!-- Erros -->
+    <main class="page hidden" data-section="erros" data-title="Erros">
+      <div class="stats stats-4">
+        <div class="stat"><span>Erros no período</span><b id="erTotal">—</b></div>
+        <div class="stat"><span>Addons com falha</span><b id="erAddons">—</b></div>
+        <div class="stat"><span>Erros do app</span><b id="erApp">—</b></div>
+        <div class="stat"><span>App fechou sozinho</span><b id="erCrash">—</b></div>
+      </div>
+      <div class="card">
+        <div class="card-head" style="flex-wrap: nowrap">
+          <div><h2>O que deu errado nos aparelhos</h2><p class="sub">Addons que falharam ou não responderam, erros do app e vezes em que ele fechou sozinho. Chega a cada 10 minutos.</p></div>
+          <button id="erReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
+        </div>
+        <div class="er-tools">
+          <div id="erKind" class="seg scroll">
+            <button type="button" data-v="" class="on">Todos <span class="n" data-er="all">0</span></button>
+            <button type="button" data-v="addon">Addons <span class="n" data-er="addon">0</span></button>
+            <button type="button" data-v="app">App <span class="n" data-er="app">0</span></button>
+            <button type="button" data-v="crash">Fechou <span class="n" data-er="crash">0</span></button>
+          </div>
+          <div id="erDays" class="seg">
+            <button type="button" data-v="1">Hoje</button>
+            <button type="button" data-v="7" class="on">7 dias</button>
+            <button type="button" data-v="30">30 dias</button>
+          </div>
+        </div>
+        <div id="erList" class="er-list"></div>
+        <p id="erEmpty" class="empty hidden">Nenhum erro no período. 🎉</p>
+      </div>
+    </main>
+
+    <!-- Melhorias com IA -->
+    <main class="page hidden" data-section="melhorias" data-title="Melhorias com IA">
+      <div class="card ai-hero">
+        <span class="gen-badge"><svg class="i"><use href="#i-spark"/></svg></span>
+        <div><h2>A IA revisa o CloudPlay toda semana</h2>
+          <p class="sub" style="margin:0">Ela olha o código do app, os erros que chegam dos aparelhos e o tempo de carregamento, e deixa aqui o que pode ser melhorado. Nada muda sozinho: para fazer uma melhoria, é só pedir no chat.</p>
+          <p id="aiWhen" class="ai-when"></p></div>
+      </div>
+      <div id="aiSummary" class="card hidden"></div>
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Sugestões</h2><p class="sub">Da mais importante para a menos importante.</p></div>
+          <div id="aiFilter" class="seg">
+            <button type="button" data-v="open" class="on">Pendentes</button>
+            <button type="button" data-v="done">Feitas</button>
+            <button type="button" data-v="">Todas</button>
+          </div>
+        </div>
+        <div id="aiList" class="ai-list"></div>
+        <p id="aiEmpty" class="empty hidden">Nenhuma sugestão por aqui.</p>
       </div>
     </main>
 
@@ -1609,7 +1710,7 @@
   window.addEventListener("resize", () => { if (["", "#inicio"].includes(location.hash)) drawActiveHistory(); });
   // CloudPlay: a small icon in the corner of each number card.
   (function statIcons() {
-    const pick = (t) => /online|ativos em|usaram|pico/i.test(t) ? "tv" : /pedido/i.test(t) ? "inbox" : /addon/i.test(t) ? "puzzle"
+    const pick = (t) => /erro|fechou/i.test(t) ? "alert" : /online|ativos em|usaram|pico/i.test(t) ? "tv" : /pedido/i.test(t) ? "inbox" : /addon/i.test(t) ? "puzzle"
       : /vencid/i.test(t) ? "clock" : /livre/i.test(t) ? "unlock" : /em uso/i.test(t) ? "check" : /banco|biblioteca|aberturas/i.test(t) ? "chart"
       : /cadastrad/i.test(t) ? "list" : "key";
     document.querySelectorAll(".stat").forEach((st) => {
@@ -2385,10 +2486,127 @@
     }));
     $("updEmpty").classList.toggle("hidden", entries.length > 0);
   }
-  $("updReload").addEventListener("click", loadUpdates);
+  $("updReload").addEventListener("click", () => { loadUpdates(); loadBuild(); });
+
+  // How far along the next version is: the APK build writes status/build.json in the public
+  // repository (started, published or failed); the percentage is the time it has run against
+  // how long the last builds took.
+  let buildTick = null, buildPoll = null;
+  async function loadBuild() {
+    let b = null;
+    try { const r = await fetch("../status/build.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) b = await r.json(); } catch (_) { b = null; }
+    renderBuild(b);
+  }
+  function renderBuild(b) {
+    clearInterval(buildTick); clearTimeout(buildPoll); buildTick = buildPoll = null;
+    const box = $("buildCard");
+    const building = b?.status === "building";
+    const fresh = b && (building ? Date.now() - new Date(b.started_at) < 3 * 3600e3 : b.finished_at && Date.now() - new Date(b.finished_at) < 6 * 3600e3);
+    box.classList.toggle("hidden", !fresh);
+    if (!fresh) return;
+    box.classList.toggle("ok", b.status === "published"); box.classList.toggle("bad", b.status === "failed");
+    $("buildTitle").textContent = "Versão " + b.version;
+    const hm = (iso) => new Date(iso).toLocaleTimeString("pt-BR", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit" });
+    const draw = () => {
+      let pct, text;
+      if (building) {
+        const elapsed = (Date.now() - new Date(b.started_at)) / 1000, total = Math.max(120, b.expected_s || 600);
+        pct = Math.min(97, Math.max(2, Math.round(elapsed / total * 100)));
+        const left = Math.round((total - elapsed) / 60);
+        text = "Gerando o aplicativo desde as " + hm(b.started_at) + " · " + (left >= 1 ? "faltam cerca de " + left + " min" : "quase pronta…");
+      } else if (b.status === "published") {
+        pct = 100; text = "Publicada às " + hm(b.finished_at) + ". Os clientes já recebem o aviso de atualização.";
+      } else {
+        pct = 100; text = "Deu erro ao gerar às " + hm(b.finished_at) + ". A versão não saiu; os clientes continuam na anterior.";
+      }
+      $("buildPct").textContent = b.status === "failed" ? "Erro" : pct + "%";
+      $("buildBar").style.width = pct + "%";
+      $("buildText").textContent = text;
+    };
+    draw();
+    if (building) {
+      buildTick = setInterval(draw, 1000);
+      // Checks again every 30 s while the page is open, to see it finish.
+      buildPoll = setTimeout(() => { if (location.hash === "#atualizacoes") loadBuild(); }, 30000);
+    }
+  }
+
+  // ── Erros: what the customers' devices ran into (report_app_errors) ──
+  let errRows = [];
+  const ER_KIND = { addon: "Addon", app: "App", crash: "Fechou" };
+  const ER_ICON = { addon: "puzzle", app: "alert", crash: "x" };
+  function ago(iso) {
+    const m = Math.max(0, Math.round((Date.now() - new Date(iso)) / 60000));
+    return m < 1 ? "agora" : m < 60 ? "há " + m + " min" : m < 1440 ? "há " + Math.round(m / 60) + " h" : Math.round(m / 1440) === 1 ? "há 1 dia" : "há " + Math.round(m / 1440) + " dias";
+  }
+  async function loadErrors() {
+    $("erList").replaceChildren(el("p", { class: "empty" }, "Carregando…"));
+    const { data, error } = await sb.rpc("admin_app_errors", { p_days: parseInt($("erDays").dataset.value || "7", 10) });
+    if (error) {
+      errRows = [];
+      $("erList").replaceChildren(el("p", { class: "empty" }, /admin_app_errors|function/i.test(error.message)
+        ? "Para ver os erros, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível carregar: " + error.message));
+      return;
+    }
+    errRows = data || [];
+    renderErrors();
+  }
+  function renderErrors() {
+    const sum = (k) => errRows.filter((r) => !k || r.kind === k).reduce((n, r) => n + Number(r.count || 0), 0);
+    $("erTotal").textContent = sum(""); $("erApp").textContent = sum("app"); $("erCrash").textContent = sum("crash");
+    $("erAddons").textContent = new Set(errRows.filter((r) => r.kind === "addon").map((r) => r.source)).size;
+    document.querySelectorAll("#erKind [data-er]").forEach((n) => n.textContent = errRows.filter((r) => n.dataset.er === "all" || r.kind === n.dataset.er).length);
+    const recent = errRows.filter((r) => Date.now() - new Date(r.last_at) < 24 * 3600e3).length;
+    $("navErrors").textContent = recent; $("navErrors").classList.toggle("hidden", recent === 0);
+    const kind = $("erKind").dataset.value || "";
+    const list = errRows.filter((r) => !kind || r.kind === kind);
+    $("erEmpty").classList.toggle("hidden", list.length > 0);
+    $("erList").replaceChildren(...list.map((r) => el("div", { class: "er" },
+      el("span", { class: "er-ic er-" + r.kind }, icon(ER_ICON[r.kind] || "alert")),
+      el("div", {}, el("b", {}, (ER_KIND[r.kind] || r.kind) + " · " + r.source),
+        el("span", { class: "msg-t" }, r.message),
+        el("span", { class: "meta" }, ago(r.last_at) + (r.versions && r.versions.length ? " · versão " + r.versions.join(", ") : "") +
+          " · " + r.reports + (r.reports === 1 ? " envio" : " envios"))),
+      el("div", { class: "cnt" }, el("b", {}, String(r.count)), el("span", {}, r.count == 1 ? "vez" : "vezes"),
+        el("button", { type: "button", class: "ghost small", onclick: async (ev) => {
+          ev.currentTarget.disabled = true;
+          const { error } = await sb.rpc("admin_clear_app_error", { p_kind: r.kind, p_source: r.source, p_message: r.message });
+          if (error) { toast("Não foi possível: " + error.message); ev.currentTarget.disabled = false; return; }
+          errRows = errRows.filter((x) => x !== r); renderErrors(); toast("Marcado como resolvido");
+        } }, icon("check"), "Resolvido")))));
+  }
+  seg("erKind", renderErrors); seg("erDays", loadErrors);
+  $("erReload").addEventListener("click", loadErrors);
+
+  // ── Melhorias com IA: the weekly AI review, kept in melhorias.json ──
+  let aiData = null;
+  const AI_IMPACT = { alto: "Impacto alto", medio: "Impacto médio", baixo: "Impacto baixo" };
+  const AI_STATUS = { sugerida: "Sugerida", andamento: "Em andamento", feita: "Feita" };
+  async function loadImprovements() {
+    try { aiData = await (await fetch("melhorias.json?t=" + Date.now(), { cache: "no-store" })).json(); } catch (_) { aiData = { items: [] }; }
+    const fmt = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    $("aiWhen").textContent = aiData.updated_at ? "Última revisão: " + fmt.format(new Date(aiData.updated_at)).replace(",", " às") + (aiData.next ? " · próxima: " + aiData.next : "") : "";
+    $("aiSummary").classList.toggle("hidden", !aiData.summary);
+    if (aiData.summary) $("aiSummary").replaceChildren(el("h2", {}, "Resumo da última revisão"), el("p", { class: "sub", style: "margin:6px 0 0;line-height:1.6" }, aiData.summary));
+    renderImprovements();
+  }
+  function renderImprovements() {
+    const f = $("aiFilter").dataset.value ?? "open";
+    const rank = { alto: 0, medio: 1, baixo: 2 };
+    const items = (aiData?.items || []).filter((i) => !f || (f === "done" ? i.status === "feita" : i.status !== "feita"))
+      .sort((a, b) => (rank[a.impact] ?? 3) - (rank[b.impact] ?? 3));
+    $("aiEmpty").classList.toggle("hidden", items.length > 0);
+    $("aiList").replaceChildren(...items.map((i) => el("div", { class: "ai" },
+      el("div", { class: "ai-top" }, el("b", {}, i.title),
+        i.area ? el("span", { class: "chip-s" }, i.area) : "",
+        el("span", { class: "chip-s " + (i.impact || "") }, AI_IMPACT[i.impact] || "—"),
+        el("span", { class: "chip-s " + (i.status || "") }, (AI_STATUS[i.status] || "Sugerida") + (i.version ? " · v" + i.version : ""))),
+      el("p", {}, i.detail || ""))));
+  }
+  seg("aiFilter", renderImprovements);
 
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "listas", "categorias", "streamings", "uso", "atualizacoes"];
+  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "listas", "categorias", "streamings", "uso", "atualizacoes", "erros", "melhorias"];
   function go() {
     const page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "inicio";
     document.querySelectorAll("[data-section]").forEach((s) => {
@@ -2398,7 +2616,9 @@
       if (on && page === "uso" && !$("app").classList.contains("hidden")) setTimeout(loadUsage, 0);
       if (on && page === "inicio") setTimeout(drawActiveHistory, 0);
       if (on && page === "conectados" && !$("app").classList.contains("hidden")) setTimeout(loadPeaks, 0);
-      if (on && page === "atualizacoes" && !$("app").classList.contains("hidden")) setTimeout(loadUpdates, 0);
+      if (on && page === "atualizacoes" && !$("app").classList.contains("hidden")) setTimeout(() => { loadUpdates(); loadBuild(); }, 0);
+      if (on && page === "erros" && !$("app").classList.contains("hidden")) setTimeout(loadErrors, 0);
+      if (on && page === "melhorias" && !$("app").classList.contains("hidden")) setTimeout(loadImprovements, 0);
     });
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.page === page));
     document.querySelectorAll(".bottom-nav a").forEach((a) => a.classList.toggle("active", a.dataset.page.split(" ").includes(page)));
@@ -2410,7 +2630,7 @@
   $("menuBtn").addEventListener("click", () => document.body.classList.add("nav-open"));
   $("bnMore").addEventListener("click", (e) => { e.preventDefault(); document.body.classList.add("nav-open"); });
   $("backdrop").addEventListener("click", () => document.body.classList.remove("nav-open"));
-  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") loadUpdates(); loadPlaylists(); };
+  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); } loadErrors(); if (location.hash === "#melhorias") loadImprovements(); loadPlaylists(); };
   $("refreshAll").addEventListener("click", loadAll);
 
   $("search").addEventListener("input", render);

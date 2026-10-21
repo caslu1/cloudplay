@@ -1,5 +1,12 @@
 [
   {
+    "version": "2.5",
+    "date": null,
+    "items": [
+      "O app manda para o painel os erros dos addons e do app, e quando fecha sozinho"
+    ]
+  },
+  {
     "version": "2.4",
     "date": null,
     "items": [
