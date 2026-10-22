@@ -11,6 +11,10 @@
     {
       "text": "Tela inicial: no lugar da fileira de banners, uma fileira de capas para cada streaming ativo (\"Exclusivo da Netflix\"…), 15 títulos e \"Ver todos\"; nas abas Filmes e Séries, só filmes ou só séries",
       "added": "2026-10-22"
+    },
+    {
+      "text": "Apagar ou renomear no painel as fileiras de banners (Décadas, Franquias, Gêneros, Streamings) e cada banner agora funciona no app",
+      "added": "2026-10-22"
     }
   ],
   "sent_at": null,
