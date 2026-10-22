@@ -1,5 +1,16 @@
 [
   {
+    "version": "2.19",
+    "date": null,
+    "items": [
+      "No celular, as páginas de gênero também ficam em pôster (só ficam deitadas se o cliente escolher)",
+      "No celular, a pesquisa funciona nas abas Filmes, Séries e Infantil",
+      "Logos dos filmes e séries carregam com mais frequência (tenta de novo quando falha; prefere o logo em português)",
+      "Fileiras dos addons (Filmes Populares, Adicionados recentemente…) com \"Ver tudo\", mostrando tudo, igual às fileiras do app",
+      "Filmes/Séries Populares, Em Alta e Adicionados recentemente viram fileiras do app: juntam todos os addons ativos e, em \"Adicionados recentemente\", também os títulos novos da lista M3U. Cada uma continua separada. Populares tem \"Ver tudo\"; Em Alta e Adicionados recentemente mostram só 15 títulos"
+    ]
+  },
+  {
     "version": "2.18",
     "date": null,
     "items": [

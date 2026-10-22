@@ -1,22 +1,5 @@
 {
-  "items": [
-    {
-      "text": "No celular, as páginas de gênero também ficam em pôster (só ficam deitadas se o cliente escolher)",
-      "added": "2026-10-22"
-    },
-    {
-      "text": "No celular, a pesquisa funciona nas abas Filmes, Séries e Infantil",
-      "added": "2026-10-22"
-    },
-    {
-      "text": "Logos dos filmes e séries carregam com mais frequência (tenta de novo quando falha; prefere o logo em português)",
-      "added": "2026-10-22"
-    },
-    {
-      "text": "Fileiras dos addons (Filmes Populares, Adicionados recentemente…) com \"Ver tudo\", mostrando tudo, igual às fileiras do app",
-      "added": "2026-10-22"
-    }
-  ],
+  "items": [],
   "sent_at": null,
-  "updated_at": "2026-10-22T23:00:00-03:00"
+  "updated_at": null
 }
