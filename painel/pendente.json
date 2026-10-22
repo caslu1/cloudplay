@@ -3,6 +3,10 @@
     {
       "text": "Tela de erro nova do CloudPlay (botão para abrir de novo e um código para o suporte, que também aparece em Erros no painel)",
       "added": "2026-10-22"
+    },
+    {
+      "text": "Página do filme: informações em caixinhas (duração, ano, bandeiras do áudio, nota ★) e os gêneros em seguida",
+      "added": "2026-10-22"
     }
   ],
   "sent_at": null,
