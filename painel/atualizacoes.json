@@ -1,5 +1,12 @@
 [
   {
+    "version": "2.16",
+    "date": null,
+    "items": [
+      "Correção: as fileiras de cada streaming (\"Exclusivo da Netflix\"…) não apareciam na tela inicial"
+    ]
+  },
+  {
     "version": "2.15",
     "date": null,
     "items": [
