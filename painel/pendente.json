@@ -1,5 +1,10 @@
 {
-  "items": [],
+  "items": [
+    {
+      "text": "Correção: as fileiras de cada streaming (\"Exclusivo da Netflix\"…) não apareciam na tela inicial",
+      "added": "2026-10-22"
+    }
+  ],
   "sent_at": null,
-  "updated_at": null
+  "updated_at": "2026-10-22T22:00:00-03:00"
 }
