@@ -491,6 +491,16 @@
   table.codes col.c-valid { width: 24%; } table.codes col.c-dev { width: 20%; } table.codes col.c-act { width: 150px; }
   .cell-main { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .addon-list { display: grid; gap: 8px; }
+  .src-bar { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; justify-content: space-between; padding: 12px 14px; margin-bottom: 16px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; }
+  .src-bar .order-mode { margin: 0; }
+  .src-sum { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); }
+  .src-chip b { color: var(--text); font-size: 15px; margin-right: 6px; }
+  .src-tag { font-style: normal; font-size: 10.5px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--pink); background: rgba(255, 116, 168, .1); padding: 2px 7px; border-radius: 99px; margin-left: 8px; vertical-align: 2px; }
+  .src-tag.info { color: var(--muted); background: var(--line2); }
+  .addon .meta span { font-family: inherit !important; }
+  .addon button.icon.on { color: var(--pink); }
+  .src-link { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; padding: 10px 12px; background: var(--field); border: 1px solid var(--line); border-radius: 8px; }
+  .src-link code { flex: 1; min-width: 0; font: 12px ui-monospace, Menlo, Consolas, monospace; color: var(--text); word-break: break-all; }
   .order-mode { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 2px 2px 6px; font-size: 12.5px; color: var(--muted); }
   .addon.m3u { border-style: dashed; }
   .m3u-tag { font-style: normal; font-size: 10.5px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--peach); background: rgba(255, 176, 140, .1); padding: 2px 7px; border-radius: 99px; margin-left: 8px; vertical-align: 2px; }
@@ -847,6 +857,8 @@
   <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
   <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
@@ -1190,26 +1202,6 @@
 
     <!-- Addons -->
     <main class="page hidden" data-section="addons" data-title="Fontes de conteúdo">
-      <div class="card">
-        <div class="card-head">
-          <div><h2>Addons instalados</h2><p class="sub">Instalados em todos os aparelhos. A ordem das fontes no app é escolhida logo abaixo.</p></div>
-          <div class="head-btns">
-            <button type="button" id="aTestAll" class="ghost small"><svg class="i"><use href="#i-bolt"/></svg>Testar todos</button>
-            <button type="button" id="aNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Adicionar addon ou M3U</button>
-          </div>
-        </div>
-        <div id="addonList" class="addon-list"></div>
-        <p id="addonEmpty" class="empty hidden">Nenhum addon padrão. Os aparelhos ficam só com os addons que cada cliente adicionar.</p>
-      </div>
-      <div class="card">
-        <div class="card-head">
-          <div><h2>Estabilidade nos aparelhos</h2><p class="sub">Medido nos aparelhos dos clientes a cada busca de fontes: quantas vezes o addon trouxe fontes, em quanto tempo, e quantos filmes foram assistidos por ele.</p></div>
-          <div id="stDays" class="seg"><button type="button" data-v="7" class="on">7 dias</button><button type="button" data-v="30">30 dias</button></div>
-        </div>
-        <div id="stMsg" class="msg"></div>
-        <div id="stList" class="st-list"></div>
-        <p id="stEmpty" class="empty hidden">Ainda sem dados. Os números aparecem conforme os clientes usam o app (versão nova).</p>
-      </div>
       <div id="addonCard" class="card hidden">
         <div class="card-head"><div><h2 id="addonFormTitle">Nova fonte</h2><p id="addonFormSub" class="sub">Escolha o que vai adicionar: um addon (link manifest.json) ou uma lista M3U.</p></div>
           <div id="aSrc" class="seg"><button type="button" data-v="addon" class="on">Addon</button><button type="button" data-v="m3u">Lista M3U</button></div></div>
@@ -1226,6 +1218,27 @@
           <div class="btns"><button type="button" id="aCancel" class="ghost">Cancelar</button><button type="submit" id="aSubmit">Adicionar</button></div>
         </form>
         <div id="addonMsg" class="msg"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Fontes instaladas</h2><p class="sub">Addons e listas M3U instalados em todos os aparelhos. Os links ficam ocultos: toque no olho para ver.</p></div>
+          <div class="head-btns">
+            <button type="button" id="aTestAll" class="ghost small"><svg class="i"><use href="#i-bolt"/></svg>Testar todos</button>
+            <button type="button" id="aNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Adicionar addon ou M3U</button>
+          </div>
+        </div>
+        <div class="src-bar"><div id="srcSummary" class="src-sum"></div><div id="srcOrder"></div></div>
+        <div id="addonList" class="addon-list"></div>
+        <p id="addonEmpty" class="empty hidden">Nenhum addon padrão. Os aparelhos ficam só com os addons que cada cliente adicionar.</p>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Estabilidade nos aparelhos</h2><p class="sub">Medido nos aparelhos dos clientes a cada busca de fontes: quantas vezes o addon trouxe fontes, em quanto tempo, e quantos filmes foram assistidos por ele.</p></div>
+          <div id="stDays" class="seg"><button type="button" data-v="7" class="on">7 dias</button><button type="button" data-v="30">30 dias</button></div>
+        </div>
+        <div id="stMsg" class="msg"></div>
+        <div id="stList" class="st-list"></div>
+        <p id="stEmpty" class="empty hidden">Ainda sem dados. Os números aparecem conforme os clientes usam o app (versão nova).</p>
       </div>
     </main>
 
@@ -2240,10 +2253,14 @@
     // Same numbers as the app: every M3U list shares the number of the first one.
     const fonteNum = new Map(); let n = 0, m3uN = null;
     enabled.forEach((x) => { if (x.__m3u) { if (m3uN == null) m3uN = ++n; fonteNum.set(x, m3uN); } else fonteNum.set(x, ++n); });
+    const nAddons = contents.filter((x) => !x.__m3u && x.enabled).length, nLists = contents.filter((x) => x.__m3u && x.enabled).length;
+    const chip = (n, label) => el("span", { class: "src-chip" }, el("b", {}, String(n)), label);
+    $("srcSummary").replaceChildren(chip(nAddons, nAddons === 1 ? "addon ativo" : "addons ativos"), chip(nLists, nLists === 1 ? "lista M3U" : "listas M3U"),
+      chip(infos.filter((x) => x.enabled).length, "de informação"));
+    $("srcOrder").replaceChildren(addons.length || playlists.length ? orderToggle() : "");
     const section = (title, sub, n) => el("div", { class: "addon-sec" }, el("b", {}, title + " "), el("span", { class: "n" }, String(n)), el("span", {}, sub));
     if (addons.length || playlists.length) {
-      list.append(section("Addons de conteúdo", "Trazem as fontes para assistir, na ordem desta lista (Fonte 1, Fonte 2…). As listas M3U entram aqui também: suba ou desça para mudar a ordem.", contents.length));
-      list.append(orderToggle());
+      list.append(section("Fontes de conteúdo", "Trazem os vídeos para assistir, na ordem desta lista (Fonte 1, Fonte 2…). Suba ou desça para mudar a ordem.", contents.length));
     }
     [...contents, ...(infos.length ? [null] : []), ...infos].forEach((a) => {
       if (a === null) { list.append(section("Addons de informação", "Só catálogos e detalhes dos títulos (capas, sinopse, elenco). Não trazem fontes, então não são testados.", infos.length)); return; }
@@ -2260,13 +2277,14 @@
       list.append(el("div", { class: "addon" + (a.enabled ? "" : " off") },
         el("div", { class: "order" }, up, down),
         el("span", { class: "fonte" }, el("i", { style: "background:" + (a.color || "transparent") }), info ? "Informação" : a.enabled ? "Fonte " + fonteNum.get(a) : "—"),
-        el("div", { class: "meta" }, el("b", {}, a.name), el("span", { title: a.manifest_url }, a.manifest_url)),
+        el("div", { class: "meta" }, el("b", {}, a.name, info ? "" : el("em", { class: "src-tag" }, "Addon"))),
         state,
         el("div", { class: "actions act" },
           info ? el("span", { class: "icon-gap" }) : iconBtn("bolt", "Testar agora", () => testAddon(a)),
-          iconBtn("copy", "Copiar link", (e) => copy(a.manifest_url, e.currentTarget, "Link copiado")),
+          eyeBtn("a" + a.id),
           iconBtn("edit", "Editar", () => startEdit(a)),
           iconBtn("trash", "Apagar", () => deleteAddon(a), "bad")),
+        linkBox("a" + a.id, a.manifest_url),
         info ? "" : el("div", { class: "test", id: "test-" + a.id }, testResults[a.id] || "")));
     });
   }
@@ -2553,6 +2571,20 @@
     if (settings.source_order === "auto") toast("A ordem está em Automática: mude para Manual para o app seguir esta lista.");
     await loadPlaylists(); loadAddons();
   }
+  // CloudPlay: links stay hidden; the eye opens the full link (with a copy button) under the row.
+  const shownLinks = new Set();
+  const hostOf = (u) => { try { return new URL(u).host; } catch (_) { return "Link"; } };
+  function eyeBtn(key) {
+    const on = shownLinks.has(key);
+    const b = iconBtn(on ? "eyeoff" : "eye", on ? "Esconder link" : "Ver link", () => { on ? shownLinks.delete(key) : shownLinks.add(key); renderAddons(); });
+    if (on) b.classList.add("on");
+    return b;
+  }
+  function linkBox(key, url) {
+    if (!shownLinks.has(key)) return "";
+    return el("div", { class: "src-link" }, el("code", {}, url),
+      el("button", { type: "button", class: "ghost small", onclick: (e) => copy(url, e.currentTarget, "Link copiado") }, icon("copy"), "Copiar"));
+  }
   function playlistAddonRow(p, contents, fonteNum) {
     const ci = contents.indexOf(p);
     const up = iconBtn("up", "Subir", () => moveContent(ci, -1)); if (ci === 0) up.disabled = true;
@@ -2563,12 +2595,13 @@
     return el("div", { class: "addon m3u" + (p.enabled ? "" : " off") },
       el("div", { class: "order" }, up, down),
       el("span", { class: "fonte" }, el("i", { style: "background:" + (p.color || "#ffb08c") }), p.enabled ? "Fonte " + num : "—"),
-      el("div", { class: "meta" }, el("b", {}, p.name, el("em", { class: "m3u-tag" }, "Lista M3U")), el("span", { title: "Link com senha oculta" }, maskUrl(p.url))),
+      el("div", { class: "meta" }, el("b", {}, p.name, el("em", { class: "m3u-tag" }, "Lista M3U"))),
       state,
       el("div", { class: "actions act" }, el("span", { class: "icon-gap" }),
-        iconBtn("copy", "Copiar link", (e) => copy(p.url, e.currentTarget, "Link copiado")),
+        eyeBtn("p" + p.id),
         iconBtn("edit", "Editar", () => startEditPlaylist(p)),
-        iconBtn("trash", "Apagar", () => deletePlaylist(p), "bad")));
+        iconBtn("trash", "Apagar", () => deletePlaylist(p), "bad")),
+      linkBox("p" + p.id, p.url));
   }
   function orderToggle() {
     const manual = settings.source_order !== "auto";
