@@ -264,6 +264,31 @@
   @media (max-width: 720px) { .rc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; } .rc-right { width: 100%; } .rc-right select { flex: 1; width: auto; }
     .rc-right .seg { width: 100%; flex-wrap: nowrap; } .rc-right select + .seg { width: auto; flex: 1.4; } .rc-right .seg button { flex: 1 1 0; white-space: nowrap; padding: 0 8px; } }
   .tst { grid-column: 1 / -1; }
+  .ht-list { display: grid; gap: 8px; }
+  .ht-item { background: var(--panel2); border: 1px solid var(--line2); border-radius: 12px; overflow: hidden; }
+  .ht { display: grid; grid-template-columns: minmax(0, 1.6fr) 118px repeat(3, minmax(0, .8fr)) 74px auto; gap: 14px; align-items: center; padding: 12px 14px; cursor: pointer; }
+  .ht.off { opacity: .6; }
+  .ht-name { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .ht-name > i { flex: none; width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(255,255,255,.3); }
+  .ht-name div { min-width: 0; } .ht-name b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ht-name span, .ht-k span { display: block; color: var(--faint); font-size: 12px; }
+  .ht-k b { font-weight: 600; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  .ht .pill { justify-self: start; } .ht .pill.none { color: var(--faint); border-color: var(--line2); }
+  .ht-hist { display: flex; gap: 4px; }
+  .ht-end { display: flex; align-items: center; gap: 10px; justify-self: end; }
+  .ht-more { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .ht-more svg.i { width: 14px; height: 14px; transition: transform .2s; transform: rotate(90deg); } .ht.open .ht-more svg.i { transform: rotate(-90deg); }
+  .ht-hist i { width: 8px; height: 8px; border-radius: 50%; background: var(--line2); }
+  .ht-hist i.good { background: var(--ok); } .ht-hist i.mid { background: var(--warn); } .ht-hist i.bad { background: var(--bad); }
+  .ht-run { padding: 0 14px 12px; font-size: 12.5px; color: var(--muted); }
+  .ht-detail { padding: 0 14px 14px; border-top: 1px dashed var(--line2); padding-top: 12px; }
+  .ht-err { margin: 0; font-size: 13px; color: #ff8a8e; }
+  .hl-dev-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 12.5px; color: var(--muted); }
+  @media (max-width: 720px) {
+    .ht { grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .ht-name { grid-column: 1 / 3; } .ht .pill { justify-self: end; }
+    .ht-hist { grid-column: 1 / 2; } .ht-end { grid-column: 2 / 4; }
+  }
   .tst-sum { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 12.5px; color: var(--muted); }
   .tst-sum b { color: var(--text); font-weight: 600; }
   .tst-bar { height: 6px; border-radius: 99px; background: var(--field); overflow: hidden; margin: 8px 0 2px; }
@@ -1256,7 +1281,6 @@
         <div class="card-head">
           <div><h2>Fontes instaladas</h2><p class="sub">Addons e listas M3U instalados em todos os aparelhos. Os links ficam ocultos: toque no olho para ver.</p></div>
           <div class="head-btns">
-            <button type="button" id="aTestAll" class="ghost small"><svg class="i"><use href="#i-bolt"/></svg>Testar todos</button>
             <button type="button" id="aNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Adicionar addon ou M3U</button>
           </div>
         </div>
@@ -1264,14 +1288,21 @@
         <div id="addonList" class="addon-list"></div>
         <p id="addonEmpty" class="empty hidden">Nenhum addon padrão. Os aparelhos ficam só com os addons que cada cliente adicionar.</p>
       </div>
-      <div class="card">
+      <div class="card" id="hlCard">
         <div class="card-head">
-          <div><h2>Estabilidade nos aparelhos</h2><p class="sub">Medido nos aparelhos dos clientes a cada busca de fontes: quantas vezes o addon trouxe fontes, em quanto tempo, e quantos filmes foram assistidos por ele.</p></div>
-          <div id="stDays" class="seg"><button type="button" data-v="7" class="on">7 dias</button><button type="button" data-v="30">30 dias</button></div>
+          <div><h2>Saúde das fontes</h2><p id="hlSub" class="sub">Teste na hora: o painel pede filmes e séries sorteados a cada fonte e mostra quantos abriram e em quanto tempo.</p></div>
+          <div class="head-btns">
+            <div id="hlTab" class="seg"><button type="button" data-v="test" class="on">Teste</button><button type="button" data-v="dev">Nos aparelhos</button></div>
+            <button type="button" id="aTestAll" class="small"><svg class="i"><use href="#i-bolt"/></svg>Testar todas</button>
+          </div>
         </div>
-        <div id="stMsg" class="msg"></div>
-        <div id="stList" class="st-list"></div>
-        <p id="stEmpty" class="empty hidden">Ainda sem dados. Os números aparecem conforme os clientes usam o app (versão nova).</p>
+        <div id="hlTest"><div id="tstList" class="ht-list"></div></div>
+        <div id="hlDev" class="hidden">
+          <div class="hl-dev-bar"><span>Período</span><div id="stDays" class="seg"><button type="button" data-v="7" class="on">7 dias</button><button type="button" data-v="30">30 dias</button></div></div>
+          <div id="stMsg" class="msg"></div>
+          <div id="stList" class="st-list"></div>
+          <p id="stEmpty" class="empty hidden">Ainda sem dados. Os números aparecem conforme os clientes usam o app (versão nova).</p>
+        </div>
       </div>
     </main>
 
@@ -2344,17 +2375,15 @@
         el("div", { class: "meta" }, el("b", {}, a.name, info ? "" : el("em", { class: "src-tag" }, "Addon"))),
         state,
         el("div", { class: "actions act" },
-          info ? el("span", { class: "icon-gap" }) : iconBtn("bolt", "Testar agora", () => testAddon(a)),
           eyeBtn("a" + a.id),
           iconBtn("edit", "Editar", () => startEdit(a)),
           iconBtn("trash", "Apagar", () => deleteAddon(a), "bad")),
-        linkBox("a" + a.id, a.manifest_url),
-        info ? "" : el("div", { class: "test", id: "test-" + a.id }, testResults[a.id] || "")));
+        linkBox("a" + a.id, a.manifest_url)));
+    renderTests();
     });
   }
 
   // ── Addon test (from this browser) and stability (from the customers' devices) ──
-  const testResults = {};
   const normUrl = (u) => { const [b, q] = u.trim().split(/\?(.*)/s); const base = b.replace(/\/$/, "").replace(/\/manifest\.json$/, "").replace(/\/$/, ""); return q !== undefined ? base + "?" + q : base; };
   async function keyFor(u) {
     const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(normUrl(u)));
@@ -2413,30 +2442,81 @@
     const [cls, word] = grade(r.answered / r.tested, r.avg_ms);
     return r.with_streams / r.tested < 0.5 && cls === "good" ? ["mid", "Poucas fontes"] : [cls, word];
   }
-  function histChips(key) {
-    const runs = (testHistory[key] || []).slice(0, 6);
-    if (!runs.length) return "";
-    const hm = (iso) => new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).replace(",", "");
-    return el("div", { class: "tst-hist" }, el("span", {}, "Últimos testes:"), ...runs.map((r) => {
-      const [cls] = gradeRun(r);
-      return el("span", { class: cls, title: hm(r.at) }, Math.round(r.with_streams / Math.max(1, r.tested) * 100) + "% · " + secs(r.avg_ms || 0) + " · " + hm(r.at));
-    }));
+
+  // ── Teste das fontes: one row per content source (addons and M3U lists), in the app's order ──
+  const testState = {};
+  const testKeys = {};
+  const srcKey = (x) => x.__m3u ? "p" + x.id : "a" + x.id;
+  const m3uTestKey = (p) => "m3u-" + String(p.id).replace(/-/g, "").slice(0, 28);
+  async function historyKeyOf(x) {
+    if (x.__m3u) return m3uTestKey(x);
+    return testKeys[x.id] || (testKeys[x.id] = await keyFor(x.manifest_url));
   }
   async function loadTestHistory() {
     const { data, error } = await sb.rpc("admin_addon_tests", { p_per_addon: 6 });
     if (error) return;
     testHistory = {};
     (data || []).forEach((r) => (testHistory[r.addon_key] = testHistory[r.addon_key] || []).push(r));
-    for (const a of addons) {
-      const key = await keyFor(a.manifest_url);
-      if (!testResults[a.id] && testHistory[key]) { testResults[a.id] = [histChips(key)]; const box = $("test-" + a.id); if (box) box.replaceChildren(...testResults[a.id]); }
-    }
+    for (const a of addons) await historyKeyOf(a);
+    renderTests();
+  }
+  const agoShort = (iso) => { const m = Math.round((Date.now() - new Date(iso)) / 60e3); return m < 1 ? "agora" : m < 60 ? "há " + m + " min" : m < 1440 ? "há " + Math.round(m / 60) + " h" : "há " + Math.round(m / 1440) + " d"; };
+  function renderTests() {
+    const box = $("tstList"); if (!box) return;
+    const list = contentOrder();
+    const enabled = list.filter((x) => x.enabled);
+    if (!list.length) { box.replaceChildren(el("p", { class: "empty" }, "Nenhuma fonte de conteúdo para testar.")); return; }
+    box.replaceChildren(...list.map((x) => {
+      const st = testState[srcKey(x)] || {};
+      const hkey = x.__m3u ? m3uTestKey(x) : testKeys[x.id];
+      const hist = (hkey && testHistory[hkey]) || [];
+      const last = st.run || hist[0] || null;
+      const [cls, word] = st.running ? ["wait", "Testando…"] : st.error ? ["bad", st.errorWord || "Erro"] : last ? gradeRun(last) : ["none", "Nunca testado"];
+      const pct = last && last.tested ? Math.round(last.with_streams / last.tested * 100) : null;
+      const num = enabled.indexOf(x) >= 0 ? (x.__m3u ? enabled.findIndex((y) => y.__m3u) : enabled.indexOf(x)) : -1;
+      const color = x.color || (x.__m3u ? "#ffb08c" : "transparent");
+      const btn = el("button", { type: "button", class: "ghost small", onclick: (e) => { e.stopPropagation(); x.__m3u ? testPlaylist(x) : testAddon(x); } }, icon("bolt"), st.running ? "Testando" : "Testar");
+      if (st.running) btn.disabled = true;
+      const open = !!st.open && !!(st.results || st.error);
+      const row = el("div", { class: "ht" + (open ? " open" : "") + (x.enabled ? "" : " off"), onclick: () => { if (st.results || st.error) { st.open = !st.open; testState[srcKey(x)] = st; renderTests(); } } },
+        el("div", { class: "ht-name" }, el("i", { style: "background:" + color }),
+          el("div", {}, el("b", {}, x.name), el("span", {}, (num >= 0 ? "Fonte " + (num + 1) : "Desativada") + " · " + (x.__m3u ? "Lista M3U" : "Addon")))),
+        el("span", { class: "pill " + cls }, word),
+        el("div", { class: "ht-k" }, el("b", {}, pct == null ? "—" : pct + "%"), el("span", {}, x.__m3u ? "abriram" : "com fontes")),
+        el("div", { class: "ht-k" }, el("b", {}, last && last.answered ? secs(last.avg_ms) : "—"), el("span", {}, "tempo médio")),
+        el("div", { class: "ht-k" }, el("b", {}, last ? agoShort(last.at) : "—"), el("span", {}, "último teste")),
+        el("div", { class: "ht-hist", title: "Últimos testes (mais novo à esquerda)" }, ...hist.slice(0, 6).map((r) => el("i", { class: gradeRun(r)[0] }))),
+        el("div", { class: "ht-end" }, (st.results || st.error) && !st.running ? el("span", { class: "ht-more" }, open ? "Fechar" : "Ver títulos", icon("chev")) : "", btn));
+      const kids = [row];
+      if (st.running) kids.push(el("div", { class: "ht-run" }, el("span", {}, st.line || "Começando…"), el("div", { class: "tst-bar" }, el("i", { style: "width:" + Math.round((st.progress || 0) * 100) + "%" }))));
+      if (open && st.error) kids.push(el("div", { class: "ht-detail" }, el("p", { class: "ht-err" }, st.error)));
+      if (open && st.results) {
+        const order = (r) => (r.ok ? (r.n ? 2 : 1) : 0);
+        kids.push(el("div", { class: "ht-detail" }, el("div", { class: "tst-rows" }, ...st.results.slice().sort((p, q) => order(p) - order(q) || q.ms - p.ms).map((r) => el("div", { class: "tst-row" },
+          r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy" }) : el("span", { class: "ph" }),
+          el("b", {}, (r.type === "series" ? "Série · " : x.__m3u ? "Filme · " : "") + (r.name || r.id || "?")),
+          el("span", { class: "r " + (r.n ? "ok" : r.ok ? "mid" : "bad") }, r.status),
+          el("span", { class: "ms" }, secs(r.ms)))))));
+      }
+      return el("div", { class: "ht-item" }, ...kids);
+    }));
+  }
+  function finishTest(x, key, name, results) {
+    const st = testState[srcKey(x)];
+    const answered = results.filter((r) => r.ok);
+    const run = { tested: results.length, answered: answered.length, with_streams: results.filter((r) => r.n > 0).length,
+      avg_ms: answered.length ? Math.round(answered.reduce((t, r) => t + r.ms, 0) / answered.length) : 15000,
+      max_ms: results.length ? Math.max(...results.map((r) => r.ms)) : 0, at: new Date().toISOString() };
+    sb.rpc("admin_save_addon_test", { p_key: key, p_name: name, p_tested: run.tested, p_answered: run.answered, p_with_streams: run.with_streams,
+      p_avg_ms: run.avg_ms, p_max_ms: run.max_ms, p_details: results.map((r) => ({ n: r.name, s: r.status, ms: r.ms })) }).then(() => {});
+    (testHistory[key] = testHistory[key] || []).unshift({ ...run, addon_key: key });
+    Object.assign(st, { running: false, run, results, error: null });
+    renderTests();
+    return gradeRun(run)[0];
   }
   async function testAddon(a) {
-    const box0 = $("test-" + a.id); if (!box0) return;
-    const bar = el("i", { style: "width:0%" });
-    const line = el("span", {}, "Escolhendo títulos…");
-    box0.replaceChildren(el("div", { class: "tst" }, el("div", { class: "tst-sum" }, el("span", { class: "pill wait" }, "Testando…"), line), el("div", { class: "tst-bar" }, bar)));
+    const st = testState[srcKey(a)] = { running: true, progress: 0, line: "Escolhendo títulos…", open: false };
+    renderTests();
     const { base, q } = addonParts(a.manifest_url);
     let manifest = null;
     try { manifest = await (await fetch(base + "/manifest.json" + q, { signal: AbortSignal.timeout(15000) })).json(); } catch (_) {}
@@ -2457,39 +2537,42 @@
             else { const j = await res.json(); const n = (j.streams || []).length; r = { ok: true, status: n ? n + " fontes" : "Sem fontes", n }; }
           } catch (e) { r = { ok: false, status: e?.name === "TimeoutError" || e?.name === "AbortError" ? "Não respondeu em 15 s" : "Erro de rede", n: 0 }; }
           results.push({ ...t, ...r, ms: Math.round(performance.now() - t0) });
-          done++; bar.style.width = Math.round(done / titles.length * 100) + "%"; line.textContent = "Testando " + done + " de " + titles.length + "…";
+          done++; st.progress = done / titles.length; st.line = "Testando " + done + " de " + titles.length + "…"; renderTests();
         }
       };
       await Promise.all([worker(), worker(), worker()]);
     }
-    const answered = results.filter((r) => r.ok);
-    const run = { tested: results.length, answered: answered.length, with_streams: results.filter((r) => r.n > 0).length,
-      avg_ms: answered.length ? Math.round(answered.reduce((x, r) => x + r.ms, 0) / answered.length) : 15000,
-      max_ms: results.length ? Math.max(...results.map((r) => r.ms)) : 0, at: new Date().toISOString() };
-    const key = await keyFor(a.manifest_url);
-    sb.rpc("admin_save_addon_test", { p_key: key, p_name: a.name, p_tested: run.tested, p_answered: run.answered, p_with_streams: run.with_streams,
-      p_avg_ms: run.avg_ms, p_max_ms: run.max_ms, p_details: results.map((r) => ({ n: r.name, s: r.status, ms: r.ms })) }).then(() => {});
-    (testHistory[key] = testHistory[key] || []).unshift({ ...run, addon_key: key });
-    const [cls, word] = gradeRun(run);
-    const order = (r) => (r.ok ? (r.n ? 2 : 1) : 0);
-    const rows = results.slice().sort((x, y) => order(x) - order(y) || y.ms - x.ms).map((r) => el("div", { class: "tst-row" },
-      r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy" }) : el("span", { class: "ph" }),
-      el("b", {}, r.name || r.id || "?"),
-      el("span", { class: "r " + (r.n ? "ok" : r.ok ? "mid" : "bad") }, r.status),
-      el("span", { class: "ms" }, secs(r.ms))));
-    const fails = results.filter((r) => !r.ok).length;
-    const parts = [el("div", { class: "tst" },
-      el("div", { class: "tst-sum" }, el("span", { class: "pill " + cls }, word),
-        el("span", {}, el("b", {}, run.answered + " de " + run.tested), " responderam"),
-        el("span", {}, el("b", {}, String(run.with_streams)), " com fontes"),
-        run.answered ? el("span", {}, "média ", el("b", {}, secs(run.avg_ms)), " · mais lento ", el("b", {}, secs(run.max_ms))) : "",
-        fails ? el("span", { style: "color:#ff8a8e" }, fails + (fails === 1 ? " falha" : " falhas")) : ""),
-      el("details", {}, el("summary", {}, "Ver os " + results.length + " títulos testados"), el("div", { class: "tst-rows" }, ...rows)),
-      histChips(key))];
-    testResults[a.id] = parts; const box = $("test-" + a.id); if (box) box.replaceChildren(...parts);
-    return cls;
+    return finishTest(a, await historyKeyOf(a), a.name, results);
   }
-  $("aTestAll").addEventListener("click", async () => { for (const a of addons.filter((x) => kindOf(x) === "content")) await testAddon(a); toast("Teste concluído"); });
+  // M3U lists: tested by the "m3u-test" function in Supabase (an https page cannot open the list's http links).
+  async function testPlaylist(p) {
+    const st = testState[srcKey(p)] = { running: true, progress: 0.15, line: "Sorteando filmes e séries da lista (sem canais)…", open: false };
+    renderTests();
+    const tick = setInterval(() => { st.progress = Math.min(0.9, st.progress + 0.05); renderTests(); }, 1500);
+    let data = null, err = null;
+    try { const r = await sb.functions.invoke("m3u-test", { body: { id: p.id } }); data = r.data; err = r.error; } catch (e) { err = e; }
+    clearInterval(tick);
+    const fail = (word, text) => { Object.assign(st, { running: false, error: text, errorWord: word, results: null }); renderTests(); return "bad"; };
+    if (err || !data) {
+      const status = err?.context?.status;
+      if (status === 403) return fail("Sem permissão", "Entre no painel com a conta de administrador.");
+      return fail("Falta a função", "O teste das listas M3U precisa da função \"m3u-test\" no Supabase. Crie em Supabase › Edge Functions › Deploy a new function, com o nome m3u-test, colando o arquivo que o Claude mandou.");
+    }
+    if (data.error === "list_unreachable") return fail("Fora do ar", "A lista não abriu agora (" + (data.detail || "sem resposta") + "). Confira se o link e o login da lista ainda valem.");
+    if (data.error === "no_vod") return fail("Sem filmes", "A lista abriu, mas não achei filmes nem séries nela (só canais).");
+    if (data.error) return fail("Erro", "O teste não terminou: " + (data.detail || data.error));
+    return finishTest(p, m3uTestKey(p), p.name, data.results || []);
+  }
+  $("aTestAll").addEventListener("click", async () => {
+    for (const x of contentOrder().filter((y) => y.enabled)) await (x.__m3u ? testPlaylist(x) : testAddon(x));
+    toast("Teste concluído");
+  });
+  seg("hlTab", (v) => {
+    $("hlTest").classList.toggle("hidden", v !== "test"); $("hlDev").classList.toggle("hidden", v !== "dev");
+    $("aTestAll").classList.toggle("hidden", v !== "test");
+    $("hlSub").textContent = v === "test" ? "Teste na hora: o painel pede filmes e séries sorteados a cada fonte e mostra quantos abriram e em quanto tempo."
+      : "Medido nos aparelhos dos clientes a cada busca de fontes: quantas vezes o addon trouxe fontes, em quanto tempo, e quantos filmes foram assistidos por ele.";
+  });
 
   let stats = [];
   async function loadStats() {
@@ -2661,7 +2744,7 @@
       el("span", { class: "fonte" }, el("i", { style: "background:" + (p.color || "#ffb08c") }), p.enabled ? "Fonte " + num : "—"),
       el("div", { class: "meta" }, el("b", {}, p.name, el("em", { class: "m3u-tag" }, "Lista M3U"))),
       state,
-      el("div", { class: "actions act" }, el("span", { class: "icon-gap" }),
+      el("div", { class: "actions act" },
         eyeBtn("p" + p.id),
         iconBtn("edit", "Editar", () => startEditPlaylist(p)),
         iconBtn("trash", "Apagar", () => deletePlaylist(p), "bad")),
