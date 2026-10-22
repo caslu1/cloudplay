@@ -39,7 +39,7 @@
       "title": "Registro de erros dos aparelhos",
       "area": "Diagnóstico",
       "impact": "medio",
-      "status": "andamento",
+      "status": "feita",
       "version": "2.8",
       "detail": "O app passa a mandar para o painel os addons que falham, os erros que ele pega e as vezes em que fecha sozinho. Com isso a IA consegue apontar o que mais acontece de verdade."
     },
@@ -62,7 +62,7 @@
       "title": "Capas menores em aparelhos fracos",
       "area": "Imagens",
       "impact": "baixo",
-      "status": "sugerida",
+      "status": "andamento",
       "detail": "Em TV box com pouca memória, pedir as capas um tamanho abaixo deixa a rolagem mais leve sem perder qualidade visível."
     }
   ]

@@ -299,6 +299,19 @@
     #aiFilter { width: 100%; }
     .ai-hero { flex-direction: column; gap: 12px; }
   }
+  .pend-card { border-color: rgba(255, 116, 168, .22); }
+  .pend-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  .pend-send { background: var(--grad) !important; color: #fff !important; border: 0; height: 42px; padding: 0 18px; font-weight: 700; box-shadow: 0 8px 24px rgba(255, 116, 168, .2); }
+  .pend-send:disabled { background: var(--panel2) !important; color: var(--faint) !important; box-shadow: none; }
+  .pend-list { margin: 12px 0 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; }
+  .pend-list:empty { display: none; }
+  .pend-list span { color: var(--faint); font-size: 12px; margin-left: 6px; }
+  .pend-token { margin-top: 14px; padding: 14px; border-radius: 12px; background: var(--field); border: 1px solid var(--line2); font-size: 13.5px; color: var(--muted); }
+  .pend-token b { color: var(--text); } .pend-token ol { margin: 8px 0 12px; padding-left: 20px; line-height: 1.7; }
+  .pend-token-row { display: flex; gap: 8px; } .pend-token-row input { flex: 1; }
+  .pend-msg { margin: 10px 0 0; font-size: 13px; color: var(--muted); } .pend-msg:empty { display: none; }
+  .pend-msg.bad { color: #ff8a8e; } .pend-msg.ok { color: var(--ok); }
+  @media (max-width: 720px) { .pend-send { width: 100%; } .pend-token-row { flex-direction: column; } }
   .build-card { background: linear-gradient(120deg, rgba(255, 116, 168, .07), rgba(255, 176, 140, .02) 60%), var(--panel); }
   .build-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
   .build-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--faint); margin-bottom: 4px; }
@@ -1262,6 +1275,25 @@
 
     <!-- Atualizações -->
     <main class="page hidden" data-section="atualizacoes" data-title="Atualizações">
+      <div id="pendCard" class="card pend-card">
+        <div class="pend-head">
+          <div><span class="build-label">Atualização pendente</span><h2 id="pendTitle">Nada pendente</h2>
+            <p id="pendSub" class="sub" style="margin:2px 0 0">O que for pedido no chat e ficar "para a próxima atualização" aparece aqui.</p></div>
+          <button type="button" id="pendSend" class="pend-send" disabled><svg class="i"><use href="#i-up"/></svg>Enviar atualização</button>
+        </div>
+        <ul id="pendList" class="pend-list"></ul>
+        <div id="pendToken" class="pend-token hidden">
+          <p><b>Primeira vez neste navegador:</b> cole um token do GitHub para o painel poder mandar a atualização. Ele fica guardado só neste navegador.</p>
+          <ol>
+            <li>No GitHub: <b>Settings → Developer settings → Fine-grained tokens → Generate new token</b>.</li>
+            <li>Em <b>Repository access</b>, escolha <b>Only select repositories → caslu1/cloudflix</b>.</li>
+            <li>Em <b>Permissions → Repository permissions → Actions</b>, escolha <b>Read and write</b>. Gere e copie.</li>
+          </ol>
+          <div class="pend-token-row"><input id="pendTokenInput" type="password" placeholder="github_pat_…" autocomplete="off">
+            <button type="button" id="pendTokenSave">Salvar e enviar</button></div>
+        </div>
+        <p id="pendMsg" class="pend-msg"></p>
+      </div>
       <div id="buildCard" class="card build-card hidden">
         <div class="build-top">
           <div><span class="build-label">Próxima versão</span><h2 id="buildTitle">Versão</h2></div>
@@ -2769,7 +2801,7 @@
     }));
     $("updEmpty").classList.toggle("hidden", entries.length > 0);
   }
-  $("updReload").addEventListener("click", () => { loadUpdates(); loadBuild(); });
+  $("updReload").addEventListener("click", () => { loadUpdates(); loadBuild(); loadPending(); });
 
   // ── Versões nos aparelhos + versão mínima (app_settings "min_version") ──
   let releaseVersions = [];
@@ -2827,6 +2859,61 @@
     if (error) { toast("Não foi possível salvar: " + error.message); return; }
     settings.min_version = v || null;
     toast(v ? "Versão mínima: " + v + ". Vale na próxima vez que o app abrir." : "Versão mínima desligada");
+  });
+
+  // ── Enviar atualização: what waits for the next version (pendente.json) and the button that
+  // starts it (the release-pending workflow, called with a GitHub token kept in this browser). ──
+  let pendItems = [];
+  const PEND_TOKEN = "cloudplay_gh_token", PEND_SENT = "cloudplay_pending_sent";
+  const lsGet = (k) => { try { return localStorage.getItem(k); } catch (_) { return null; } };
+  const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (_) {} };
+  async function loadPending() {
+    let data = null;
+    try { data = await (await fetch("pendente.json?t=" + Date.now(), { cache: "no-store" })).json(); } catch (_) { data = null; }
+    pendItems = (data?.items || []).map((i) => typeof i === "string" ? { text: i } : i);
+    renderPending();
+  }
+  function renderPending() {
+    const n = pendItems.length;
+    const sent = Number(lsGet(PEND_SENT) || 0);
+    const recentlySent = sent && Date.now() - sent < 15 * 60e3 && n > 0;
+    $("pendTitle").textContent = n ? n + (n === 1 ? " mudança esperando" : " mudanças esperando") : "Nada pendente";
+    $("pendSub").textContent = n ? "Vão juntas na próxima versão do app quando você tocar em Enviar atualização."
+      : "O que for pedido no chat e ficar \"para a próxima atualização\" aparece aqui.";
+    $("pendList").replaceChildren(...pendItems.map((i) => el("li", {}, i.text, i.added ? el("span", {}, "pedido em " + i.added.split("-").reverse().join("/")) : "")));
+    $("pendSend").disabled = !n || recentlySent;
+    $("pendSend").lastChild.textContent = recentlySent ? "Enviando…" : "Enviar atualização";
+    if (recentlySent) setPendMsg("Atualização enviada às " + new Date(sent).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + ". A versão aparece abaixo, com a porcentagem, em instantes.", "ok");
+  }
+  const setPendMsg = (t, cls) => { $("pendMsg").textContent = t || ""; $("pendMsg").className = "pend-msg" + (cls ? " " + cls : ""); };
+  async function sendPending() {
+    const token = lsGet(PEND_TOKEN);
+    if (!token) { $("pendToken").classList.remove("hidden"); $("pendTokenInput").focus(); return; }
+    if (!confirm("Enviar a atualização com " + pendItems.length + (pendItems.length === 1 ? " mudança" : " mudanças") + "? Os aparelhos recebem o aviso quando a versão ficar pronta (uns 30 minutos).")) return;
+    $("pendSend").disabled = true; setPendMsg("Enviando…");
+    let res = null;
+    try {
+      res = await fetch("https://api.github.com/repos/caslu1/cloudflix/actions/workflows/release-pending.yml/dispatches", {
+        method: "POST", headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+        body: JSON.stringify({ ref: "main" }) });
+    } catch (_) { res = null; }
+    if (res && res.status === 204) {
+      lsSet(PEND_SENT, String(Date.now())); renderPending(); toast("Atualização enviada");
+      setTimeout(() => { loadBuild(); loadPending(); }, 60000);
+      return;
+    }
+    $("pendSend").disabled = false;
+    if (res && (res.status === 401 || res.status === 403 || res.status === 404)) {
+      lsSet(PEND_TOKEN, null); $("pendToken").classList.remove("hidden");
+      setPendMsg("O GitHub recusou o token (vencido ou sem a permissão Actions: Read and write). Cole um novo.", "bad");
+    } else setPendMsg("Não foi possível falar com o GitHub agora. Tente de novo em instantes.", "bad");
+  }
+  $("pendSend").addEventListener("click", sendPending);
+  $("pendTokenSave").addEventListener("click", () => {
+    const t = $("pendTokenInput").value.trim();
+    if (!/^(github_pat_|ghp_)/.test(t)) { setPendMsg("Isso não parece um token do GitHub (começa com github_pat_).", "bad"); return; }
+    lsSet(PEND_TOKEN, t); $("pendTokenInput").value = ""; $("pendToken").classList.add("hidden"); setPendMsg("");
+    sendPending();
   });
 
   // How far along the next version is: the APK build writes status/build.json in the public
@@ -3060,7 +3147,7 @@
       if (on && page === "uso" && !$("app").classList.contains("hidden")) setTimeout(loadUsage, 0);
       if (on && page === "inicio") setTimeout(drawActiveHistory, 0);
       if (on && page === "conectados" && !$("app").classList.contains("hidden")) setTimeout(loadPeaks, 0);
-      if (on && page === "atualizacoes" && !$("app").classList.contains("hidden")) setTimeout(() => { loadUpdates(); loadBuild(); }, 0);
+      if (on && page === "atualizacoes" && !$("app").classList.contains("hidden")) setTimeout(() => { loadUpdates(); loadBuild(); loadPending(); }, 0);
       if (on && page === "erros" && !$("app").classList.contains("hidden")) setTimeout(loadErrors, 0);
       if (on && page === "recentes" && !$("app").classList.contains("hidden")) setTimeout(openRecent, 300);
       if (on && page === "melhorias" && !$("app").classList.contains("hidden")) setTimeout(loadImprovements, 0);
@@ -3075,7 +3162,7 @@
   $("menuBtn").addEventListener("click", () => document.body.classList.add("nav-open"));
   $("bnMore").addEventListener("click", (e) => { e.preventDefault(); document.body.classList.add("nav-open"); });
   $("backdrop").addEventListener("click", () => document.body.classList.remove("nav-open"));
-  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); } loadErrors(); if (location.hash === "#recentes") setTimeout(openRecent, 800); if (location.hash === "#melhorias") loadImprovements(); loadPlaylists(); };
+  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); loadPending(); } loadErrors(); if (location.hash === "#recentes") setTimeout(openRecent, 800); if (location.hash === "#melhorias") loadImprovements(); loadPlaylists(); };
   $("refreshAll").addEventListener("click", loadAll);
 
   $("search").addEventListener("input", render);
