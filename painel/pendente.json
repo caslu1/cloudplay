@@ -3,8 +3,12 @@
     {
       "text": "Página de cada streaming mostra só o que está na assinatura dele no Brasil (sem filmes de aluguel ou de outros streamings)",
       "added": "2026-10-22"
+    },
+    {
+      "text": "\"Continuar assistindo\" começa mais rápido: espera no máximo 2 s pela fonte da última vez (antes 6 s)",
+      "added": "2026-10-22"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-22T18:30:00-03:00"
+  "updated_at": "2026-10-22T19:00:00-03:00"
 }
