@@ -1,18 +1,5 @@
 {
-  "items": [
-    {
-      "text": "Correção urgente: o player fechava com erro em alguns aparelhos (o salvamento do atraso da legenda foi desligado)",
-      "added": "2026-10-22"
-    },
-    {
-      "text": "Fileiras dos streamings no mesmo tamanho das outras fileiras do app",
-      "added": "2026-10-22"
-    },
-    {
-      "text": "No celular, as capas aparecem em pé (modo pôster) por padrão; na TV continua igual",
-      "added": "2026-10-22"
-    }
-  ],
+  "items": [],
   "sent_at": null,
-  "updated_at": "2026-10-22T22:30:00-03:00"
+  "updated_at": null
 }

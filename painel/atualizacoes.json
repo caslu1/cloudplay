@@ -1,5 +1,14 @@
 [
   {
+    "version": "2.17",
+    "date": null,
+    "items": [
+      "Correção urgente: o player fechava com erro em alguns aparelhos (o salvamento do atraso da legenda foi desligado)",
+      "Fileiras dos streamings no mesmo tamanho das outras fileiras do app",
+      "No celular, as capas aparecem em pé (modo pôster) por padrão; na TV continua igual"
+    ]
+  },
+  {
     "version": "2.16",
     "date": null,
     "items": [
