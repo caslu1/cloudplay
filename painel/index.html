@@ -508,14 +508,18 @@
   .addon .meta span { display: block; color: var(--faint); font: 12px ui-monospace, Menlo, Consolas, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .addon .state { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--muted); font-size: 12.5px; user-select: none; }
   .addon .state.on .switch { background: var(--ok); } .addon .state.on .switch::after { left: 18px; }
-  .addon-form { display: grid; gap: 14px; grid-template-columns: 1fr 2fr 120px; align-items: end; }
+  .addon-form { display: grid; gap: 14px; grid-template-columns: 1fr 2fr 130px 1fr; align-items: start; }
+  .addon-form .hint { font-size: 11.5px; line-height: 1.4; }
+  .addon-form.m3u-mode { grid-template-columns: 1fr 2.6fr 130px; }
+  #addonCard .card-head { align-items: center; }
   .addon-form .btns { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; }
   @media (max-width: 860px) {
     .addon { grid-template-columns: 1fr auto; grid-template-areas: "meta meta" "fonte state" "order act"; gap: 10px 12px; }
     .addon .meta { grid-area: meta; } .addon .fonte { grid-area: fonte; } .addon .state { grid-area: state; }
     .addon .order { grid-area: order; } .addon .act { grid-area: act; }
     .addon .act { display: flex; flex-wrap: nowrap; justify-content: flex-end; gap: 2px; } .addon .icon-gap { display: none; }
-    .addon-form { grid-template-columns: 1fr; }
+    .addon-form, .addon-form.m3u-mode { grid-template-columns: 1fr; }
+    #addonCard .card-head { flex-wrap: wrap; }
     .addon-form .btns button { flex: 1; }
   }
   .meter-row { display: grid; gap: 10px; }
@@ -903,7 +907,6 @@
       <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-cart"/></svg>Pedidos<span id="navPending" class="pill count-pill hidden">0</span></a>
       <div class="nav-label">Conteúdo do aplicativo</div>
       <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg>Add-ons padrão</a>
-      <a href="#listas" data-page="listas"><svg class="i"><use href="#i-list"/></svg>Listas M3U</a>
       <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-tag"/></svg>Categorias</a>
       <a href="#streamings" data-page="streamings"><svg class="i"><use href="#i-tvplay"/></svg>Fontes de conteúdo</a>
       <a href="#recentes" data-page="recentes"><svg class="i"><use href="#i-new"/></svg>Conteúdos recentes</a>
@@ -970,7 +973,7 @@
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg><span>Conectados</span></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg><span>Addons</span></a>
-    <a href="#mais" id="bnMore" data-page="pedidos listas categorias streamings recentes uso atualizacoes erros melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#mais" id="bnMore" data-page="pedidos categorias streamings recentes uso atualizacoes erros melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
   </nav>
 
   <div class="content">
@@ -1189,7 +1192,7 @@
           <div><h2>Addons instalados</h2><p class="sub">Instalados em todos os aparelhos. A ordem das fontes no app é escolhida logo abaixo.</p></div>
           <div class="head-btns">
             <button type="button" id="aTestAll" class="ghost small"><svg class="i"><use href="#i-bolt"/></svg>Testar todos</button>
-            <button type="button" id="aNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Novo addon</button>
+            <button type="button" id="aNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Adicionar addon ou M3U</button>
           </div>
         </div>
         <div id="addonList" class="addon-list"></div>
@@ -1205,14 +1208,18 @@
         <p id="stEmpty" class="empty hidden">Ainda sem dados. Os números aparecem conforme os clientes usam o app (versão nova).</p>
       </div>
       <div id="addonCard" class="card hidden">
-        <div class="card-head"><div><h2 id="addonFormTitle">Novo addon</h2><p class="sub">Cole o link do manifest do addon (termina em manifest.json).</p></div></div>
+        <div class="card-head"><div><h2 id="addonFormTitle">Nova fonte</h2><p id="addonFormSub" class="sub">Escolha o que vai adicionar: um addon (link manifest.json) ou uma lista M3U.</p></div>
+          <div id="aSrc" class="seg"><button type="button" data-v="addon" class="on">Addon</button><button type="button" data-v="m3u">Lista M3U</button></div></div>
         <form id="addonForm" class="addon-form">
-          <div><label for="aName">Nome</label><input id="aName" placeholder="Ex.: Torrentio" maxlength="60" required></div>
-          <div><label for="aUrl">Link do manifest</label><input id="aUrl" type="url" placeholder="https://.../manifest.json" required></div>
-          <div><label for="aColor">Cor da bolinha</label><input id="aColor" type="color" value="#ff74a8"></div>
-          <div><label for="aKind">Tipo</label><select id="aKind">
-            <option value="">Automático (pelo manifest)</option><option value="content">Conteúdo (traz fontes)</option><option value="info">Informação (catálogos e detalhes)</option>
-          </select></div>
+          <div><label for="aName">Nome</label><input id="aName" placeholder="Ex.: Torrentio" maxlength="60" required>
+            <span class="hint">Só para você reconhecer no painel. No app aparece "Fonte 1, 2…".</span></div>
+          <div><label for="aUrl" id="aUrlLabel">Link do manifest</label><input id="aUrl" type="url" placeholder="https://.../manifest.json" required>
+            <span class="hint" id="aUrlHint">O mesmo link usado para instalar o addon (termina em manifest.json).</span></div>
+          <div><label for="aColor">Cor da bolinha</label><input id="aColor" type="color" value="#ff74a8">
+            <span class="hint">Aparece ao lado de "Fonte N" no app.</span></div>
+          <div id="aKindBox"><label for="aKind">Tipo</label><select id="aKind">
+            <option value="">Automático</option><option value="content">Conteúdo (traz fontes)</option><option value="info">Informação (capas e catálogos)</option>
+          </select><span class="hint">Deixe em Automático: o painel descobre pelo manifest.</span></div>
           <div class="btns"><button type="button" id="aCancel" class="ghost">Cancelar</button><button type="submit" id="aSubmit">Adicionar</button></div>
         </form>
         <div id="addonMsg" class="msg"></div>
@@ -2437,13 +2444,38 @@
   function resetAddonForm() {
     editingAddon = null;
     $("aName").value = ""; $("aUrl").value = ""; $("aColor").value = "#ff74a8"; $("aKind").value = "";
+    editingPlaylist = null; $("aSrc").classList.remove("hidden"); setSrcMode("addon");
     $("aSubmit").textContent = "Adicionar";
-    $("addonFormTitle").textContent = "Novo addon";
+    $("addonFormTitle").textContent = "Nova fonte";
     $("addonCard").classList.add("hidden");
   }
 
+  // CloudPlay: the same form adds an addon or an M3U list (default_playlists).
+  let editingPlaylist = null;
+  function setSrcMode(mode) {
+    const m3u = mode === "m3u";
+    $("aSrc").dataset.value = mode;
+    $("aSrc").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.v === mode));
+    $("addonForm").classList.toggle("m3u-mode", m3u);
+    $("aKindBox").classList.toggle("hidden", m3u);
+    $("aUrlLabel").textContent = m3u ? "Link M3U" : "Link do manifest";
+    $("aUrl").placeholder = m3u ? "http://servidor/get.php?username=...&password=...&type=m3u_plus" : "https://.../manifest.json";
+    $("aUrlHint").textContent = m3u ? "Só filmes e séries viram fontes (canais ficam de fora). A senha fica escondida no painel. Até 5 listas."
+      : "O mesmo link usado para instalar o addon (termina em manifest.json).";
+    $("aName").placeholder = m3u ? "Ex.: Lista VOD" : "Ex.: Torrentio";
+    if (!editingAddon && !editingPlaylist) $("aColor").value = m3u ? "#ffb08c" : "#ff74a8";
+  }
+  seg("aSrc", (v) => setSrcMode(v));
+  function startEditPlaylist(p) {
+    resetAddonForm(); editingPlaylist = p; setSrcMode("m3u");
+    $("aSrc").classList.add("hidden");
+    $("aName").value = p.name; $("aUrl").value = p.url; $("aColor").value = p.color || "#ffb08c";
+    $("aSubmit").textContent = "Salvar"; $("addonFormTitle").textContent = "Editar lista M3U";
+    $("addonCard").classList.remove("hidden"); $("addonCard").scrollIntoView({ behavior: "smooth", block: "center" }); $("aName").focus();
+  }
   function startEdit(a) {
     editingAddon = a;
+    editingPlaylist = null; setSrcMode("addon"); $("aSrc").classList.add("hidden");
     $("aName").value = a.name; $("aUrl").value = a.manifest_url; $("aColor").value = a.color || "#ff74a8"; $("aKind").value = a.kind || "";
     $("aSubmit").textContent = "Salvar";
     $("addonFormTitle").textContent = "Editar addon";
@@ -2465,6 +2497,17 @@
     const url = $("aUrl").value.trim();
     if (!/^https?:\/\//i.test(url)) { $("addonMsg").textContent = "O link precisa começar com http:// ou https://"; return; }
     const color = $("aColor").value.toLowerCase();
+    if (($("aSrc").dataset.value || "addon") === "m3u") {
+      if (!editingPlaylist && playlists.length >= 5) { $("addonMsg").textContent = "Já são 5 listas: apague uma antes de adicionar outra."; return; }
+      const prow = { name, url, color };
+      const { error } = editingPlaylist
+        ? await sb.from("default_playlists").update(prow).eq("id", editingPlaylist.id)
+        : await sb.from("default_playlists").insert({ ...prow, position: 1000 + playlists.length });
+      if (error) { $("addonMsg").textContent = /color/i.test(error.message) ? "Para salvar a cor, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível salvar: " + error.message; return; }
+      toast(editingPlaylist ? "Lista salva" : "Lista adicionada");
+      resetAddonForm(); await loadPlaylists(); loadAddons();
+      return;
+    }
     const row = { name, manifest_url: url, color };
     if ($("aKind").value || editingAddon?.kind) row.kind = $("aKind").value || null;
     const { error } = editingAddon
@@ -2523,7 +2566,7 @@
       state,
       el("div", { class: "actions act" }, el("span", { class: "icon-gap" }),
         iconBtn("copy", "Copiar link", (e) => copy(p.url, e.currentTarget, "Link copiado")),
-        iconBtn("edit", "Editar", () => { location.hash = "#listas"; setTimeout(() => editPlaylist(p), 300); }),
+        iconBtn("edit", "Editar", () => startEditPlaylist(p)),
         iconBtn("trash", "Apagar", () => deletePlaylist(p), "bad")));
   }
   function orderToggle() {
@@ -2848,12 +2891,12 @@
   });
   async function togglePlaylist(p) {
     const { error } = await sb.from("default_playlists").update({ enabled: !p.enabled }).eq("id", p.id);
-    if (error) { toast("Erro: " + error.message); return; } loadPlaylists();
+    if (error) { toast("Erro: " + error.message); return; } await loadPlaylists(); loadAddons();
   }
   async function deletePlaylist(p) {
     if (!confirm("Apagar a lista \"" + p.name + "\"? Ela sai de todos os aparelhos na próxima vez que o app abrir.")) return;
     const { error } = await sb.from("default_playlists").delete().eq("id", p.id);
-    if (error) { toast("Erro: " + error.message); return; } toast("Lista apagada"); loadPlaylists();
+    if (error) { toast("Erro: " + error.message); return; } toast("Lista apagada"); await loadPlaylists(); loadAddons();
   }
 
   // ── Atualizações: the history in atualizacoes.json, timed by the GitHub releases when known ──
@@ -3222,8 +3265,10 @@
   seg("aiFilter", renderImprovements);
 
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "listas", "categorias", "streamings", "recentes", "uso", "atualizacoes", "erros", "melhorias"];
+  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "categorias", "streamings", "recentes", "uso", "atualizacoes", "erros", "melhorias"];
   function go() {
+    // The M3U lists moved into Add-ons padrão.
+    if (location.hash === "#listas") { history.replaceState(null, "", "#addons"); }
     const page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "inicio";
     document.querySelectorAll("[data-section]").forEach((s) => {
       const on = s.dataset.section === page;
