@@ -257,7 +257,8 @@
   .rc-new { position: absolute; top: 8px; left: 8px; font-size: 10.5px; font-weight: 700; letter-spacing: .5px; padding: 3px 8px; border-radius: 99px; background: rgba(10, 10, 15, .78); color: var(--pink); backdrop-filter: blur(6px); }
   .rc b { display: block; margin-top: 8px; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .rc span { display: block; color: var(--faint); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  @media (max-width: 720px) { .rc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; } .rc-right { width: 100%; } .rc-right select { flex: 1; width: auto; } }
+  @media (max-width: 720px) { .rc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; } .rc-right { width: 100%; } .rc-right select { flex: 1; width: auto; }
+    .rc-right .seg { width: 100%; flex-wrap: nowrap; } .rc-right .seg button { flex: 1 1 0; white-space: nowrap; padding: 0 8px; } }
   .tst { grid-column: 1 / -1; }
   .tst-sum { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 12.5px; color: var(--muted); }
   .tst-sum b { color: var(--text); font-weight: 600; }
@@ -321,6 +322,19 @@
   .build-card.ok .build-bar i { background: var(--ok); } .build-card.bad .build-bar i { background: var(--bad); }
   .build-card.ok .build-pct { color: var(--ok); } .build-card.bad .build-pct { color: #ff8a8e; }
   .build-text { margin: 10px 0 0; color: var(--muted); font-size: 13.5px; }
+  /* ── Organização (revisão geral) ── */
+  /* One refresh per page: the top bar's Atualizar reloads everything, so the cards' own buttons go. */
+  #reload, #cnReload, #reqReload, #usoReload, #updReload, #erReload { display: none !important; }
+  /* Same spacing everywhere: card heads, toolbars and lists. */
+  .card-head, .list-head { margin-bottom: 16px; }
+  .card h2 { font-size: 15.5px; }
+  .toolbar { margin-bottom: 16px; }
+  .list-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .list-head .gen-open { margin: 0; }
+  /* Devices in the codes table: name and Liberar side by side. */
+  table.codes .devices div { justify-content: flex-start; gap: 10px; }
+  table.codes td.td-dev { min-width: 190px; }
+  .empty { padding: 36px 10px; color: var(--faint); }
   .ver-two { grid-template-columns: 1.3fr 1fr; margin-bottom: 0; }
   .ver-two .card { margin-bottom: 16px; }
   .ver-head { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 14px; flex-wrap: wrap; }
@@ -415,7 +429,7 @@
   .stat-sub { display: block; color: var(--faint); font-size: 12px; margin-top: 2px; }
   .hist-card { position: relative; margin-bottom: 16px; }
   .hist-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
-  .hist-ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(255, 61, 138, .12); color: #ff8ab5; flex: none; }
+  .hist-ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(255, 116, 168, .10); color: #FF74A8; flex: none; }
   .hist-ic svg { width: 20px; height: 20px; }
   .hist-chart { width: 100%; overflow: hidden; }
   .hist-tip { position: absolute; z-index: 3; width: 150px; padding: 9px 12px; border-radius: 10px; background: #2a2a30; border: 1px solid var(--line2); box-shadow: 0 10px 30px rgba(0, 0, 0, .5); pointer-events: none; }
@@ -1338,7 +1352,7 @@
     <main class="page hidden" data-section="recentes" data-title="Conteúdos recentes">
       <div class="card">
         <div class="card-head">
-          <div><h2>O que entrou nos addons</h2><p class="sub"><b>Lançamentos</b>: os títulos mais novos que os addons padrão têm, pela data de lançamento e pelos catálogos de novidades. <b>Novos desde a última leitura</b>: o que apareceu nos catálogos depois da leitura anterior. Lê sozinho quando você abre esta página (no máximo 1 vez por hora).</p></div>
+          <div><h2>O que entrou nos addons</h2><p class="sub">Os títulos mais novos dos addons de conteúdo. O painel lê os catálogos sozinho quando você abre esta página (no máximo 1 vez por hora)</p></div>
           <button type="button" id="rcScan" class="small"><svg class="i"><use href="#i-refresh"/></svg>Procurar novidades</button>
         </div>
         <div class="er-tools">
@@ -1987,12 +2001,13 @@
     const ns = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(ns, "svg"); svg.setAttribute("width", W); svg.setAttribute("height", H);
     const mk = (tag, attrs, text) => { const e = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); if (text != null) e.textContent = text; svg.append(e); return e; };
+    mk("defs", {}).innerHTML = '<linearGradient id="pkBest" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FFB08C"/><stop offset="1" stop-color="#FF74A8"/></linearGradient>';
     const max = Math.max(1, ...hours.map((x) => x.n)), plotH = H - T - B;
     const slot = (W - L - R) / 24, bw = Math.max(5, Math.min(22, slot - 4));
     const best = Math.max(...hours.map((x) => x.n));
     hours.forEach(({ h, n }) => {
       const x = L + h * slot + (slot - bw) / 2, hh = Math.max(n ? 3 : 1, n / max * (plotH - 14)), y = T + plotH - hh;
-      mk("rect", { x, y, width: bw, height: hh, rx: 3, fill: n && n === best ? "rgba(255, 61, 138, .55)" : "rgba(255, 255, 255, .16)" });
+      mk("rect", { x, y, width: bw, height: hh, rx: 3, fill: n && n === best ? "url(#pkBest)" : "rgba(255, 116, 168, .22)" });
       if (n && (W > 560 || n === best)) mk("text", { x: x + bw / 2, y: y - 5, "text-anchor": "middle", fill: "#d4d4d8", "font-size": 10.5, "font-weight": 600 }, n);
     });
     for (let h = 0; h < 24; h += (W < 560 ? 6 : 3)) mk("text", { x: L + h * slot + slot / 2, y: H - 8, "text-anchor": "middle", fill: "#6b6b73", "font-size": 11 }, String(h).padStart(2, "0") + "h");
@@ -2066,6 +2081,8 @@
   seg("gType", updateSummary); seg("gDays", updateSummary); seg("gStart", updateSummary); seg("filter", render);
   const setGen = (open) => { $("genCard").classList.toggle("open", open); document.body.classList.toggle("gen-visible", open);
     if (open && window.innerWidth <= 720) $("genCard").scrollIntoView({ behavior: "smooth", block: "start" }); };
+  // Computers: "Gerar código" sits in the codes list header, where the list's own refresh was.
+  if (window.matchMedia("(min-width: 721px)").matches) $("reload").parentElement.append($("genOpen"));
   $("genBackdrop").addEventListener("click", () => setGen(false));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("genCard").classList.contains("open")) setGen(false); });
   $("genOpen").addEventListener("click", () => { $("gDate").min = todaySP(); setGen(true); });
@@ -2765,7 +2782,7 @@
       const x = L + i * slot + (slot - bw) / 2; const h = s.mb / top * plotH; const y = T + plotH - h;
       if (h > 0.5) {
         const r = Math.min(4, h, bw / 2);
-        mk("path", { d: `M${x},${T + plotH} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${T + plotH} Z`, fill: "#bdbdc4" });
+        mk("path", { d: `M${x},${T + plotH} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${T + plotH} Z`, fill: "rgba(255, 116, 168, .45)" });
       }
       if (i % Math.ceil(series.length / (W < 500 ? 5 : 10)) === 0 || i === series.length - 1) {
         const last = i === series.length - 1;
