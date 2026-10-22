@@ -1,5 +1,10 @@
 {
-  "items": [],
+  "items": [
+    {
+      "text": "Tela de erro nova do CloudPlay (botão para abrir de novo e um código para o suporte, que também aparece em Erros no painel)",
+      "added": "2026-10-22"
+    }
+  ],
   "sent_at": null,
   "updated_at": null
 }
