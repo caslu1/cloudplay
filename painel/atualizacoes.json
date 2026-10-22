@@ -1,5 +1,15 @@
 [
   {
+    "version": "2.15",
+    "date": null,
+    "items": [
+      "Legendas só em português do Brasil (as de Portugal não aparecem mais)",
+      "O ajuste de atraso da legenda fica salvo: no mesmo filme/episódio e fonte, já abre sincronizado",
+      "Tela inicial: no lugar da fileira de banners, uma fileira de capas para cada streaming ativo (\"Exclusivo da Netflix\"…), 15 títulos e \"Ver todos\"; nas abas Filmes e Séries, só filmes ou só séries",
+      "Apagar ou renomear no painel as fileiras de banners (Décadas, Franquias, Gêneros, Streamings) e cada banner agora funciona no app"
+    ]
+  },
+  {
     "version": "2.14",
     "date": null,
     "items": [
