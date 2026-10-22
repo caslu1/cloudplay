@@ -473,6 +473,9 @@
   table.codes col.c-valid { width: 24%; } table.codes col.c-dev { width: 20%; } table.codes col.c-act { width: 150px; }
   .cell-main { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .addon-list { display: grid; gap: 8px; }
+  .order-mode { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 2px 2px 6px; font-size: 12.5px; color: var(--muted); }
+  .addon.m3u { border-style: dashed; }
+  .m3u-tag { font-style: normal; font-size: 10.5px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--peach); background: rgba(255, 176, 140, .1); padding: 2px 7px; border-radius: 99px; margin-left: 8px; vertical-align: 2px; }
   .addon-sec { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin: 10px 2px 2px; }
   .addon-sec:first-child { margin-top: 0; }
   .addon-sec b { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
@@ -497,6 +500,7 @@
     .addon { grid-template-columns: 1fr auto; grid-template-areas: "meta meta" "fonte state" "order act"; gap: 10px 12px; }
     .addon .meta { grid-area: meta; } .addon .fonte { grid-area: fonte; } .addon .state { grid-area: state; }
     .addon .order { grid-area: order; } .addon .act { grid-area: act; }
+    .addon .act { display: flex; flex-wrap: nowrap; justify-content: flex-end; gap: 2px; } .addon .icon-gap { display: none; }
     .addon-form { grid-template-columns: 1fr; }
     .addon-form .btns button { flex: 1; }
   }
@@ -1168,7 +1172,7 @@
     <main class="page hidden" data-section="addons" data-title="Add-ons padrão">
       <div class="card">
         <div class="card-head">
-          <div><h2>Addons instalados</h2><p class="sub">Instalados em todos os aparelhos. No app, o mais estável dos últimos 7 dias vira "Fonte 1".</p></div>
+          <div><h2>Addons instalados</h2><p class="sub">Instalados em todos os aparelhos. A ordem das fontes no app é escolhida logo abaixo.</p></div>
           <div class="head-btns">
             <button type="button" id="aTestAll" class="ghost small"><svg class="i"><use href="#i-bolt"/></svg>Testar todos</button>
             <button type="button" id="aNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Novo addon</button>
@@ -1216,6 +1220,7 @@
         <form id="plForm" class="addon-form">
           <div><label for="plName">Nome (aparece nas fontes)</label><input id="plName" placeholder="Ex.: Lista VOD" maxlength="40" required></div>
           <div><label for="plUrl">Link M3U</label><input id="plUrl" type="url" placeholder="http://servidor/get.php?username=...&password=...&type=m3u_plus" required></div>
+          <div><label for="plColor">Cor da bolinha</label><input id="plColor" type="color" value="#ffb08c"></div>
           <div class="btns"><button type="button" id="plCancel" class="ghost">Cancelar</button><button type="submit" id="plSubmit">Adicionar</button></div>
         </form>
         <div id="plMsg" class="msg"></div>
@@ -2204,21 +2209,32 @@
     const list = $("addonList"); list.replaceChildren();
     $("addonEmpty").classList.toggle("hidden", addons.length > 0);
     $("sAddons").textContent = addons.filter((a) => a.enabled).length;
-    const enabled = addons.filter((x) => x.enabled && kindOf(x) === "content");
-    const contents = addons.filter((a) => kindOf(a) === "content"), infos = addons.filter((a) => kindOf(a) === "info");
+    // CloudPlay: the M3U lists go among the content addons, in one order the app follows.
+    const contents = contentOrder(), infos = addons.filter((a) => kindOf(a) === "info");
+    const enabled = contents.filter((x) => x.enabled);
+    // Same numbers as the app: every M3U list shares the number of the first one.
+    const fonteNum = new Map(); let n = 0, m3uN = null;
+    enabled.forEach((x) => { if (x.__m3u) { if (m3uN == null) m3uN = ++n; fonteNum.set(x, m3uN); } else fonteNum.set(x, ++n); });
     const section = (title, sub, n) => el("div", { class: "addon-sec" }, el("b", {}, title + " "), el("span", { class: "n" }, String(n)), el("span", {}, sub));
-    if (addons.length) list.append(section("Addons de conteúdo", "Trazem as fontes para assistir. São testados e mostram o que entrou em Conteúdos recentes.", contents.length));
+    if (addons.length || playlists.length) {
+      list.append(section("Addons de conteúdo", "Trazem as fontes para assistir, na ordem desta lista (Fonte 1, Fonte 2…). As listas M3U entram aqui também: suba ou desça para mudar a ordem.", contents.length));
+      list.append(orderToggle());
+    }
     [...contents, ...(infos.length ? [null] : []), ...infos].forEach((a) => {
       if (a === null) { list.append(section("Addons de informação", "Só catálogos e detalhes dos títulos (capas, sinopse, elenco). Não trazem fontes, então não são testados.", infos.length)); return; }
+      if (a.__m3u) { list.append(playlistAddonRow(a, contents, fonteNum)); return; }
       const i = addons.indexOf(a);
       const info = kindOf(a) === "info";
       const state = el("div", { class: "state" + (a.enabled ? " on" : ""), title: a.enabled ? "Desativar" : "Ativar", onclick: () => toggleAddon(a) },
         el("span", { class: "switch" }), a.enabled ? "Ativo" : "Desativado");
-      const up = iconBtn("up", "Subir", () => moveAddon(i, -1)); if (i === 0) up.disabled = true;
-      const down = iconBtn("down", "Descer", () => moveAddon(i, 1)); if (i === addons.length - 1) down.disabled = true;
+      const ci = contents.indexOf(a);
+      const up = info ? iconBtn("up", "Subir", () => moveAddon(i, -1)) : iconBtn("up", "Subir", () => moveContent(ci, -1));
+      const down = info ? iconBtn("down", "Descer", () => moveAddon(i, 1)) : iconBtn("down", "Descer", () => moveContent(ci, 1));
+      if (info ? i === 0 : ci === 0) up.disabled = true;
+      if (info ? i === addons.length - 1 : ci === contents.length - 1) down.disabled = true;
       list.append(el("div", { class: "addon" + (a.enabled ? "" : " off") },
         el("div", { class: "order" }, up, down),
-        el("span", { class: "fonte" }, el("i", { style: "background:" + (a.color || "transparent") }), info ? "Informação" : a.enabled ? "Fonte " + (enabled.indexOf(a) + 1) : "—"),
+        el("span", { class: "fonte" }, el("i", { style: "background:" + (a.color || "transparent") }), info ? "Informação" : a.enabled ? "Fonte " + fonteNum.get(a) : "—"),
         el("div", { class: "meta" }, el("b", {}, a.name), el("span", { title: a.manifest_url }, a.manifest_url)),
         state,
         el("div", { class: "actions act" },
@@ -2461,6 +2477,53 @@
     if (error) alert(error.message); else { if (editingAddon && editingAddon.id === a.id) resetAddonForm(); loadAddons(); }
   }
 
+  // Content addons and M3U lists share one order (their position columns), the app's source order.
+  function contentOrder() {
+    const items = [...addons.filter((a) => kindOf(a) === "content"), ...playlists.map((p) => Object.assign(p, { __m3u: true }))];
+    return items.sort((x, y) => (x.position ?? 0) - (y.position ?? 0) || String(x.created_at).localeCompare(String(y.created_at)));
+  }
+  async function moveContent(i, delta) {
+    const order = contentOrder(), j = i + delta;
+    if (j < 0 || j >= order.length) return;
+    [order[i], order[j]] = [order[j], order[i]];
+    const results = await Promise.all(order.map((x, pos) => sb.from(x.__m3u ? "default_playlists" : "default_addons").update({ position: pos }).eq("id", x.id)));
+    const failed = results.find((r) => r.error);
+    if (failed) toast("Não foi possível mudar a ordem: " + failed.error.message);
+    if (settings.source_order === "auto") toast("A ordem está em Automática: mude para Manual para o app seguir esta lista.");
+    await loadPlaylists(); loadAddons();
+  }
+  function playlistAddonRow(p, contents, fonteNum) {
+    const ci = contents.indexOf(p);
+    const up = iconBtn("up", "Subir", () => moveContent(ci, -1)); if (ci === 0) up.disabled = true;
+    const down = iconBtn("down", "Descer", () => moveContent(ci, 1)); if (ci === contents.length - 1) down.disabled = true;
+    const state = el("div", { class: "state" + (p.enabled ? " on" : ""), title: p.enabled ? "Desativar" : "Ativar", onclick: () => togglePlaylist(p) },
+      el("span", { class: "switch" }), p.enabled ? "Ativa" : "Desativada");
+    const num = fonteNum.get(p);
+    return el("div", { class: "addon m3u" + (p.enabled ? "" : " off") },
+      el("div", { class: "order" }, up, down),
+      el("span", { class: "fonte" }, el("i", { style: "background:" + (p.color || "#ffb08c") }), p.enabled ? "Fonte " + num : "—"),
+      el("div", { class: "meta" }, el("b", {}, p.name, el("em", { class: "m3u-tag" }, "Lista M3U")), el("span", { title: "Link com senha oculta" }, maskUrl(p.url))),
+      state,
+      el("div", { class: "actions act" }, el("span", { class: "icon-gap" }),
+        iconBtn("copy", "Copiar link", (e) => copy(p.url, e.currentTarget, "Link copiado")),
+        iconBtn("edit", "Editar", () => { location.hash = "#listas"; setTimeout(() => editPlaylist(p), 300); }),
+        iconBtn("trash", "Apagar", () => deletePlaylist(p), "bad")));
+  }
+  function orderToggle() {
+    const manual = settings.source_order !== "auto";
+    const box = el("div", { class: "order-mode" }, el("span", {}, "Ordem das fontes no app:"),
+      el("div", { class: "seg" },
+        el("button", { type: "button", class: manual ? "on" : "", onclick: () => saveSourceOrder("manual") }, "Manual (esta lista)"),
+        el("button", { type: "button", class: manual ? "" : "on", onclick: () => saveSourceOrder("auto") }, "Automática (o mais estável primeiro)")));
+    return box;
+  }
+  async function saveSourceOrder(mode) {
+    const { error } = await sb.from("app_settings").upsert({ key: "source_order", value: mode, updated_at: new Date().toISOString() });
+    if (error) { toast("Não foi possível salvar: " + error.message); return; }
+    settings.source_order = mode; renderAddons();
+    toast(mode === "auto" ? "Automática: o addon mais estável vira Fonte 1 (as listas M3U vão por último)." : "Manual: o app segue a ordem desta lista.");
+  }
+
   async function moveAddon(i, delta) {
     const j = i + delta;
     if (j < 0 || j >= addons.length) return;
@@ -2481,7 +2544,7 @@
     const { data, error } = await sb.from("app_settings").select("key,value");
     if (error) { $("serviceToggles").textContent = "Rode o arquivo app_settings.sql no Supabase para usar esta seção."; return; }
     (data || []).forEach((r) => {
-      settings[r.key] = r.key === "min_version" ? (typeof r.value === "string" ? r.value : null) : r.key === "category_overrides"
+      settings[r.key] = r.key === "min_version" || r.key === "source_order" ? (typeof r.value === "string" ? r.value : null) : r.key === "category_overrides"
         ? (r.value && typeof r.value === "object" && !Array.isArray(r.value) ? r.value : {})
         : (Array.isArray(r.value) ? r.value : []);
     });
@@ -2728,7 +2791,7 @@
   async function loadPlaylists() {
     const { data, error } = await sb.from("default_playlists").select("*").order("position").order("created_at");
     if (error) { $("plEmpty").textContent = "Para usar listas, rode antes o arquivo cloudplay_functions.sql no Supabase."; $("plEmpty").classList.remove("hidden"); $("plList").replaceChildren(); return; }
-    playlists = data || []; renderPlaylists();
+    playlists = data || []; renderPlaylists(); if (typeof renderAddons === "function" && addons) renderAddons();
   }
   function renderPlaylists() {
     $("plEmpty").textContent = "Nenhuma lista. Adicione o link M3U da sua lista IPTV.";
@@ -2750,7 +2813,7 @@
     plEditing = p || null;
     $("plFormTitle").textContent = p ? "Editar lista" : "Nova lista";
     $("plSubmit").textContent = p ? "Salvar" : "Adicionar";
-    $("plName").value = p ? p.name : ""; $("plUrl").value = p ? p.url : ""; $("plMsg").textContent = "";
+    $("plName").value = p ? p.name : ""; $("plUrl").value = p ? p.url : ""; $("plColor").value = (p && p.color) || "#ffb08c"; $("plMsg").textContent = "";
     $("plCard").classList.remove("hidden"); $("plName").focus();
   }
   const editPlaylist = (p) => openPlaylistForm(p);
@@ -2758,12 +2821,12 @@
   $("plCancel").addEventListener("click", () => $("plCard").classList.add("hidden"));
   $("plForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const row = { name: $("plName").value.trim(), url: $("plUrl").value.trim() };
+    const row = { name: $("plName").value.trim(), url: $("plUrl").value.trim(), color: $("plColor").value.toLowerCase() };
     if (!/^https?:\/\//i.test(row.url)) { $("plMsg").textContent = "O link precisa começar com http:// ou https://"; return; }
     const { error } = plEditing
       ? await sb.from("default_playlists").update(row).eq("id", plEditing.id)
-      : await sb.from("default_playlists").insert({ ...row, position: playlists.length });
-    if (error) { $("plMsg").textContent = "Erro: " + error.message; return; }
+      : await sb.from("default_playlists").insert({ ...row, position: 1000 + playlists.length });
+    if (error) { $("plMsg").textContent = /color/i.test(error.message) ? "Para salvar a cor, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Erro: " + error.message; return; }
     $("plCard").classList.add("hidden"); toast(plEditing ? "Lista salva" : "Lista adicionada"); loadPlaylists();
   });
   async function togglePlaylist(p) {
