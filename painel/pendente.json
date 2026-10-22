@@ -1,21 +1,5 @@
 {
-  "items": [
-    {
-      "text": "Capas mais leves nas TV box com pouca memória: rolagem mais suave",
-      "added": "2026-10-22"
-    },
-    {
-      "text": "Listas M3U como fonte junto com os addons, na ordem escolhida no painel",
-      "added": "2026-10-22"
-    },
-    {
-      "text": "Áudio e legenda aparecem mais rápido ao abrir um filme ou série (e na hora, quando você abre de novo)",
-      "added": "2026-10-22"
-    },
-    {
-      "text": "Conteúdo sem fonte: ao tocar em Reproduzir, volta para a página do título com o botão Solicitar conteúdo",
-      "added": "2026-10-22"
-    }
-  ],
-  "updated_at": "2026-10-22T15:30:00-03:00"
+  "items": [],
+  "sent_at": null,
+  "updated_at": null
 }

@@ -1,5 +1,15 @@
 [
   {
+    "version": "2.11",
+    "date": null,
+    "items": [
+      "Capas mais leves nas TV box com pouca memória: rolagem mais suave",
+      "Listas M3U como fonte junto com os addons, na ordem escolhida no painel",
+      "Áudio e legenda aparecem mais rápido ao abrir um filme ou série (e na hora, quando você abre de novo)",
+      "Conteúdo sem fonte: ao tocar em Reproduzir, volta para a página do título com o botão Solicitar conteúdo"
+    ]
+  },
+  {
     "version": "2.9",
     "date": null,
     "items": [
