@@ -11,7 +11,11 @@
     {
       "text": "Áudio e legenda aparecem mais rápido ao abrir um filme ou série (e na hora, quando você abre de novo)",
       "added": "2026-10-22"
+    },
+    {
+      "text": "Conteúdo sem fonte: ao tocar em Reproduzir, volta para a página do título com o botão Solicitar conteúdo",
+      "added": "2026-10-22"
     }
   ],
-  "updated_at": "2026-10-22T15:00:00-03:00"
+  "updated_at": "2026-10-22T15:30:00-03:00"
 }
