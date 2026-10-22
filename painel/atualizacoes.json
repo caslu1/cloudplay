@@ -1,5 +1,14 @@
 [
   {
+    "version": "2.14",
+    "date": null,
+    "items": [
+      "Página de cada streaming mostra só o que está na assinatura dele no Brasil (sem filmes de aluguel ou de outros streamings); Paramount+, Prime Video e HBO Max com os códigos do Brasil",
+      "\"Continuar assistindo\" começa mais rápido: espera no máximo 2 s pela fonte da última vez (antes 6 s)",
+      "Cada lista M3U vira a sua própria fonte (Fonte N), com a cor dela, na ordem do painel"
+    ]
+  },
+  {
     "version": "2.13",
     "date": null,
     "items": [

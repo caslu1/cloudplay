@@ -1,18 +1,5 @@
 {
-  "items": [
-    {
-      "text": "Página de cada streaming mostra só o que está na assinatura dele no Brasil (sem filmes de aluguel ou de outros streamings); Paramount+, Prime Video e HBO Max com os códigos do Brasil",
-      "added": "2026-10-22"
-    },
-    {
-      "text": "\"Continuar assistindo\" começa mais rápido: espera no máximo 2 s pela fonte da última vez (antes 6 s)",
-      "added": "2026-10-22"
-    },
-    {
-      "text": "Cada lista M3U vira a sua própria fonte (Fonte N), com a cor dela, na ordem do painel",
-      "added": "2026-10-22"
-    }
-  ],
+  "items": [],
   "sent_at": null,
-  "updated_at": "2026-10-22T20:00:00-03:00"
+  "updated_at": null
 }
