@@ -1,7 +1,7 @@
 {
   "version": "2.18",
-  "status": "building",
+  "status": "published",
   "started_at": "2026-10-22T21:10:44Z",
-  "expected_s": 1737,
+  "finished_at": "2026-10-22T21:40:17Z",
   "run": "120"
 }
