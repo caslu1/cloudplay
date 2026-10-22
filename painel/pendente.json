@@ -1,18 +1,5 @@
 {
-  "items": [
-    {
-      "text": "O painel mostra qual fonte cada cliente está usando ao assistir",
-      "added": "2026-10-22"
-    },
-    {
-      "text": "Ícone do app com o logo um pouco menor",
-      "added": "2026-10-22"
-    },
-    {
-      "text": "Fontes da lista M3U mostram só o nome do filme como está na lista (idioma certo nos filtros, sem o \"SD\" inventado)",
-      "added": "2026-10-22"
-    }
-  ],
+  "items": [],
   "sent_at": null,
-  "updated_at": "2026-10-22T17:30:00-03:00"
+  "updated_at": null
 }

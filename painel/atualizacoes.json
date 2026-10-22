@@ -1,5 +1,14 @@
 [
   {
+    "version": "2.13",
+    "date": null,
+    "items": [
+      "O painel mostra qual fonte cada cliente está usando ao assistir",
+      "Ícone do app com o logo um pouco menor",
+      "Fontes da lista M3U mostram só o nome do filme como está na lista (idioma certo nos filtros, sem o \"SD\" inventado)"
+    ]
+  },
+  {
     "version": "2.11",
     "date": null,
     "items": [
