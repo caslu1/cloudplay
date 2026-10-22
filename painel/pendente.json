@@ -3,8 +3,12 @@
     {
       "text": "O painel mostra qual fonte cada cliente está usando ao assistir",
       "added": "2026-10-22"
+    },
+    {
+      "text": "Ícone do app com o logo um pouco menor",
+      "added": "2026-10-22"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-22T16:30:00-03:00"
+  "updated_at": "2026-10-22T17:00:00-03:00"
 }
