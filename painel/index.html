@@ -249,16 +249,20 @@
   .rc-right select { width: 200px; }
   .rc-info { color: var(--muted); font-size: 12.5px; margin: -4px 0 14px; }
   .rc-info b { color: var(--text); }
-  .rc-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .rc-grid { display: grid; gap: 18px 14px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .sec-tag { color: var(--pink); background: rgba(255, 116, 168, .1); }
+  #svcCard { margin-top: 18px; }
   .rc { min-width: 0; }
   .rc-poster { position: relative; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; background: var(--field); border: 1px solid var(--line); }
   .rc-poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .rc-poster .np { position: absolute; inset: 0; display: grid; place-items: center; color: var(--faint); font-size: 12px; padding: 10px; text-align: center; }
-  .rc-new { position: absolute; top: 8px; left: 8px; font-size: 10.5px; font-weight: 700; letter-spacing: .5px; padding: 3px 8px; border-radius: 99px; background: rgba(10, 10, 15, .78); color: var(--pink); backdrop-filter: blur(6px); }
+  .rc .rc-addon { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; align-items: center; gap: 6px; width: max-content; max-width: calc(100% - 16px); font-size: 11px; font-weight: 600; padding: 4px 9px 4px 7px; border-radius: 99px; background: rgba(10, 10, 15, .8); color: var(--text); backdrop-filter: blur(6px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 1px solid rgba(255, 255, 255, .08); }
+  .rc .rc-addon i { flex: none; width: 7px; height: 7px; border-radius: 50%; }
+  .rc .rc-new { position: absolute; bottom: 8px; left: 8px; font-size: 10.5px; font-weight: 700; letter-spacing: .5px; padding: 3px 8px; border-radius: 99px; background: rgba(10, 10, 15, .78); color: var(--pink); backdrop-filter: blur(6px); }
   .rc b { display: block; margin-top: 8px; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .rc span { display: block; color: var(--faint); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   @media (max-width: 720px) { .rc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; } .rc-right { width: 100%; } .rc-right select { flex: 1; width: auto; }
-    .rc-right .seg { width: 100%; flex-wrap: nowrap; } .rc-right .seg button { flex: 1 1 0; white-space: nowrap; padding: 0 8px; } }
+    .rc-right .seg { width: 100%; flex-wrap: nowrap; } .rc-right select + .seg { width: auto; flex: 1.4; } .rc-right .seg button { flex: 1 1 0; white-space: nowrap; padding: 0 8px; } }
   .tst { grid-column: 1 / -1; }
   .tst-sum { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 12.5px; color: var(--muted); }
   .tst-sum b { color: var(--text); font-weight: 600; }
@@ -906,9 +910,8 @@
       <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg>Dispositivos conectados<span id="navOnline" class="pill count-pill hidden">0</span></a>
       <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-cart"/></svg>Pedidos<span id="navPending" class="pill count-pill hidden">0</span></a>
       <div class="nav-label">Conteúdo do aplicativo</div>
-      <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg>Add-ons padrão</a>
+      <a href="#addons" data-page="addons"><svg class="i"><use href="#i-tvplay"/></svg>Fontes de conteúdo</a>
       <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-tag"/></svg>Categorias</a>
-      <a href="#streamings" data-page="streamings"><svg class="i"><use href="#i-tvplay"/></svg>Fontes de conteúdo</a>
       <a href="#recentes" data-page="recentes"><svg class="i"><use href="#i-new"/></svg>Conteúdos recentes</a>
       <div class="nav-sep"></div>
       <div class="nav-label">Sistema</div>
@@ -972,8 +975,8 @@
     <a href="#inicio" data-page="inicio"><svg class="i"><use href="#i-home"/></svg><span>Início</span></a>
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg><span>Conectados</span></a>
-    <a href="#addons" data-page="addons"><svg class="i"><use href="#i-puzzle"/></svg><span>Addons</span></a>
-    <a href="#mais" id="bnMore" data-page="pedidos categorias streamings recentes uso atualizacoes erros melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#addons" data-page="addons"><svg class="i"><use href="#i-tvplay"/></svg><span>Fontes</span></a>
+    <a href="#mais" id="bnMore" data-page="pedidos categorias recentes uso atualizacoes erros melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
   </nav>
 
   <div class="content">
@@ -1016,8 +1019,8 @@
           <p class="sub">O que você mais faz no painel.</p>
           <div class="quick">
             <a href="#codigos" id="quickGen"><svg class="i"><use href="#i-key"/></svg><div>Gerar códigos<small>Para novos clientes</small></div></a>
-            <a href="#addons"><svg class="i"><use href="#i-puzzle"/></svg><div>Addons padrão<small>Instalados em todos os aparelhos</small></div></a>
-            <a href="#streamings"><svg class="i"><use href="#i-tv"/></svg><div>Streamings<small>O que aparece no app</small></div></a>
+            <a href="#addons"><svg class="i"><use href="#i-tvplay"/></svg><div>Fontes de conteúdo<small>Addons e listas M3U de todos os aparelhos</small></div></a>
+            <a href="#categorias"><svg class="i"><use href="#i-tag"/></svg><div>Categorias e streamings<small>O que aparece no app</small></div></a>
           </div>
         </div>
       </div>
@@ -1186,7 +1189,7 @@
     </main>
 
     <!-- Addons -->
-    <main class="page hidden" data-section="addons" data-title="Add-ons padrão">
+    <main class="page hidden" data-section="addons" data-title="Fontes de conteúdo">
       <div class="card">
         <div class="card-head">
           <div><h2>Addons instalados</h2><p class="sub">Instalados em todos os aparelhos. A ordem das fontes no app é escolhida logo abaixo.</p></div>
@@ -1264,6 +1267,19 @@
         <div id="catMsg" class="msg"></div>
         <div id="catList" class="cat-list"></div>
         <p id="catEmpty" class="empty hidden">Nenhuma categoria ainda. Abra o app em um aparelho (com a versão nova) para a lista aparecer aqui.</p>
+      </div>
+      <div class="card" id="svcCard">
+        <div class="card-head">
+          <div><h2>Fileira "Streamings"<em class="m3u-tag sec-tag">Streamings</em></h2><p class="sub">Os streamings da fileira "Streamings" da tela Início do app. Apague os que não quer mostrar. Vale na próxima vez que o app abrir.</p></div>
+        </div>
+        <div class="toolbar">
+          <div id="svcFilter" class="seg">
+            <button type="button" data-v="on" class="on">No app<span class="n" data-sn="on"></span></button>
+            <button type="button" data-v="off">Apagados<span class="n" data-sn="off"></span></button>
+          </div>
+        </div>
+        <div id="serviceToggles" class="svc-list"></div>
+        <p id="svcEmpty" class="empty hidden"></p>
       </div>
     </main>
 
@@ -1359,12 +1375,12 @@
     <main class="page hidden" data-section="recentes" data-title="Conteúdos recentes">
       <div class="card">
         <div class="card-head">
-          <div><h2>O que entrou nos addons</h2><p class="sub">Os títulos mais novos dos addons de conteúdo. O painel lê os catálogos sozinho quando você abre esta página (no máximo 1 vez por hora)</p></div>
+          <div><h2>O que entrou nos addons</h2><p class="sub">Títulos novos nos catálogos dos addons de conteúdo. O painel lê sozinho ao abrir esta página (no máximo 1 vez por hora).</p></div>
           <button type="button" id="rcScan" class="small"><svg class="i"><use href="#i-refresh"/></svg>Procurar novidades</button>
         </div>
         <div class="er-tools">
           <div class="rc-right">
-            <div id="rcView" class="seg"><button type="button" data-v="latest" class="on">Lançamentos</button><button type="button" data-v="new">Novos desde a última leitura</button></div>
+            <div id="rcView" class="seg"><button type="button" data-v="new" class="on">Novos desde a última leitura</button><button type="button" data-v="latest">Lançamentos</button></div>
             <div id="rcType" class="seg"><button type="button" data-v="" class="on">Todos</button><button type="button" data-v="movie">Filmes</button><button type="button" data-v="series">Séries</button></div>
           </div>
           <div class="rc-right">
@@ -1433,21 +1449,6 @@
     </main>
 
     <!-- Streamings -->
-    <main class="page hidden" data-section="streamings" data-title="Fontes de conteúdo">
-      <div class="card">
-        <div class="card-head">
-          <div><h2>Fileira "Streamings"</h2><p class="sub">Os streamings da fileira "Streamings" da tela Início do app. Apague os que não quer mostrar. Vale na próxima vez que o app abrir.</p></div>
-        </div>
-        <div class="toolbar">
-          <div id="svcFilter" class="seg">
-            <button type="button" data-v="on" class="on">No app<span class="n" data-sn="on"></span></button>
-            <button type="button" data-v="off">Apagados<span class="n" data-sn="off"></span></button>
-          </div>
-        </div>
-        <div id="serviceToggles" class="svc-list"></div>
-        <p id="svcEmpty" class="empty hidden"></p>
-      </div>
-    </main>
   </div>
 </div>
 
@@ -3092,7 +3093,7 @@
   // ── Conteúdos recentes: new items in the default addons' catalogs (admin_catalog_seen) ──
   let rcItems = [], rcScanning = false;
   async function loadRecent() {
-    const latest = ($("rcView").dataset.value || "latest") === "latest";
+    const latest = ($("rcView").dataset.value || "new") === "latest";
     $("rcDays").classList.toggle("hidden", latest);
     const { data, error } = latest
       ? await sb.rpc("admin_latest_catalog_items", { p_days: 120 })
@@ -3106,6 +3107,7 @@
     rcItems = data || [];
     renderRecent();
   }
+  const addonColor = (name) => (addons || []).find((a) => a.name === name)?.color || "#ff74a8";
   function renderRecent() {
     const t = $("rcType").dataset.value || "", ad = $("rcAddon").value;
     const names = [...new Set(rcItems.map((r) => r.addon_name).filter(Boolean))].sort();
@@ -3116,21 +3118,22 @@
     }
     const list = rcItems.filter((r) => (!t || (t === "series" ? /series|tv|show/i.test(r.type || "") : (r.type || "movie") === t)) && (!sel.value || r.addon_name === sel.value));
     let last = null; try { last = localStorage.getItem("rcLastScan"); } catch (_) {}
-    const latest = ($("rcView").dataset.value || "latest") === "latest";
+    const latest = ($("rcView").dataset.value || "new") === "latest";
     if (!rcScanning) $("rcInfo").replaceChildren(el("b", {}, list.length + (list.length === 1 ? " título" : " títulos")),
       last ? " · última leitura " + ago(new Date(Number(last)).toISOString()) : " · ainda não leu os catálogos");
     $("rcEmpty").classList.toggle("hidden", list.length > 0);
     $("rcEmpty").textContent = rcScanning ? "Lendo os catálogos dos addons…"
       : !last ? "Toque em Procurar novidades para ler os catálogos dos addons."
-      : latest ? "Os addons padrão não têm catálogos com lançamentos. Os títulos aparecem aqui quando algum addon tiver um catálogo de novidades ou datas de lançamento."
+      : latest ? "Os addons de conteúdo não têm catálogos com lançamentos. Os títulos aparecem aqui quando algum addon tiver um catálogo de novidades ou datas de lançamento."
       : "Nada novo desde a leitura anterior. Conforme os addons colocarem títulos, eles aparecem aqui.";
     $("rcList").replaceChildren(...list.map((r) => el("div", { class: "rc" },
       el("div", { class: "rc-poster" }, r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, r.name || ""),
+        r.addon_name ? el("span", { class: "rc-addon", title: r.addon_name }, el("i", { style: "background:" + addonColor(r.addon_name) }), r.addon_name) : "",
         latest ? "" : el("span", { class: "rc-new" }, "NOVO")),
       el("b", { title: r.name || "" }, r.name || r.item_id),
       el("span", {}, (/series|tv|show/i.test(r.type || "") ? "Série" : "Filme") + (r.year ? " · " + r.year : "") +
         (latest ? (r.released ? " · " + new Date(r.released).toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "2-digit" }) : "") : " · " + ago(r.first_seen))),
-      el("span", { title: (r.addon_name || "") + " · " + (r.catalog_name || r.catalog) }, (r.addon_name || "Addon") + " · " + (r.catalog_name || r.catalog)))));
+      el("span", { title: r.catalog_name || r.catalog }, r.catalog_name || r.catalog))));
   }
   async function scanCatalogs() {
     if (rcScanning) return;
@@ -3265,10 +3268,11 @@
   seg("aiFilter", renderImprovements);
 
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "categorias", "streamings", "recentes", "uso", "atualizacoes", "erros", "melhorias"];
+  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "categorias", "recentes", "uso", "atualizacoes", "erros", "melhorias"];
   function go() {
-    // The M3U lists moved into Add-ons padrão.
+    // Moved pages: the M3U lists are in Fontes de conteúdo, the Streamings row in Categorias.
     if (location.hash === "#listas") { history.replaceState(null, "", "#addons"); }
+    if (location.hash === "#streamings") { history.replaceState(null, "", "#categorias"); }
     const page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "inicio";
     document.querySelectorAll("[data-section]").forEach((s) => {
       const on = s.dataset.section === page;
