@@ -7,6 +7,10 @@
     {
       "text": "No celular, a pesquisa funciona nas abas Filmes, Séries e Infantil",
       "added": "2026-10-22"
+    },
+    {
+      "text": "Logos dos filmes e séries carregam com mais frequência (tenta de novo quando falha; prefere o logo em português)",
+      "added": "2026-10-22"
     }
   ],
   "sent_at": null,
