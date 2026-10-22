@@ -441,6 +441,38 @@
   .see-all { display: block; margin-top: 6px; color: var(--muted); font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; }
   .stats.stats-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .cn-list { display: grid; gap: 6px; margin-top: 12px; }
+  .dv-list { display: grid; gap: 10px; margin-top: 14px; }
+  .dv { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 14px 16px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 12px; }
+  .dv.playing { border-color: rgba(255, 116, 168, .35); }
+  .dv-art { width: 64px; height: 96px; border-radius: 8px; object-fit: cover; background: var(--field); display: block; }
+  .dv-art.icon-art { height: 64px; display: grid; place-items: center; color: var(--faint); border: 1px solid var(--line); }
+  .dv-art.icon-art .i { width: 24px; height: 24px; }
+  .dv-main { min-width: 0; display: grid; gap: 4px; }
+  .dv-top { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .dv-top > b { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dv-chip { flex: none; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 99px; background: var(--line2); color: var(--muted); }
+  .dv-chip.on { color: var(--ok); background: rgba(52, 211, 153, .1); }
+  .dv-chip.play { color: var(--pink); background: rgba(255, 116, 168, .12); }
+  .dv-chip.pause { color: var(--peach); background: rgba(255, 176, 140, .12); }
+  .dv-sub { color: var(--faint); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dv-watch { display: grid; gap: 6px; margin-top: 6px; }
+  .dv-watch > b { font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dv-prog { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+  .dv-prog .w-bar { flex: 1; margin: 0; max-width: 320px; }
+  .dv-src { justify-self: start; display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; padding: 3px 10px 3px 8px; border-radius: 99px; background: var(--field); border: 1px solid var(--line); color: var(--text); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dv-src i { flex: none; width: 8px; height: 8px; border-radius: 50%; }
+  .dv-src.none { font-weight: 400; color: var(--faint); }
+  .dv-last { font-size: 12.5px; color: var(--faint); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dv-last b { color: var(--muted); font-weight: 600; }
+  .dv-side { display: grid; gap: 8px; justify-items: end; text-align: right; }
+  .dv-session span { display: block; font-size: 11.5px; color: var(--faint); }
+  .dv-session b { display: block; font-size: 17px; }
+  @media (max-width: 720px) {
+    .dv { grid-template-columns: 52px minmax(0, 1fr); gap: 12px; padding: 12px; align-items: start; }
+    .dv-art { width: 52px; height: 78px; } .dv-art.icon-art { height: 52px; }
+    .dv-side { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; text-align: left; border-top: 1px dashed var(--line2); padding-top: 10px; }
+    .dv-session { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; } .dv-session b { font-size: 14px; } .dv-session span { display: inline; }
+  }
   .cn { display: grid; grid-template-columns: 10px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel2); }
   .cn .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
   .cn .dot.on { background: var(--ok); box-shadow: 0 0 0 3px rgba(60, 207, 142, .15); }
@@ -453,6 +485,7 @@
   .fm-btn { height: 26px; padding: 0 9px; font-size: 11.5px; font-weight: 500; border-radius: 7px; background: transparent; color: var(--muted); border: 1px solid var(--line2); gap: 5px; }
   .fm-btn svg.i { width: 13px; height: 13px; }
   .fm-btn:hover { color: var(--text); background: var(--panel2); }
+  .dv .fm-wait { font-size: 11.5px; font-weight: 500; color: var(--peach); }
   .cn .fm-wait { font-size: 11.5px; font-weight: 500; color: var(--peach); }
   .cn .watch { grid-column: 2 / -1; display: flex; gap: 14px; align-items: center; padding-top: 10px; border-top: 1px dashed var(--line2); }
   .w-poster { width: 34px; height: 51px; border-radius: 6px; object-fit: cover; background: var(--field); flex: none; }
@@ -1154,19 +1187,13 @@
     <main class="page hidden" data-section="conectados" data-title="Dispositivos conectados">
       <div class="stats stats-4">
         <div class="stat"><span>Online agora</span><b id="cnNow">0</b></div>
+        <div class="stat"><span>Assistindo agora</span><b id="cnWatch">0</b></div>
         <div class="stat"><span>Pico de hoje</span><b id="cnPeak">—</b><small id="cnPeakAt" class="stat-sub"></small></div>
-        <div class="stat"><span>Usaram hoje</span><b id="cnToday">0</b></div>
-        <div class="stat"><span>Cadastrados</span><b id="cnAll">0</b></div>
-      </div>
-      <div class="card hist-card">
-        <div class="hist-head"><div class="hist-ic"><svg class="i"><use href="#i-chart"/></svg></div>
-          <div><h2>Pico por hora</h2><p class="sub" style="margin:0">Mais aparelhos online ao mesmo tempo, hoje</p></div></div>
-        <div id="peakChart" class="hist-chart"></div>
-        <p id="peakMsg" class="empty hidden"></p>
+        <div class="stat"><span>Usaram hoje</span><b id="cnToday">0</b><small id="cnAll" class="stat-sub"></small></div>
       </div>
       <div class="card">
         <div class="list-head">
-          <div><h2>Aparelhos</h2><p class="sub" style="margin:0">Online = app aberto nos últimos 3 minutos. Atualiza a cada 10 segundos.</p></div>
+          <div><h2>Aparelhos</h2><p class="sub" style="margin:0">O que cada cliente está assistindo e por qual fonte. Online = app aberto nos últimos 3 minutos; atualiza a cada 10 segundos.</p></div>
           <button id="cnReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
         </div>
         <div class="toolbar">
@@ -1177,8 +1204,14 @@
           </div>
           <div class="field-icon"><svg class="i"><use href="#i-search"/></svg><input id="cnSearch" placeholder="Buscar cliente, código ou aparelho" autocomplete="off"></div>
         </div>
-        <div id="cnList" class="cn-list"></div>
+        <div id="cnList" class="dv-list"></div>
         <p id="cnEmpty" class="empty hidden">Ninguém online agora.</p>
+      </div>
+      <div class="card hist-card">
+        <div class="hist-head"><div class="hist-ic"><svg class="i"><use href="#i-chart"/></svg></div>
+          <div><h2>Pico por hora</h2><p class="sub" style="margin:0">Mais aparelhos online ao mesmo tempo, hoje</p></div></div>
+        <div id="peakChart" class="hist-chart"></div>
+        <p id="peakMsg" class="empty hidden"></p>
       </div>
     </main>
 
@@ -1897,7 +1930,7 @@
   window.addEventListener("resize", () => { if (["", "#inicio"].includes(location.hash)) drawActiveHistory(); });
   // CloudPlay: a small icon in the corner of each number card.
   (function statIcons() {
-    const pick = (t) => /erro|fechou/i.test(t) ? "alert" : /online|ativos em|usaram|pico/i.test(t) ? "tv" : /pedido/i.test(t) ? "inbox" : /addon/i.test(t) ? "puzzle"
+    const pick = (t) => /erro|fechou/i.test(t) ? "alert" : /assistindo/i.test(t) ? "tvplay" : /online|ativos em|usaram|pico/i.test(t) ? "tv" : /pedido/i.test(t) ? "inbox" : /addon/i.test(t) ? "puzzle"
       : /vencid/i.test(t) ? "clock" : /livre/i.test(t) ? "unlock" : /em uso/i.test(t) ? "check" : /banco|biblioteca|aberturas/i.test(t) ? "chart"
       : /cadastrad/i.test(t) ? "list" : "key";
     document.querySelectorAll(".stat").forEach((st) => {
@@ -1920,23 +1953,54 @@
       on: isOnline(d), today: !!d.last_seen && daySP(d.last_seen) === today0 })));
     all.sort((x, y) => (y.on - x.on) || (new Date(y.d.last_seen || 0) - new Date(x.d.last_seen || 0)));
     const counts = { online: all.filter((x) => x.on).length, today: all.filter((x) => x.today).length, all: all.length };
-    $("cnNow").textContent = counts.online; $("cnToday").textContent = counts.today; $("cnAll").textContent = counts.all;
+    $("cnNow").textContent = counts.online; $("cnToday").textContent = counts.today; $("cnAll").textContent = counts.all + " cadastrados";
+    $("cnWatch").textContent = all.filter((x) => watchState(x.d, x.on) === "playing").length;
     document.querySelectorAll("#cnFilter [data-cn]").forEach((n) => n.textContent = counts[n.dataset.cn]);
     $("navOnline").textContent = counts.online; $("navOnline").classList.toggle("hidden", counts.online === 0);
     const list = all.filter((x) => (f === "all" || (f === "online" ? x.on : x.today)) &&
       (!q || x.c.code.includes(q) || (x.c.note || "").toLowerCase().includes(q) || (x.d.device_name || "").toLowerCase().includes(q)));
     $("cnEmpty").textContent = f === "online" ? "Ninguém online agora." : f === "today" ? "Ninguém usou hoje." : "Nenhum aparelho ainda.";
     $("cnEmpty").classList.toggle("hidden", list.length > 0);
-    $("cnList").replaceChildren(...list.map(({ c, d, on }) => el("div", { class: "cn" },
-      el("i", { class: "dot" + (on ? " on" : "") }),
-      el("div", {}, el("b", {}, c.note || "Sem nome"),
-        el("span", { class: "c-sub" }, (d.device_name || "Aparelho") + " · " + c.code)),
-      el("div", { class: "c-dev" }, el("b", {}, d.device_name || "Aparelho"), el("span", {}, "ativado " + fmt(d.activated_at))),
-      el("div", { class: "c-code" }, el("b", {}, c.code), el("span", {}, statusLabel[statusOf(c)])),
-      el("div", { class: "when" + (on ? " on" : "") }, on ? "Online agora" : d.last_seen ? ago(d.last_seen) : "—",
-        d.force_mode ? el("span", { class: "fm-wait" }, "Vai abrir em modo " + (d.force_mode === "tv" ? "TV" : "celular"))
-          : el("button", { type: "button", class: "fm-btn", title: "Para TV box que abriu no modo celular", onclick: (ev) => forceMode(c, d, "tv", ev.currentTarget) }, icon("tv"), "Forçar modo TV")),
-      watchStrip(d, on))));
+    $("cnList").replaceChildren(...list.map(({ c, d, on }) => deviceCard(c, d, on)));
+  }
+
+  // CloudPlay: one card per device: poster, who, what is playing and from which source, session.
+  function sourceColor(src) {
+    const a = (addons || []).find((x) => x.name && src.toLowerCase().includes(x.name.toLowerCase()));
+    if (a?.color) return a.color;
+    const p = (playlists || []).find((x) => x.name && src.toLowerCase().includes(x.name.toLowerCase()));
+    return p?.color || "#ff74a8";
+  }
+  function deviceCard(c, d, on) {
+    const st = watchState(d, on);
+    const live = st === "playing" || st === "paused";
+    const session = on && d.session_since ? (Date.now() - new Date(d.session_since)) / 1000 : 0;
+    const pct = live && d.now_duration > 0 ? Math.min(100, Math.round(d.now_position / d.now_duration * 100)) : 0;
+    const chip = st === "playing" ? el("span", { class: "dv-chip play" }, "▶ Assistindo")
+      : st === "paused" ? el("span", { class: "dv-chip pause" }, "❚❚ Pausado")
+      : on ? el("span", { class: "dv-chip on" }, "Online") : el("span", { class: "dv-chip" }, d.last_seen ? ago(d.last_seen) : "—");
+    const art = live && d.now_poster ? el("img", { class: "dv-art", src: d.now_poster.replace("/original/", "/w154/"), alt: "", loading: "lazy" })
+      : el("div", { class: "dv-art icon-art" }, icon("tv"));
+    const sub = [d.device_name || "Aparelho", "código " + c.code, d.app_version ? "v" + d.app_version : null, statusOf(c) === "active" ? null : statusLabel[statusOf(c)]].filter(Boolean).join(" · ");
+    const watch = live ? el("div", { class: "dv-watch" },
+        el("b", {}, d.now_title + (d.now_detail ? " · " + d.now_detail : "")),
+        d.now_duration > 0 ? el("div", { class: "dv-prog" }, el("div", { class: "w-bar" }, el("i", { style: "width:" + pct + "%" })),
+          el("span", {}, mins(d.now_position) + " de " + mins(d.now_duration))) : "",
+        d.now_source ? el("span", { class: "dv-src", title: "Fonte que está tocando" }, el("i", { style: "background:" + sourceColor(d.now_source) }), d.now_source)
+          : el("span", { class: "dv-src none" }, "Fonte: aparece quando o aparelho atualizar o app"))
+      : st === "last" ? el("div", { class: "dv-last" }, "Assistiu por último: ", el("b", {}, d.now_title + (d.now_detail ? " · " + d.now_detail.split(" · ")[0] : "")), " · " + ago(d.now_at)) : "";
+    const side = el("div", { class: "dv-side" },
+      session ? el("div", { class: "dv-session" }, el("span", {}, "Sessão"), el("b", {}, mins(session)),
+        st === "playing" && d.now_since ? el("span", {}, "neste título há " + mins((Date.now() - new Date(d.now_since)) / 1000)) : "") : "",
+      d.force_mode ? el("span", { class: "fm-wait" }, "Vai abrir em modo " + (d.force_mode === "tv" ? "TV" : "celular"))
+        : el("button", { type: "button", class: "fm-btn", title: "Para TV box que abriu no modo celular", onclick: (ev) => forceMode(c, d, "tv", ev.currentTarget) }, icon("tv"), "Forçar modo TV"));
+    return el("div", { class: "dv" + (on ? " on" : "") + (st === "playing" ? " playing" : "") },
+      art,
+      el("div", { class: "dv-main" },
+        el("div", { class: "dv-top" }, el("b", {}, c.note || "Sem nome"), chip),
+        el("span", { class: "dv-sub" }, sub),
+        watch),
+      side);
   }
 
   // "Forçar modo TV": the app switches the next time it opens (report_app_version hands it over).
