@@ -2345,9 +2345,9 @@
     // CloudPlay: the M3U lists go among the content addons, in one order the app follows.
     const contents = contentOrder(), infos = addons.filter((a) => kindOf(a) === "info");
     const enabled = contents.filter((x) => x.enabled);
-    // Same numbers as the app: every M3U list shares the number of the first one.
-    const fonteNum = new Map(); let n = 0, m3uN = null;
-    enabled.forEach((x) => { if (x.__m3u) { if (m3uN == null) m3uN = ++n; fonteNum.set(x, m3uN); } else fonteNum.set(x, ++n); });
+    // Same numbers as the app (2.14 on): each M3U list has its own, in this list's order.
+    const fonteNum = new Map(); let n = 0;
+    enabled.forEach((x) => fonteNum.set(x, ++n));
     const nAddons = contents.filter((x) => !x.__m3u && x.enabled).length, nLists = contents.filter((x) => x.__m3u && x.enabled).length;
     const chip = (n, label) => el("span", { class: "src-chip" }, el("b", {}, String(n)), label);
     $("srcSummary").replaceChildren(chip(nAddons, nAddons === 1 ? "addon ativo" : "addons ativos"), chip(nLists, nLists === 1 ? "lista M3U" : "listas M3U"),
@@ -2473,7 +2473,7 @@
       const last = st.run || hist[0] || null;
       const [cls, word] = st.running ? ["wait", "Testando…"] : st.error ? ["bad", st.errorWord || "Erro"] : last ? gradeRun(last) : ["none", "Nunca testado"];
       const pct = last && last.tested ? Math.round(last.with_streams / last.tested * 100) : null;
-      const num = enabled.indexOf(x) >= 0 ? (x.__m3u ? enabled.findIndex((y) => y.__m3u) : enabled.indexOf(x)) : -1;
+      const num = enabled.indexOf(x);
       const color = x.color || (x.__m3u ? "#ffb08c" : "transparent");
       const btn = el("button", { type: "button", class: "ghost small", onclick: (e) => { e.stopPropagation(); x.__m3u ? testPlaylist(x) : testAddon(x); } }, icon("bolt"), st.running ? "Testando" : "Testar");
       if (st.running) btn.disabled = true;
