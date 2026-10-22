@@ -2550,7 +2550,11 @@
     renderTests();
     const tick = setInterval(() => { st.progress = Math.min(0.9, st.progress + 0.05); renderTests(); }, 1500);
     let data = null, err = null;
-    try { const r = await sb.functions.invoke("m3u-test", { body: { id: p.id } }); data = r.data; err = r.error; } catch (e) { err = e; }
+    // The Supabase editor may give the function its own address ("smart-handler") instead of its name.
+    for (const fn of ["m3u-test", "smart-handler"]) {
+      try { const r = await sb.functions.invoke(fn, { body: { id: p.id } }); data = r.data; err = r.error; } catch (e) { data = null; err = e; }
+      if (!(err && err.context && err.context.status === 404)) break;
+    }
     clearInterval(tick);
     const fail = (word, text) => { Object.assign(st, { running: false, error: text, errorWord: word, results: null }); renderTests(); return "bad"; };
     if (err || !data) {
