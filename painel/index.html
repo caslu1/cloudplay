@@ -2876,7 +2876,7 @@
   function renderPending() {
     const n = pendItems.length;
     const sent = Number(lsGet(PEND_SENT) || 0);
-    const recentlySent = sent && Date.now() - sent < 15 * 60e3 && n > 0;
+    const recentlySent = sent && Date.now() - sent < 10 * 60e3 && n > 0;
     $("pendTitle").textContent = n ? n + (n === 1 ? " mudança esperando" : " mudanças esperando") : "Nada pendente";
     $("pendSub").textContent = n ? "Vão juntas na próxima versão do app quando você tocar em Enviar atualização."
       : "O que for pedido no chat e ficar \"para a próxima atualização\" aparece aqui.";
@@ -2923,6 +2923,11 @@
   async function loadBuild() {
     let b = null;
     try { const r = await fetch("../status/build.json?t=" + Date.now(), { cache: "no-store" }); if (r.ok) b = await r.json(); } catch (_) { b = null; }
+    // A version stopped or failed after "Enviar atualização" frees the button again.
+    const sent = Number(lsGet(PEND_SENT) || 0);
+    if (sent && b && (b.status === "cancelled" || b.status === "failed") && b.finished_at && new Date(b.finished_at) > sent) {
+      lsSet(PEND_SENT, null); setPendMsg(""); renderPending();
+    }
     renderBuild(b);
   }
   function renderBuild(b) {
