@@ -23,6 +23,10 @@
     {
       "text": "Filmes e Séries adicionados recentemente: o app mostra os títulos que você escolhe no painel (Conteúdos recentes > \"+ No app\"); sem escolha, os recentes dos addons como antes.",
       "added": "2026-10-23"
+    },
+    {
+      "text": "Tela inicial na TV: a linha do banner fica em caixinhas como na página do filme (logo do streaming, duração, ano, ★ nota e gêneros), sem as bandeiras.",
+      "added": "2026-10-23"
     }
   ],
   "sent_at": null,
