@@ -3567,13 +3567,15 @@
     const { data: st } = await sb.from("app_settings").select("value").eq("key", "own_catalog").maybeSingle();
     $("ownCatalog").checked = !st || st.value !== false;
     renderOwn();
-    const { data: chk } = await sb.functions.invoke("media/admin", { body: { action: "check" } }).catch(() => ({ data: null }));
+    const r = await sb.functions.invoke("media/admin", { body: { action: "check" } }).catch((e) => ({ data: null, error: e }));
+    let chk = r.data;
+    if (!chk && r.error && r.error.context) { try { chk = await r.error.context.json(); } catch (_) {} }
     const setup = $("ownSetup");
     if (!chk || !chk.ok) {
       setup.classList.remove("hidden");
       setup.textContent = chk && chk.error === "r2_not_configured"
         ? "Falta configurar a Cloudflare: coloque R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY e R2_BUCKET em Supabase > Edge Functions > Secrets."
-        : chk && chk.status ? "A Cloudflare recusou as chaves (erro " + chk.status + "). Confira a chave de acesso e o nome do bucket nos Secrets."
+        : chk && (chk.status || chk.error) ? "A Cloudflare recusou (" + [chk.error, chk.status].filter(Boolean).join(" ") + "). Confira a chave de acesso e o nome do bucket nos Secrets."
         : "A função \"media\" ainda não está no Supabase. Crie em Edge Functions com o arquivo media/index.ts (sem \"Verify JWT\").";
     } else setup.classList.add("hidden");
   }
