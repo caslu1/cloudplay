@@ -1,5 +1,14 @@
 [
   {
+    "version": "2.21",
+    "date": null,
+    "items": [
+      "Nova tela de carregamento do vídeo: anel nas cores do CloudPlay do começo ao fim, com %, etapa, velocidade da internet (↓ Mb/s) e aviso de internet lenta; título sem logo mostra o nome",
+      "Barra de download da atualização sem o ponto branco no final",
+      "Ao abrir o app, as fileiras dos streamings (e Populares/Em Alta/Recentes) já aparecem certas, sem mostrar antes os banners"
+    ]
+  },
+  {
     "version": "2.20",
     "date": null,
     "items": [
