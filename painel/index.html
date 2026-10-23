@@ -2141,6 +2141,22 @@
   }
 
   // CloudPlay: one card per device: poster, who, what is playing and from which source, session.
+  // What the device says is playing ("Fonte 2 · bestcine · 1080p"), numbered with this panel's
+  // current order: the device's own number can be old (before a change here) or count differently.
+  function sourceView(src) {
+    const parts = String(src).split(" · ").filter((x) => !/^Fonte \d+$/i.test(x.trim()));
+    const name = (parts[0] || "").trim().toLowerCase();
+    const enabled = contentOrder().filter((x) => x.enabled && kindOf(x) !== "info");
+    const hit = enabled.find((x) => x.name && x.name.trim().toLowerCase() === name)
+      || enabled.find((x) => x.name && name && (name.includes(x.name.trim().toLowerCase()) || x.name.trim().toLowerCase().includes(name)));
+    // Apps before 2.28 say "IPTV VOD" for every M3U list: the one list, if there is only one.
+    const lists = enabled.filter((x) => x.__m3u);
+    const m3u = !hit && /iptv/i.test(name) ? (lists.length === 1 ? lists[0] : null) : null;
+    const found = hit || m3u;
+    if (found) return { text: ["Fonte " + (enabled.indexOf(found) + 1), found.name, ...parts.slice(1)].join(" · "), color: found.color || (found.__m3u ? "#ffb08c" : "#ff74a8") };
+    if (/iptv/i.test(name)) return { text: ["Lista M3U", ...parts.slice(1)].join(" · "), color: "#ffb08c" };
+    return { text: parts.join(" · ") || src, color: sourceColor(src) };
+  }
   function sourceColor(src) {
     const a = (addons || []).find((x) => x.name && src.toLowerCase().includes(x.name.toLowerCase()));
     if (a?.color) return a.color;
@@ -2162,7 +2178,7 @@
         el("b", {}, d.now_title + (d.now_detail ? " · " + d.now_detail : "")),
         d.now_duration > 0 ? el("div", { class: "dv-prog" }, el("div", { class: "w-bar" }, el("i", { style: "width:" + pct + "%" })),
           el("span", {}, mins(d.now_position) + " de " + mins(d.now_duration))) : "",
-        d.now_source ? el("span", { class: "dv-src", title: "Fonte que está tocando" }, el("i", { style: "background:" + sourceColor(d.now_source) }), d.now_source)
+        d.now_source ? ((v) => el("span", { class: "dv-src", title: "Fonte que está tocando" }, el("i", { style: "background:" + v.color }), v.text))(sourceView(d.now_source))
           : el("span", { class: "dv-src none" }, "Fonte: aparece quando o aparelho atualizar o app"))
       : st === "last" ? el("div", { class: "dv-last" }, "Assistiu por último: ", el("b", {}, d.now_title + (d.now_detail ? " · " + d.now_detail.split(" · ")[0] : "")), " · " + ago(d.now_at)) : "";
     const side = el("div", { class: "dv-side" },
