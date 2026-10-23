@@ -3748,6 +3748,26 @@
   ["dragleave", "drop"].forEach((ev) => $("ownDrop").addEventListener(ev, (e) => { e.preventDefault(); $("ownDrop").classList.remove("over"); }));
   $("ownDrop").addEventListener("drop", (e) => ownSetFile(e.dataTransfer.files[0]));
   $("ownCancel").addEventListener("click", () => { if (ownCancelFn) ownCancelFn(); });
+  // Completes a multipart upload in R2 from here, with two links the function signs: the list of
+  // the parts R2 has (their real ETags) and the "complete" itself.
+  async function ownFinish(call, key, uploadId, total) {
+    const urls = await call({ action: "mp_finish", key, upload_id: uploadId });
+    if (!urls || !urls.list) return false;
+    const listRes = await fetch(urls.list);
+    const listXml = await listRes.text();
+    if (!listRes.ok) throw new Error("R2 " + listRes.status + " (lista das partes). Confira se o CORS do bucket tem POST.");
+    const doc = new DOMParser().parseFromString(listXml, "application/xml");
+    const parts = [...doc.getElementsByTagName("Part")].map((p) => ({
+      n: Number(p.getElementsByTagName("PartNumber")[0].textContent), etag: p.getElementsByTagName("ETag")[0].textContent,
+    })).sort((a, b) => a.n - b.n);
+    if (parts.length !== total) throw new Error("R2 tem " + parts.length + " de " + total + " partes");
+    const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const xml = "<CompleteMultipartUpload>" + parts.map((p) => "<Part><PartNumber>" + p.n + "</PartNumber><ETag>" + esc(p.etag) + "</ETag></Part>").join("") + "</CompleteMultipartUpload>";
+    const res = await fetch(urls.complete, { method: "POST", body: xml, headers: { "Content-Type": "application/xml" } });
+    const out = await res.text();
+    if (!res.ok || /<Error>/.test(out)) throw new Error("R2 " + res.status + " · " + ((out.match(/<Message>([^<]*)/) || [])[1] || (out.match(/<Code>([^<]*)/) || [])[1] || "falhou ao juntar as partes"));
+    return true;
+  }
   $("ownSend").addEventListener("click", async () => {
     if (segValue("ownSource") === "link") return ownImport();
     const f = ownFileSel, pick = ownPick, type = segValue("ownType");
@@ -3757,7 +3777,10 @@
       const r = await sb.functions.invoke("media/admin", { body }).catch((e) => ({ error: e }));
       if (!r.error) return r.data;
       // What the function answered (it says why), for the message below.
-      try { const b = await r.error.context.json(); lastErr = (b.error || "") + (b.status ? " " + b.status : "") + (b.detail ? " · " + b.detail : ""); }
+      try {
+        const res = r.error.context, b = await res.json();
+        lastErr = [b.error || b.code, b.status || res.status, b.detail || b.message].filter(Boolean).join(" · ");
+      }
       catch (_) { lastErr = String((r.error && r.error.message) || r.error); }
       return null;
     };
@@ -3816,8 +3839,7 @@
       // Tried a few times: the function can be busy for a moment (all the parts are already in R2).
       for (let attempt = 0; attempt < 6 && !ok; attempt++) {
         if (attempt) { $("ownProgText").textContent = f.name + " · " + gb(f.size) + " · finalizando o envio (tentativa " + (attempt + 1) + ")…"; await new Promise((r) => setTimeout(r, 5000 * attempt)); }
-        const done = await call({ action: "mp_complete", key: up.key, upload_id: start.upload_id, parts: etags, total });
-        ok = !!(done && done.ok);
+        ok = await ownFinish(call, up.key, start.upload_id, total).catch((e) => { lastErr = String(e.message || e); return false; });
       }
     }
     if (!ok) call({ action: "mp_abort", key: up.key, upload_id: start.upload_id });
