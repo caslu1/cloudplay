@@ -11,6 +11,10 @@
     {
       "text": "Atualizar: quando o instalador fecha sem instalar, um clique em \"Instalar\" já abre de novo (antes precisava de dois em algumas TVs).",
       "added": "2026-10-23"
+    },
+    {
+      "text": "Player: o botão de áudio e legendas ganha o ícone de balão de fala (antes era \"CC\", que parecia só legenda).",
+      "added": "2026-10-23"
     }
   ],
   "sent_at": null,
