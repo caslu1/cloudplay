@@ -1333,7 +1333,7 @@
           <div><label class="own-l">Qualidade</label><div id="ownQuality" class="seg"><button type="button" data-v="1080p" class="on">1080p</button><button type="button" data-v="4K">4K</button><button type="button" data-v="720p">720p</button></div></div>
         </div>
         <label id="ownDrop" class="own-drop"><input id="ownFile" type="file" accept="video/*,.mkv,.mp4" hidden>
-          <span id="ownDropText">Arraste o arquivo de vídeo aqui ou <u>escolha no computador</u> (MP4 ou MKV, até 5 GB)</span>
+          <span id="ownDropText">Arraste o arquivo de vídeo aqui ou <u>escolha no computador</u> (MP4 ou MKV)</span>
           <div id="ownProg" class="hidden"><div id="ownProgText" class="own-prog-t"></div><div class="own-bar"><i id="ownBar"></i></div></div>
         </label>
         <p id="ownMsg" class="msg"></p>
@@ -3547,7 +3547,8 @@
   // ── Sidebar navigation ──
   const PAGES = ["inicio", "codigos", "conectados", "pedidos", "revendedores", "meus", "addons", "categorias", "recentes", "uso", "atualizacoes", "erros", "melhorias"];
   // ── CloudPlay: Meus conteúdos ──
-  let ownVideos = [], ownPick = null, ownXhr = null;
+  let ownVideos = [], ownPick = null, ownXhr = null, ownCancelFn = null;
+  const ownXhrs = new Set();
   const segValue = (id) => ($(id).querySelector("button.on") || {}).dataset?.v;
   ["ownType", "ownAudio", "ownQuality"].forEach((id) => $(id).addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
@@ -3624,7 +3625,6 @@
   }
   function ownSetFile(f) {
     if (!f) return;
-    if (f.size > 5 * 1073741824) { $("ownMsg").textContent = "O arquivo tem mais de 5 GB."; return; }
     ownFileSel = f; $("ownMsg").textContent = "";
     $("ownDropText").textContent = f.name + " · " + gb(f.size); ownReady();
   }
@@ -3632,37 +3632,62 @@
   ["dragover", "dragenter"].forEach((ev) => $("ownDrop").addEventListener(ev, (e) => { e.preventDefault(); $("ownDrop").classList.add("over"); }));
   ["dragleave", "drop"].forEach((ev) => $("ownDrop").addEventListener(ev, (e) => { e.preventDefault(); $("ownDrop").classList.remove("over"); }));
   $("ownDrop").addEventListener("drop", (e) => ownSetFile(e.dataTransfer.files[0]));
-  $("ownCancel").addEventListener("click", () => { if (ownXhr) ownXhr.abort(); });
+  $("ownCancel").addEventListener("click", () => { if (ownCancelFn) ownCancelFn(); });
   $("ownSend").addEventListener("click", async () => {
     const f = ownFileSel, pick = ownPick, type = segValue("ownType");
     $("ownMsg").textContent = "";
-    const { data: up, error } = await sb.functions.invoke("media/admin", { body: { action: "upload", file_name: f.name } }).catch((e) => ({ error: e }));
-    if (error || !up || !up.url) { $("ownMsg").textContent = "Não deu para começar o envio (confira a configuração da Cloudflare acima)."; return; }
+    const call = async (body) => { const r = await sb.functions.invoke("media/admin", { body }).catch((e) => ({ error: e })); return r.error ? null : r.data; };
+    const start = await call({ action: "mp_start", file_name: f.name });
+    if (!start || !start.upload_id) { $("ownMsg").textContent = "Não deu para começar o envio (atualize a função \"media\" no Supabase e confira a Cloudflare)."; return; }
+    const up = { key: start.key };
+    ownXhr = {}; ownReady();
     $("ownProg").classList.remove("hidden"); $("ownCancel").classList.remove("hidden");
+    // In parts of 50 MB, 3 at a time; a part that fails is tried again (up to 5 times).
+    const PART = 50 * 1048576, total = Math.ceil(f.size / PART), sent = new Array(total).fill(0), etags = [];
+    let cancelled = false, failed = false, next = 0;
     const t0 = Date.now();
-    const ok = await new Promise((resolve) => {
-      ownXhr = new XMLHttpRequest(); ownReady();
-      ownXhr.open("PUT", up.url);
-      ownXhr.setRequestHeader("Content-Type", f.type || "video/mp4");
-      ownXhr.upload.onprogress = (e) => {
-        if (!e.lengthComputable) return;
-        const pct = e.loaded / e.total, secs = (Date.now() - t0) / 1000, left = pct > 0.02 ? secs / pct - secs : 0;
-        $("ownBar").style.width = (pct * 100).toFixed(1) + "%";
-        $("ownProgText").textContent = f.name + " · " + gb(f.size) + " · enviando " + Math.floor(pct * 100) + "%" + (left ? " · faltam ~" + Math.max(1, Math.round(left / 60)) + " min" : "");
-      };
-      ownXhr.onload = () => resolve(ownXhr.status >= 200 && ownXhr.status < 300);
-      ownXhr.onerror = ownXhr.onabort = () => resolve(false);
-      ownXhr.send(f);
+    const draw = () => {
+      const done = sent.reduce((a, b) => a + b, 0), pct = done / f.size, secs = (Date.now() - t0) / 1000, left = pct > 0.02 ? secs / pct - secs : 0;
+      $("ownBar").style.width = (pct * 100).toFixed(1) + "%";
+      $("ownProgText").textContent = f.name + " · " + gb(f.size) + " · enviando " + Math.floor(pct * 100) + "%" + (left ? " · faltam ~" + Math.max(1, Math.round(left / 60)) + " min" : "");
+    };
+    const putPart = (url, blob, i) => new Promise((resolve) => {
+      const x = new XMLHttpRequest(); ownXhr = x; ownXhrs.add(x);
+      x.open("PUT", url);
+      x.upload.onprogress = (e) => { if (e.lengthComputable) { sent[i] = e.loaded; draw(); } };
+      x.onload = () => { ownXhrs.delete(x); resolve(x.status >= 200 && x.status < 300 ? (x.getResponseHeader("ETag") || "") : null); };
+      x.onerror = x.onabort = () => { ownXhrs.delete(x); resolve(null); };
+      x.send(blob);
     });
+    const worker = async () => {
+      while (!cancelled && !failed && next < total) {
+        const i = next++, blob = f.slice(i * PART, Math.min(f.size, (i + 1) * PART));
+        let etag = null;
+        for (let attempt = 0; attempt < 5 && !cancelled && !etag; attempt++) {
+          if (attempt) await new Promise((r) => setTimeout(r, 2000 * attempt));
+          const signed = await call({ action: "mp_part", key: up.key, upload_id: start.upload_id, part: i + 1 });
+          if (!signed || !signed.url) continue;
+          sent[i] = 0; etag = await putPart(signed.url, blob, i);
+        }
+        if (!etag) { failed = true; return; }
+        sent[i] = blob.size; etags.push({ part: i + 1, etag }); draw();
+      }
+    };
+    ownCancelFn = () => { cancelled = true; ownXhrs.forEach((x) => x.abort()); };
+    await Promise.all([worker(), worker(), worker()]);
+    let ok = !cancelled && !failed && etags.length === total;
+    if (ok) { const done = await call({ action: "mp_complete", key: up.key, upload_id: start.upload_id, parts: etags }); ok = !!(done && done.ok); }
+    if (!ok) call({ action: "mp_abort", key: up.key, upload_id: start.upload_id });
+    ownCancelFn = null;
     ownXhr = null; $("ownCancel").classList.add("hidden");
-    if (!ok) { $("ownMsg").textContent = "O envio não terminou. Se aparecer \"blocked by CORS\" no F12, a regra de CORS do bucket na Cloudflare ainda não está ativa."; $("ownProg").classList.add("hidden"); ownReady(); return; }
+    if (!ok) { $("ownMsg").textContent = cancelled ? "Envio cancelado." : "O envio não terminou: uma parte falhou 5 vezes seguidas. Confira a internet e tente de novo."; $("ownProg").classList.add("hidden"); ownReady(); return; }
     const row = { media_type: type, tmdb_id: 0, imdb_id: pick.imdb_id, title: pick.title, year: pick.year || null, poster: pick.poster,
       audio: segValue("ownAudio"), quality: segValue("ownQuality"), size_bytes: f.size, file_name: f.name, r2_key: up.key,
       season: type === "series" ? parseInt($("ownSeason").value || "1", 10) : null, episode: type === "series" ? parseInt($("ownEpisode").value || "1", 10) : null };
     const { error: ie } = await sb.from("own_videos").insert(row);
     if (ie) { $("ownMsg").textContent = "O arquivo foi enviado, mas não deu para salvar: " + ie.message; return; }
     toast("Vídeo enviado"); $("ownProg").classList.add("hidden"); $("ownBar").style.width = "0";
-    ownFileSel = null; $("ownFile").value = ""; $("ownDropText").innerHTML = "Arraste o arquivo de vídeo aqui ou <u>escolha no computador</u> (MP4 ou MKV, até 5 GB)";
+    ownFileSel = null; $("ownFile").value = ""; $("ownDropText").innerHTML = "Arraste o arquivo de vídeo aqui ou <u>escolha no computador</u> (MP4 ou MKV)";
     if (type === "series") $("ownEpisode").value = parseInt($("ownEpisode").value || "1", 10) + 1; else { ownPick = null; $("ownPicked").classList.add("hidden"); $("ownQuery").value = ""; }
     ownReady(); loadOwn();
   });
