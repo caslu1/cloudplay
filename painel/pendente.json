@@ -39,6 +39,10 @@
     {
       "text": "Fontes: o CloudPlay aparece uma vez só (as cópias antigas, \"CloudPlay #A810\", \"#2E7B\"…, são apagadas sozinhas).",
       "added": "2026-10-23"
+    },
+    {
+      "text": "Áudio: quando o arquivo é dual áudio, \"Português (Dublado)\" e \"Legendado\" trocam o áudio do próprio arquivo, sem recarregar (Legendado liga a legenda PT); a lista \"Faixas deste arquivo\" some nesse caso.",
+      "added": "2026-10-23"
     }
   ],
   "sent_at": null,
