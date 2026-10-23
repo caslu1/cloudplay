@@ -3,6 +3,10 @@
     {
       "text": "Dispositivos conectados: quando o cliente assiste por uma lista M3U, o painel mostra o nome da lista (ex.: Megaembed) em vez de \"IPTV VOD\".",
       "added": "2026-10-23"
+    },
+    {
+      "text": "Conta na TV: o código de acesso fica maior, com Vencimento e Tempo restante ao lado (sem Conexões), sem texto cortado em TVs com letra maior.",
+      "added": "2026-10-23"
     }
   ],
   "sent_at": null,
