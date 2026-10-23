@@ -1,5 +1,16 @@
 [
   {
+    "version": "2.28",
+    "date": null,
+    "items": [
+      "Dispositivos conectados: quando o cliente assiste por uma lista M3U, o painel mostra o nome da lista (ex.: Megaembed) em vez de \"IPTV VOD\".",
+      "Conta na TV: o código de acesso fica maior, com Vencimento e Tempo restante ao lado (sem Conexões), sem texto cortado em TVs com letra maior.",
+      "Atualizar: quando o instalador fecha sem instalar, um clique em \"Instalar\" já abre de novo (antes precisava de dois em algumas TVs).",
+      "Player: o botão de áudio e legendas ganha o ícone de balão de fala (antes era \"CC\", que parecia só legenda).",
+      "Crianças: as fileiras (Animação, Aventura, Comédia, Fantasia…) não começam mais todas com os mesmos títulos; os repetidos vão para o fim da fileira."
+    ]
+  },
+  {
     "version": "2.27",
     "date": null,
     "items": [
