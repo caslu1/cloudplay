@@ -1,5 +1,19 @@
 [
   {
+    "version": "2.24",
+    "date": null,
+    "items": [
+      "Ao abrir o app, Adicionados recentemente e Em Alta não mostram mais \"Ver tudo\" por um instante",
+      "Fontes que não abriram vão para o fim da fila daquele título; fontes lentas ficam atrás das rápidas (o app lembra por 3 dias)",
+      "Tela de carregamento do vídeo não para mais em 40% com 0,0 Mb/s enquanto a fonte abre",
+      "Quadro do código de acesso nos Ajustes menor e mais organizado (TV e celular)",
+      "Popups sem a cor rosa: botão principal e ícone em cinza",
+      "Aba Infantil: novas bolinhas do Mickey e da Galinha Pintadinha",
+      "Aba Infantil: \"Ver tudo\" das categorias segue o modo escolhido (pôster ou deitado)",
+      "No celular, os avisos (ex.: \"Verificar atualizações\") aparecem acima da barra de baixo, sem ficar escondidos"
+    ]
+  },
+  {
     "version": "2.23",
     "date": null,
     "items": [
