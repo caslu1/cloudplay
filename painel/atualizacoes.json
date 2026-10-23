@@ -1,5 +1,25 @@
 [
   {
+    "version": "2.29",
+    "date": null,
+    "items": [
+      "Dispositivos conectados: quando o cliente assiste por uma lista M3U, o painel mostra o nome da lista (ex.: Megaembed) em vez de \"IPTV VOD\".",
+      "Conta na TV: o código de acesso fica maior, com Vencimento e Tempo restante ao lado (sem Conexões), sem texto cortado em TVs com letra maior.",
+      "Atualizar: quando o instalador fecha sem instalar, um clique em \"Instalar\" já abre de novo (antes precisava de dois em algumas TVs).",
+      "Player: o botão de áudio e legendas ganha o ícone de balão de fala (antes era \"CC\", que parecia só legenda).",
+      "Crianças: as fileiras (Animação, Aventura, Comédia, Fantasia…) não começam mais todas com os mesmos títulos; os repetidos vão para o fim da fileira.",
+      "Filmes e Séries adicionados recentemente: o app mostra os títulos que você escolhe no painel (Conteúdos recentes > \"+ No app\"); sem escolha, os recentes dos addons como antes.",
+      "Tela inicial na TV: a linha do banner fica em caixinhas como na página do filme (logo do streaming, duração, ano, ★ nota e gêneros), sem as bandeiras.",
+      "Página do filme na TV: botões Fontes, Trailer, Favoritos e Coleção com ícones novos e o nome sempre à vista.",
+      "Página do filme na TV: fundo mais escuro atrás do texto, dos botões e do elenco, para ler melhor.",
+      "Fontes: o CloudPlay aparece uma vez só (as cópias antigas, \"CloudPlay #A810\", \"#2E7B\"…, são apagadas sozinhas).",
+      "Áudio: quando o arquivo é dual áudio, \"Português (Dublado)\" e \"Legendado\" trocam o áudio do próprio arquivo, sem recarregar (Legendado liga a legenda PT); a lista \"Faixas deste arquivo\" some nesse caso.",
+      "Menu de legendas e áudio na TV: some o nome da fonte/arquivo no topo (ex.: \"★ Hollymovies\").",
+      "Áudio original nas configurações: o app passa a escolher primeiro as fontes com áudio original (ou dual, tocando a faixa original), mesmo com a legenda desligada.",
+      "Legendas: quando a fonte diz LEGENDADO/LEG (e não é dual), o app não liga legenda sozinho, para não ficar duas na tela; dá para ligar à mão no menu."
+    ]
+  },
+  {
     "version": "2.28",
     "date": null,
     "items": [
