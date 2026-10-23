@@ -244,7 +244,30 @@
   .own-results span { display: block; font-size: 12px; margin-top: 5px; color: var(--muted); }
   .own-picked { display: flex; gap: 12px; align-items: center; margin-top: 12px; background: var(--panel2); border-radius: 12px; padding: 10px; }
   .own-picked img { width: 46px; height: 68px; border-radius: 6px; object-fit: cover; }
-  .own-drop { display: block; margin-top: 14px; border: 1.5px dashed var(--line2); border-radius: 12px; padding: 20px; text-align: center; color: var(--muted); cursor: pointer; }
+  .own-picked.rich { position: relative; overflow: hidden; align-items: flex-end; min-height: 170px; padding: 16px; background-size: cover; background-position: center top; }
+  .own-picked.rich::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,10,15,.95) 0%, rgba(10,10,15,.75) 55%, rgba(10,10,15,.35) 100%); }
+  .own-picked.rich > * { position: relative; }
+  .own-picked.rich img { width: 92px; height: 138px; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+  .own-picked .ov { font-size: 12.5px; color: var(--muted); margin-top: 6px; max-width: 640px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .own-drop { display: block; margin-top: 12px; border: 1.5px dashed var(--line2); border-radius: 12px; padding: 26px 20px; text-align: center; color: var(--muted); cursor: pointer; transition: border-color .15s, background .15s; }
+  .own-drop:hover { border-color: rgba(255,255,255,.28); background: rgba(255,255,255,.02); }
+  .own-drop .up-ico { display: block; width: 26px; height: 26px; margin: 0 auto 8px; color: #FF9A9C; }
+  .own-drop.has { border-style: solid; border-color: rgba(255,154,156,.45); color: var(--text); }
+  .up-step { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 14px; padding: 18px 0; border-top: 1px solid var(--line); }
+  .up-n { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line2); display: grid; place-items: center; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .up-step.done .up-n { background: linear-gradient(135deg, #FF74A8, #FFB08C); color: #0A0A0F; border-color: transparent; }
+  .up-body h3 { margin: 4px 0 12px; font-size: 14px; font-weight: 600; }
+  .up-body > .own-form:first-of-type { margin-top: 0; }
+  .up-grid { display: flex; flex-wrap: wrap; gap: 16px 20px; align-items: flex-end; }
+  .up-ep { display: flex; gap: 10px; } .up-ep input { width: 96px; }
+  .up-hint { font-size: 12px; color: var(--faint, var(--muted)); margin: 10px 0 0; }
+  .up-foot { display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--line); padding-top: 16px; }
+  .up-sum { flex: 1; min-width: 0; font-size: 13px; color: var(--muted); } .up-sum b { color: var(--text); font-weight: 600; }
+  @media (max-width: 760px) { .up-step { grid-template-columns: 24px minmax(0, 1fr); gap: 10px; } .up-n { width: 24px; height: 24px; font-size: 12px; }
+    .up-foot { flex-wrap: wrap; } .up-sum { flex-basis: 100%; } .up-foot button { flex: 1; } .up-tabs { display: flex; } .up-tabs button { flex: 1; }
+    .up-grid > div { width: 100%; } .up-grid .seg { display: flex; flex-wrap: nowrap; } .up-grid .seg button { flex: 1; padding: 0 8px; font-size: 13px; white-space: nowrap; }
+    .up-ep input { width: 100%; } .up-ep > div { flex: 1; } }
+  #ownMsg:empty { display: none; }
   .own-drop.over { border-color: var(--coral); }
   .own-prog-t { text-align: left; color: var(--text); font-size: 13px; margin-top: 6px; }
   .own-bar { height: 6px; border-radius: 3px; background: #24242c; overflow: hidden; margin-top: 8px; }
@@ -952,6 +975,7 @@
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
   <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5"/><path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></symbol>
   <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
   <symbol id="i-msg" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></symbol>
@@ -1320,33 +1344,47 @@
         <div class="stat"><span>Custo estimado / mês</span><b id="ownCost">US$ 0</b></div>
       </div>
       <div class="card">
-        <div class="card-head"><div><h2>Enviar vídeo</h2><p class="sub">O vídeo vai direto do seu computador para a Cloudflare. Capa e informações vêm do catálogo (Cinemeta / TMDB).</p></div></div>
+        <div class="card-head"><div><h2>Enviar vídeo</h2><p class="sub">Escolha o título, confira os detalhes e mande o arquivo. Capa e informações vêm do TMDB / Cinemeta.</p></div></div>
         <div id="ownSetup" class="own-setup hidden"></div>
-        <div class="own-form">
-          <div id="ownType" class="seg"><button type="button" data-v="movie" class="on">Filme</button><button type="button" data-v="series">Episódio de série</button></div>
-          <div class="field-icon own-q"><svg class="i"><use href="#i-search"/></svg><input id="ownQuery" placeholder="Buscar o título ou colar o link do TMDB / IMDb" autocomplete="off"></div>
-        </div>
-        <div id="ownResults" class="own-results"></div>
-        <div id="ownPicked" class="own-picked hidden"></div>
-        <div id="ownEpRow" class="own-form hidden">
-          <div class="rn-extra"><label for="ownSeason">Temporada</label><input id="ownSeason" type="number" min="0" value="1"></div>
-          <div class="rn-extra"><label for="ownEpisode">Episódio</label><input id="ownEpisode" type="number" min="1" value="1"></div>
-        </div>
-        <div class="own-form">
-          <div><label class="own-l">Áudio</label><div id="ownAudio" class="seg"><button type="button" data-v="dual" class="on">Dual áudio (Português)</button><button type="button" data-v="original">Áudio original</button></div></div>
-          <div><label class="own-l">Qualidade</label><div id="ownQuality" class="seg"><button type="button" data-v="1080p" class="on">1080p</button><button type="button" data-v="4K">4K</button><button type="button" data-v="720p">720p</button></div></div>
-        </div>
-        <div class="own-form"><div><label class="own-l">De onde vem o vídeo</label><div id="ownSource" class="seg"><button type="button" data-v="file" class="on">Do computador</button><button type="button" data-v="link">Por link</button></div></div></div>
-        <div id="ownLinkBox" class="hidden">
-          <div class="field-icon own-q" style="margin:4px 0 6px"><svg class="i"><use href="#i-link"/></svg><input id="ownLink" placeholder="Cole o link direto do arquivo (https://…/video.mkv)" autocomplete="off"></div>
-          <p class="sub" style="margin:0 0 10px">Link direto do arquivo (MP4 ou MKV). O servidor copia para a Cloudflare: pode fechar o painel enquanto copia.</p>
-        </div>
-        <label id="ownDrop" class="own-drop"><input id="ownFile" type="file" accept="video/*,.mkv,.mp4" hidden>
-          <span id="ownDropText">Arraste o arquivo de vídeo aqui ou <u>escolha no computador</u> (MP4 ou MKV)</span>
-          <div id="ownProg" class="hidden"><div id="ownProgText" class="own-prog-t"></div><div class="own-bar"><i id="ownBar"></i></div></div>
-        </label>
+        <div class="up-step" id="up1"><div class="up-n">1</div><div class="up-body">
+          <h3>Título</h3>
+          <div class="own-form">
+            <div id="ownType" class="seg"><button type="button" data-v="movie" class="on">Filme</button><button type="button" data-v="series">Episódio de série</button></div>
+            <div class="field-icon own-q"><svg class="i"><use href="#i-search"/></svg><input id="ownQuery" placeholder="Buscar pelo nome ou colar o link do TMDB / IMDb" autocomplete="off"></div>
+          </div>
+          <div id="ownResults" class="own-results"></div>
+          <div id="ownPicked" class="own-picked hidden"></div>
+        </div></div>
+        <div class="up-step" id="up2"><div class="up-n">2</div><div class="up-body">
+          <h3>Detalhes</h3>
+          <div class="up-grid">
+            <div id="ownEpRow" class="up-ep hidden">
+              <div><label class="own-l" for="ownSeason">Temporada</label><input id="ownSeason" type="number" min="0" value="1"></div>
+              <div><label class="own-l" for="ownEpisode">Episódio</label><input id="ownEpisode" type="number" min="1" value="1"></div>
+            </div>
+            <div><label class="own-l">Áudio</label><div id="ownAudio" class="seg"><button type="button" data-v="dual" class="on">Dual áudio (Português)</button><button type="button" data-v="original">Áudio original</button></div></div>
+            <div><label class="own-l">Qualidade</label><div id="ownQuality" class="seg"><button type="button" data-v="1080p" class="on">1080p</button><button type="button" data-v="4K">4K</button><button type="button" data-v="720p">720p</button></div></div>
+          </div>
+          <p class="up-hint">O nome do arquivo já preenche sozinho: S03E01 → temporada e episódio, 1080p/4K/720p → qualidade, DUAL/LEG → áudio.</p>
+        </div></div>
+        <div class="up-step" id="up3"><div class="up-n">3</div><div class="up-body">
+          <h3>Arquivo</h3>
+          <div id="ownSource" class="seg up-tabs"><button type="button" data-v="file" class="on">Do computador</button><button type="button" data-v="link">Por link</button></div>
+          <div id="ownLinkBox" class="hidden">
+            <div class="field-icon own-q" style="margin:12px 0 6px"><svg class="i"><use href="#i-link"/></svg><input id="ownLink" placeholder="Cole o link direto do arquivo (https://…/video.mkv)" autocomplete="off"></div>
+            <p class="up-hint">O servidor copia o vídeo para a Cloudflare: pode fechar o painel enquanto copia. O progresso aparece em Importações.</p>
+          </div>
+          <label id="ownDrop" class="own-drop"><input id="ownFile" type="file" accept="video/*,.mkv,.mp4" hidden>
+            <svg class="i up-ico"><use href="#i-upload"/></svg>
+            <span id="ownDropText">Arraste o arquivo de vídeo aqui ou <u>escolha no computador</u> (MP4 ou MKV)</span>
+            <div id="ownProg" class="hidden"><div id="ownProgText" class="own-prog-t"></div><div class="own-bar"><i id="ownBar"></i></div></div>
+          </label>
+        </div></div>
         <p id="ownMsg" class="msg"></p>
-        <div class="rn-actions" style="justify-content:flex-start"><button type="button" id="ownSend" disabled>Enviar</button><button type="button" class="ghost hidden" id="ownCancel">Cancelar envio</button></div>
+        <div class="up-foot">
+          <div class="up-sum" id="ownSummary">Escolha o título para começar.</div>
+          <button type="button" class="ghost hidden" id="ownCancel">Cancelar envio</button><button type="button" id="ownSend" disabled>Enviar</button>
+        </div>
       </div>
       <div class="card hidden" id="ownImpCard">
         <div class="card-head"><div><h2>Importações</h2><p class="sub">Vídeos sendo copiados pelo servidor.</p></div></div>
@@ -3560,7 +3598,7 @@
   // ── Sidebar navigation ──
   const PAGES = ["inicio", "codigos", "conectados", "pedidos", "revendedores", "meus", "addons", "categorias", "recentes", "uso", "atualizacoes", "erros", "melhorias"];
   // ── CloudPlay: Meus conteúdos ──
-  let ownVideos = [], ownPick = null, ownXhr = null, ownCancelFn = null;
+  let ownVideos = [], ownPick = null, ownXhr = null, ownCancelFn = null, ownBusy = false;
   const ownXhrs = new Set();
   const segValue = (id) => ($(id).querySelector("button.on") || {}).dataset?.v;
   ["ownType", "ownAudio", "ownQuality", "ownSource"].forEach((id) => $(id).addEventListener("click", (e) => {
@@ -3625,7 +3663,12 @@
   function ownShowPick(p, type) {
     ownPick = p;
     $("ownResults").replaceChildren();
-    $("ownPicked").replaceChildren(el("img", { src: p.poster || "", alt: "" }), el("div", {}, el("b", {}, p.title), el("div", { class: "sub" }, (type === "series" ? "Série" : "Filme") + " · " + (p.year || "") + " · " + (p.imdb_id || "sem IMDb"))));
+    // From a link: the title's banner behind, its poster and synopsis, to check it is the right one.
+    $("ownPicked").classList.toggle("rich", !!p.backdrop);
+    $("ownPicked").style.backgroundImage = p.backdrop ? "url(\"" + p.backdrop + "\")" : "";
+    $("ownPicked").replaceChildren(el("img", { src: p.poster || "", alt: "" }), el("div", {}, el("b", {}, p.title),
+      el("div", { class: "sub" }, (type === "series" ? "Série" : "Filme") + " · " + (p.year || "") + " · " + (p.imdb_id || "sem IMDb")),
+      ...(p.overview ? [el("div", { class: "ov" }, p.overview)] : [])));
     $("ownPicked").classList.remove("hidden"); ownReady();
   }
   async function ownFromLink(link) {
@@ -3642,7 +3685,7 @@
     ownSetType(d.type);
     if (d.season) $("ownSeason").value = d.season;
     if (d.episode) $("ownEpisode").value = d.episode;
-    ownShowPick({ imdb_id: d.imdb_id, tmdb_id: d.tmdb_id, title: d.title, year: d.year, poster: d.poster }, d.type);
+    ownShowPick({ imdb_id: d.imdb_id, tmdb_id: d.tmdb_id, title: d.title, year: d.year, poster: d.poster, backdrop: d.backdrop, overview: d.overview }, d.type);
   }
   async function ownSearchTitles() {
     const q = $("ownQuery").value.trim();
@@ -3655,16 +3698,23 @@
     try { const { data } = await sb.functions.invoke("media/admin", { body: { action: "search", type, q } }); metas = (data && data.metas) || []; } catch (_) {}
     if (!metas.length) try { metas = (await (await fetch("https://v3-cinemeta.strem.io/catalog/" + type + "/top/search=" + encodeURIComponent(q) + ".json")).json()).metas || []; } catch (_) {}
     $("ownResults").replaceChildren(...metas.slice(0, 12).map((m) => el("button", { type: "button", onclick: () => {
-      ownPick = { imdb_id: m.id, title: m.name, year: (m.releaseInfo || m.year || "").toString().slice(0, 4), poster: m.poster || null };
-      $("ownResults").replaceChildren();
-      $("ownPicked").replaceChildren(el("img", { src: m.poster || "", alt: "" }), el("div", {}, el("b", {}, m.name), el("div", { class: "sub" }, (type === "series" ? "Série" : "Filme") + " · " + (ownPick.year || "") + " · " + m.id)));
-      $("ownPicked").classList.remove("hidden"); ownReady();
+      ownShowPick({ imdb_id: m.id, title: m.name, year: (m.releaseInfo || m.year || "").toString().slice(0, 4), poster: m.poster || null }, type);
     } }, el("img", { src: m.poster || "", alt: "" }), el("span", {}, m.name + (m.releaseInfo ? " (" + m.releaseInfo + ")" : "")))));
   }
   let ownFileSel = null;
   function ownReady() {
     const link = segValue("ownSource") === "link";
-    $("ownSend").disabled = !(ownPick && (link ? /^https?:\/\/\S+$/i.test($("ownLink").value.trim()) : ownFileSel)) || (!link && !!ownXhr);
+    // The steps light up as they are filled, and the line by the button says what will be sent.
+    const type = segValue("ownType"), fileOk = link ? /^https?:\/\/\S+$/i.test($("ownLink").value.trim()) : !!ownFileSel;
+    $("up1").classList.toggle("done", !!ownPick); $("up2").classList.toggle("done", !!ownPick); $("up3").classList.toggle("done", fileOk);
+    $("ownDrop").classList.toggle("has", !!ownFileSel);
+    if (!ownPick) $("ownSummary").textContent = "Escolha o título para começar.";
+    else {
+      const what = [type === "series" ? "T" + ($("ownSeason").value || 1) + " E" + ($("ownEpisode").value || 1) : "Filme",
+        segValue("ownAudio") === "dual" ? "Dual áudio" : "Áudio original", segValue("ownQuality")];
+      $("ownSummary").replaceChildren(el("b", {}, ownPick.title), " · " + what.join(" · ") + (fileOk ? "" : " · falta o " + (link ? "link" : "arquivo")));
+    }
+    $("ownSend").disabled = ownBusy || !(ownPick && (link ? /^https?:\/\/\S+$/i.test($("ownLink").value.trim()) : ownFileSel)) || (!link && !!ownXhr);
   }
   function ownSetFile(f) {
     if (!f) return;
@@ -3681,6 +3731,7 @@
     const pickSeg = (id, v) => v && $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x.dataset.v === v));
     pickSeg("ownQuality", qual); pickSeg("ownAudio", aud);
   }
+  ["ownSeason", "ownEpisode"].forEach((id) => $(id).addEventListener("input", ownReady));
   $("ownLink").addEventListener("input", () => {
     const v = $("ownLink").value.trim();
     if (/^https?:\/\//i.test(v)) { try { ownReadName(decodeURIComponent(new URL(v).pathname.split("/").pop() || "")); } catch (_) {} }
@@ -3769,8 +3820,16 @@
     return true;
   }
   $("ownSend").addEventListener("click", async () => {
-    if (segValue("ownSource") === "link") return ownImport();
+    // One send at a time: a second click (or a double click) does not start the same video again.
+    if (ownBusy) return;
+    ownBusy = true; $("ownSend").disabled = true;
+    try { await (segValue("ownSource") === "link" ? ownImport() : ownUpload()); } finally { ownBusy = false; ownReady(); }
+  });
+  async function ownUpload() {
     const f = ownFileSel, pick = ownPick, type = segValue("ownType");
+    // What the video is, taken now: the form can change while it uploads.
+    const season = type === "series" ? parseInt($("ownSeason").value || "1", 10) : null, episode = type === "series" ? parseInt($("ownEpisode").value || "1", 10) : null;
+    const audio = segValue("ownAudio"), quality = segValue("ownQuality");
     $("ownMsg").textContent = "";
     let lastErr = "";
     const call = async (body) => {
@@ -3847,15 +3906,14 @@
     ownXhr = null; $("ownCancel").classList.add("hidden");
     if (!ok) { $("ownMsg").textContent = cancelled ? "Envio cancelado." : (failed ? "O envio não terminou: uma parte falhou 5 vezes seguidas. Confira a internet e tente de novo." : "Não deu para finalizar o envio. Resposta: " + (lastErr || "sem resposta")); $("ownProg").classList.add("hidden"); ownReady(); return; }
     const row = { media_type: type, tmdb_id: pick.tmdb_id || 0, imdb_id: pick.imdb_id, title: pick.title, year: pick.year || null, poster: pick.poster,
-      audio: segValue("ownAudio"), quality: segValue("ownQuality"), size_bytes: f.size, file_name: f.name, r2_key: up.key,
-      season: type === "series" ? parseInt($("ownSeason").value || "1", 10) : null, episode: type === "series" ? parseInt($("ownEpisode").value || "1", 10) : null };
+      audio, quality, size_bytes: f.size, file_name: f.name, r2_key: up.key, season, episode };
     const { error: ie } = await sb.from("own_videos").insert(row);
     if (ie) { $("ownMsg").textContent = "O arquivo foi enviado, mas não deu para salvar: " + ie.message; return; }
     toast("Vídeo enviado"); $("ownProg").classList.add("hidden"); $("ownBar").style.width = "0";
     ownFileSel = null; $("ownFile").value = ""; $("ownDropText").innerHTML = "Arraste o arquivo de vídeo aqui ou <u>escolha no computador</u> (MP4 ou MKV)";
-    if (type === "series") $("ownEpisode").value = parseInt($("ownEpisode").value || "1", 10) + 1; else { ownPick = null; $("ownPicked").classList.add("hidden"); $("ownQuery").value = ""; }
+    if (type === "series") $("ownEpisode").value = episode + 1; else { ownPick = null; $("ownPicked").classList.add("hidden"); $("ownQuery").value = ""; }
     ownReady(); loadOwn();
-  });
+  }
 
   // ── CloudPlay: Revendedores ──
   let resellers = [], resellerById = {};
