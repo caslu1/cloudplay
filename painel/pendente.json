@@ -27,6 +27,10 @@
     {
       "text": "Tela inicial na TV: a linha do banner fica em caixinhas como na página do filme (logo do streaming, duração, ano, ★ nota e gêneros), sem as bandeiras.",
       "added": "2026-10-23"
+    },
+    {
+      "text": "Página do filme na TV: botões Fontes, Trailer, Favoritos e Coleção com ícones novos e o nome sempre à vista.",
+      "added": "2026-10-23"
     }
   ],
   "sent_at": null,
