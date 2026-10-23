@@ -263,6 +263,13 @@
   .up-body > .own-form:first-of-type { margin-top: 0; }
   .up-grid { display: flex; flex-wrap: wrap; gap: 16px 20px; align-items: flex-end; }
   .up-ep { display: flex; gap: 10px; } .up-ep input { width: 96px; }
+  .up-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .up-chips #ownChips { display: contents; }
+  .up-chip { padding: 5px 11px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line2); font-size: 12.5px; }
+  .up-chips #ownEditBtn { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
+  .up-chips #ownEditBtn .i { width: 14px; height: 14px; }
+  .up-edit { margin-top: 14px; padding: 14px; border: 1px solid var(--line2); border-radius: 12px; }
+  .up-edit > .own-form:first-child { margin-top: 0; }
   .up-hint { font-size: 12px; color: var(--faint, var(--muted)); margin: 10px 0 0; }
   .up-foot { display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--line); padding-top: 16px; }
   .up-sum { flex: 1; min-width: 0; font-size: 13px; color: var(--muted); } .up-sum b { color: var(--text); font-weight: 600; }
@@ -1347,51 +1354,43 @@
         <div class="stat"><span>Custo estimado / mês</span><b id="ownCost">US$ 0</b></div>
       </div>
       <div class="card">
-        <div class="card-head"><div><h2>Enviar vídeo</h2><p class="sub">Escolha o título, confira os detalhes e mande o arquivo. Capa e informações vêm do TMDB / Cinemeta.</p></div></div>
+        <div class="card-head"><div><h2>Enviar vídeo</h2><p class="sub">Escolha o arquivo: título, capa, temporada, episódio, áudio e qualidade são preenchidos sozinhos.</p></div></div>
         <div id="ownSetup" class="own-setup hidden"></div>
         <div class="up-step" id="up1"><div class="up-n">1</div><div class="up-body">
-          <h3>Título</h3>
-          <div class="own-form">
-            <div id="ownType" class="seg"><button type="button" data-v="movie" class="on">Filme</button><button type="button" data-v="series">Episódio de série</button></div>
-            <div class="field-icon own-q"><svg class="i"><use href="#i-search"/></svg><input id="ownQuery" placeholder="Buscar pelo nome ou colar o link do TMDB / IMDb" autocomplete="off"></div>
-          </div>
-          <div id="ownPicked" class="own-picked hidden"></div>
-          <div id="ownResults" class="own-results"></div>
-        </div></div>
-        <div class="up-step" id="up2"><div class="up-n">2</div><div class="up-body">
-          <h3>Detalhes</h3>
-          <div class="up-grid">
-            <div id="ownEpRow" class="up-ep hidden">
-              <div><label class="own-l" for="ownSeason">Temporada</label><input id="ownSeason" type="number" min="0" value="1"></div>
-              <div><label class="own-l" for="ownEpisode">Episódio</label><input id="ownEpisode" type="number" min="1" value="1"></div>
-            </div>
-            <div><label class="own-l">Áudio</label><div id="ownAudio" class="seg"><button type="button" data-v="dual" class="on">Dual áudio (Português)</button><button type="button" data-v="original">Áudio original</button></div></div>
-            <div><label class="own-l">Qualidade</label><div id="ownQuality" class="seg"><button type="button" data-v="1080p" class="on">1080p</button><button type="button" data-v="4K">4K</button><button type="button" data-v="720p">720p</button></div></div>
-          </div>
-          <p class="up-hint">O nome do arquivo já preenche sozinho: S03E01 → temporada e episódio, 1080p/4K/720p → qualidade, DUAL/LEG → áudio.</p>
-        </div></div>
-        <div class="up-step" id="up3"><div class="up-n">3</div><div class="up-body">
           <h3>Arquivo</h3>
-          <div id="ownSource" class="seg up-tabs"><button type="button" data-v="file" class="on">Do computador</button><button type="button" data-v="link">Por link</button></div>
-          <div id="ownLinkBox" class="hidden">
-            <div class="field-icon own-q" style="margin:12px 0 6px"><svg class="i"><use href="#i-link"/></svg><input id="ownLink" placeholder="Cole o link direto do arquivo (https://…/video.mkv)" autocomplete="off"></div>
-            <p class="up-hint">O servidor copia o vídeo para a Cloudflare: pode fechar o painel enquanto copia. O progresso aparece em Importações.</p>
-          </div>
           <label id="ownDrop" class="own-drop"><input id="ownFile" type="file" accept="video/*,.mkv,.mp4" hidden>
             <svg class="i up-ico"><use href="#i-upload"/></svg>
             <span id="ownDropText">Arraste o arquivo de vídeo aqui ou <u>escolha no computador</u> (MP4 ou MKV)</span>
             <div id="ownProg" class="hidden"><div id="ownProgText" class="own-prog-t"></div><div class="own-bar"><i id="ownBar"></i></div></div>
           </label>
         </div></div>
+        <div class="up-step" id="up2"><div class="up-n">2</div><div class="up-body">
+          <h3>Conteúdo</h3>
+          <p id="ownNoFile" class="up-hint" style="margin-top:0">Aparece aqui assim que você escolher o arquivo.</p>
+          <div id="ownPicked" class="own-picked hidden"></div>
+          <div id="ownFound" class="up-chips hidden"><span id="ownChips"></span><button type="button" class="ghost small" id="ownEditBtn"><svg class="i"><use href="#i-edit"/></svg> Editar</button></div>
+          <div id="ownEdit" class="up-edit hidden">
+            <div class="own-form">
+              <div id="ownType" class="seg"><button type="button" data-v="movie" class="on">Filme</button><button type="button" data-v="series">Episódio de série</button></div>
+              <div class="field-icon own-q"><svg class="i"><use href="#i-search"/></svg><input id="ownQuery" placeholder="Buscar pelo nome ou colar o link do TMDB / IMDb" autocomplete="off"></div>
+            </div>
+            <div id="ownResults" class="own-results"></div>
+            <div class="up-grid" style="margin-top:14px">
+              <div id="ownEpRow" class="up-ep hidden">
+                <div><label class="own-l" for="ownSeason">Temporada</label><input id="ownSeason" type="number" min="0" value="1"></div>
+                <div><label class="own-l" for="ownEpisode">Episódio</label><input id="ownEpisode" type="number" min="1" value="1"></div>
+              </div>
+              <div><label class="own-l">Áudio</label><div id="ownAudio" class="seg"><button type="button" data-v="dual" class="on">Dual áudio (Português)</button><button type="button" data-v="original">Áudio original</button></div></div>
+              <div><label class="own-l">Qualidade</label><div id="ownQuality" class="seg"><button type="button" data-v="1080p" class="on">1080p</button><button type="button" data-v="4K">4K</button><button type="button" data-v="720p">720p</button></div></div>
+            </div>
+            <div class="rn-actions" style="justify-content:flex-start;margin-top:14px"><button type="button" class="ghost" id="ownEditDone">Pronto</button></div>
+          </div>
+        </div></div>
         <p id="ownMsg" class="msg"></p>
         <div class="up-foot">
-          <div class="up-sum" id="ownSummary">Escolha o título para começar.</div>
+          <div class="up-sum" id="ownSummary">Escolha o arquivo para começar.</div>
           <button type="button" class="ghost hidden" id="ownCancel">Cancelar envio</button><button type="button" id="ownSend" disabled>Enviar</button>
         </div>
-      </div>
-      <div class="card hidden" id="ownImpCard">
-        <div class="card-head"><div><h2>Importações</h2><p class="sub">Vídeos sendo copiados pelo servidor.</p></div></div>
-        <div id="ownImpList"></div>
       </div>
       <div class="card">
         <div class="card-head" style="align-items:center">
@@ -3604,16 +3603,14 @@
   let ownVideos = [], ownPick = null, ownXhr = null, ownCancelFn = null, ownBusy = false;
   const ownXhrs = new Set();
   const segValue = (id) => ($(id).querySelector("button.on") || {}).dataset?.v;
-  ["ownType", "ownAudio", "ownQuality", "ownSource"].forEach((id) => $(id).addEventListener("click", (e) => {
+  ["ownType", "ownAudio", "ownQuality"].forEach((id) => $(id).addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
     $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
-    if (id === "ownSource") { const link = b.dataset.v === "link"; $("ownLinkBox").classList.toggle("hidden", !link); $("ownDrop").classList.toggle("hidden", link); $("ownSend").textContent = link ? "Importar" : "Enviar"; }
     if (id === "ownType") { ownPick = null; $("ownPicked").classList.add("hidden"); $("ownEpRow").classList.toggle("hidden", b.dataset.v !== "series"); ownSearchTitles(); }
     ownReady();
   }));
   const gb = (b) => (b / 1073741824).toFixed(1).replace(".", ",") + " GB";
   async function loadOwn() {
-    loadImports();
     const { data, error } = await sb.from("own_videos").select("*").order("created_at", { ascending: false });
     if (error) { $("ownEmpty").textContent = "Rode o cloudplay_functions.sql no Supabase para ativar Meus conteúdos."; $("ownEmpty").classList.remove("hidden"); return; }
     ownVideos = data || [];
@@ -3701,7 +3698,7 @@
   function ownAutoTitle(n) {
     if (ownPick) return;
     const t = ownTitleFromName(n);
-    if (t.length < 2) return;
+    if (t.length < 2) { ownSetEditing(true); return; }
     $("ownQuery").value = t;
     ownSearchTitles(true);
   }
@@ -3723,6 +3720,12 @@
     const pickOf = (m) => ({ imdb_id: m.id, tmdb_id: m.tmdb_id || 0, title: m.name, year: (m.releaseInfo || m.year || "").toString().slice(0, 4), poster: m.poster || null, backdrop: m.backdrop || null, overview: m.overview || null });
     const cards = (list) => list.map((m) => el("button", { type: "button", onclick: () => ownShowPick(pickOf(m), type) },
       el("img", { src: m.poster || "", alt: "" }), el("span", {}, m.name + (m.releaseInfo ? " (" + m.releaseInfo + ")" : ""))));
+    if (auto === true && !metas.length && !ownPick) {
+      $("ownResults").replaceChildren(el("div", { class: "own-other" }, "Não achei o título pelo nome do arquivo: busque pelo nome ou cole o link do TMDB / IMDb."));
+      $("ownResults").classList.remove("small");
+      ownSetEditing(true);
+      return;
+    }
     if (auto === true && metas.length && !ownPick) {
       ownShowPick(pickOf(metas[0]), type);
       // The others stay below in case the first one is not it.
@@ -3736,22 +3739,30 @@
   }
   let ownFileSel = null;
   function ownReady() {
-    const link = segValue("ownSource") === "link";
-    // The steps light up as they are filled, and the line by the button says what will be sent.
-    const type = segValue("ownType"), fileOk = link ? /^https?:\/\/\S+$/i.test($("ownLink").value.trim()) : !!ownFileSel;
-    $("up1").classList.toggle("done", !!ownPick); $("up2").classList.toggle("done", !!ownPick); $("up3").classList.toggle("done", fileOk);
+    // The steps light up as they are filled; the chips and the line by the button say what will be sent.
+    const type = segValue("ownType");
+    $("up1").classList.toggle("done", !!ownFileSel); $("up2").classList.toggle("done", !!ownPick);
     $("ownDrop").classList.toggle("has", !!ownFileSel);
-    if (!ownPick) $("ownSummary").textContent = "Escolha o título para começar.";
-    else {
-      const what = [type === "series" ? "T" + ($("ownSeason").value || 1) + " E" + ($("ownEpisode").value || 1) : "Filme",
-        segValue("ownAudio") === "dual" ? "Dual áudio" : "Áudio original", segValue("ownQuality")];
-      $("ownSummary").replaceChildren(el("b", {}, ownPick.title), " · " + what.join(" · ") + (fileOk ? "" : " · falta o " + (link ? "link" : "arquivo")));
-    }
-    $("ownSend").disabled = ownBusy || !(ownPick && (link ? /^https?:\/\/\S+$/i.test($("ownLink").value.trim()) : ownFileSel)) || (!link && !!ownXhr);
+    $("ownNoFile").classList.toggle("hidden", !!(ownFileSel || ownPick) || ownEditing);
+    $("ownFound").classList.toggle("hidden", !ownPick || ownEditing);
+    $("ownEdit").classList.toggle("hidden", !ownEditing);
+    const what = [type === "series" ? "Temporada " + ($("ownSeason").value || 1) + " · Episódio " + ($("ownEpisode").value || 1) : "Filme",
+      segValue("ownAudio") === "dual" ? "Dual áudio" : "Áudio original", segValue("ownQuality")];
+    $("ownChips").replaceChildren(...what.map((w) => el("span", { class: "up-chip" }, w)));
+    if (!ownFileSel) $("ownSummary").textContent = ownPick ? "Falta escolher o arquivo." : "Escolha o arquivo para começar.";
+    else if (!ownPick) $("ownSummary").textContent = "Falta escolher o título.";
+    else $("ownSummary").replaceChildren(el("b", {}, ownPick.title), " · " + what.join(" · "));
+    $("ownSend").disabled = ownBusy || !(ownPick && ownFileSel) || !!ownXhr;
   }
+  let ownEditing = false;
+  const ownSetEditing = (on) => { ownEditing = on; ownReady(); if (on && !ownPick) $("ownQuery").focus(); };
+  $("ownEditBtn").addEventListener("click", () => ownSetEditing(true));
+  $("ownEditDone").addEventListener("click", () => ownSetEditing(false));
   function ownSetFile(f) {
     if (!f) return;
     ownFileSel = f; $("ownMsg").textContent = "";
+    // A new file is a new video: what it is comes from its name again.
+    ownPick = null; $("ownPicked").classList.add("hidden"); ownEditing = false;
     ownReadName(f.name);
     $("ownDropText").textContent = f.name + " · " + gb(f.size); ownReady();
     ownAutoTitle(f.name);
@@ -3766,70 +3777,6 @@
     pickSeg("ownQuality", qual); pickSeg("ownAudio", aud);
   }
   ["ownSeason", "ownEpisode"].forEach((id) => $(id).addEventListener("input", ownReady));
-  $("ownLink").addEventListener("input", () => {
-    const v = $("ownLink").value.trim();
-    if (/^https?:\/\//i.test(v)) {
-      try { const n = decodeURIComponent(new URL(v).pathname.split("/").pop() || ""); ownReadName(n); clearTimeout(ownSearchTimer); ownSearchTimer = setTimeout(() => ownAutoTitle(n), 600); } catch (_) {}
-    }
-    ownReady();
-  });
-  // Links the server copies (own_imports): the list refreshes by itself while one is going.
-  let ownImports = [], ownImpTimer = null;
-  async function loadImports() {
-    const { data, error } = await sb.from("own_imports").select("id, url, video, status, progress, size_bytes, error, created_at").order("created_at", { ascending: false }).limit(30);
-    if (error) return;
-    const wasActive = ownImports.filter((i) => i.status === "queued" || i.status === "copying").map((i) => i.id);
-    ownImports = data || [];
-    if (ownImports.some((i) => wasActive.includes(i.id) && i.status === "done")) loadOwn();
-    renderImports();
-    clearTimeout(ownImpTimer);
-    if (ownImports.some((i) => i.status === "queued" || i.status === "copying")) ownImpTimer = setTimeout(loadImports, 5000);
-  }
-  function renderImports() {
-    $("ownImpCard").classList.toggle("hidden", !ownImports.length);
-    $("ownImpList").replaceChildren(...ownImports.map((i) => {
-      const v = i.video || {};
-      const name = v.title + (v.media_type === "series" ? " · T" + v.season + " E" + v.episode : "");
-      const size = i.size_bytes ? gb(i.size_bytes) + " · " : "";
-      const state = i.status === "queued" ? "na fila" : i.status === "copying" ? (i.progress > 0 ? "copiando " + Math.floor(i.progress * 100) + "%" : "copiando…")
-        : i.status === "done" ? "pronto ✓" : "não deu certo";
-      const pct = i.status === "done" ? 100 : i.status === "copying" ? i.progress * 100 : 0;
-      const remove = el("button", { class: "ghost small", onclick: async () => {
-        if (i.status !== "done" && !confirm("Parar e remover a importação de \"" + name + "\"?")) return;
-        await sb.functions.invoke("media/admin", { body: { action: "import_remove", id: i.id } }).catch(() => {});
-        loadImports();
-      } }, i.status === "done" ? "Tirar da lista" : "Remover");
-      const retry = i.status === "error" ? el("button", { class: "ghost small", onclick: async () => {
-        await sb.functions.invoke("media/admin", { body: { action: "import_retry", id: i.id } }).catch(() => {});
-        loadImports();
-      } }, "Tentar de novo") : null;
-      return el("div", { class: "own-imp" },
-        el("div", { class: "h" }, el("b", {}, name), ...(retry ? [retry] : []), remove),
-        el("div", { class: "own-prog-t" }, size + state),
-        ...(i.status === "error" && i.error ? [el("div", { class: "err" }, i.error)] : []),
-        el("div", { class: "own-bar" }, el("i", { style: "width:" + pct.toFixed(1) + "%" })));
-    }));
-  }
-  async function ownImport() {
-    const pick = ownPick, type = segValue("ownType"), url = $("ownLink").value.trim();
-    const video = { media_type: type, tmdb_id: pick.tmdb_id || 0, imdb_id: pick.imdb_id, title: pick.title, year: pick.year || null, poster: pick.poster,
-      audio: segValue("ownAudio"), quality: segValue("ownQuality"),
-      season: type === "series" ? parseInt($("ownSeason").value || "1", 10) : null, episode: type === "series" ? parseInt($("ownEpisode").value || "1", 10) : null };
-    $("ownSend").disabled = true; $("ownMsg").textContent = "";
-    const r = await sb.functions.invoke("media/admin", { body: { action: "import", url, video } }).catch((e) => ({ error: e }));
-    let d = r.data;
-    if (!d && r.error && r.error.context) { try { d = await r.error.context.json(); } catch (_) {} }
-    if (!d || !d.ok) {
-      $("ownMsg").textContent = d && d.error === "github_token_missing" ? "Falta o token do GitHub: coloque GITHUB_DISPATCH_TOKEN em Supabase > Edge Functions > Secrets."
-        : d && d.error === "unknown_action" ? "A função \"media\" no Supabase ainda é a antiga: cole o arquivo novo e clique em Deploy."
-        : "Não deu para importar. Resposta: " + ((d && [d.error, d.detail].filter(Boolean).join(" · ")) || "sem resposta");
-      loadImports(); ownReady(); return;
-    }
-    toast("Importação na fila");
-    $("ownLink").value = "";
-    if (type === "series") $("ownEpisode").value = parseInt($("ownEpisode").value || "1", 10) + 1; else { ownPick = null; $("ownPicked").classList.add("hidden"); $("ownQuery").value = ""; }
-    ownReady(); loadImports();
-  }
   $("ownFile").addEventListener("change", () => ownSetFile($("ownFile").files[0]));
   ["dragover", "dragenter"].forEach((ev) => $("ownDrop").addEventListener(ev, (e) => { e.preventDefault(); $("ownDrop").classList.add("over"); }));
   ["dragleave", "drop"].forEach((ev) => $("ownDrop").addEventListener(ev, (e) => { e.preventDefault(); $("ownDrop").classList.remove("over"); }));
@@ -3859,7 +3806,7 @@
     // One send at a time: a second click (or a double click) does not start the same video again.
     if (ownBusy) return;
     ownBusy = true; $("ownSend").disabled = true;
-    try { await (segValue("ownSource") === "link" ? ownImport() : ownUpload()); } finally { ownBusy = false; ownReady(); }
+    try { await ownUpload(); } finally { ownBusy = false; ownReady(); }
   });
   async function ownUpload() {
     const f = ownFileSel, pick = ownPick, type = segValue("ownType");
