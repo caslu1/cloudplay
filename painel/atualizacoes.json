@@ -1,5 +1,13 @@
 [
   {
+    "version": "2.22",
+    "date": null,
+    "items": [
+      "Logos de séries longas (ex.: The Walking Dead) carregam mais rápido e com mais chance de aparecer",
+      "Quando o TMDB não tem (ou não carrega) o logo de um título, o app usa o logo do Cinemeta"
+    ]
+  },
+  {
     "version": "2.21",
     "date": null,
     "items": [
