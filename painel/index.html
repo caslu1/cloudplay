@@ -1320,7 +1320,7 @@
         <div id="ownSetup" class="own-setup hidden"></div>
         <div class="own-form">
           <div id="ownType" class="seg"><button type="button" data-v="movie" class="on">Filme</button><button type="button" data-v="series">Episódio de série</button></div>
-          <div class="field-icon own-q"><svg class="i"><use href="#i-search"/></svg><input id="ownQuery" placeholder="Buscar o título (ex.: nome do filme)" autocomplete="off"></div>
+          <div class="field-icon own-q"><svg class="i"><use href="#i-search"/></svg><input id="ownQuery" placeholder="Buscar o título ou colar o link do TMDB / IMDb" autocomplete="off"></div>
         </div>
         <div id="ownResults" class="own-results"></div>
         <div id="ownPicked" class="own-picked hidden"></div>
@@ -3605,8 +3605,33 @@
   // Title search in Cinemeta (no key needed): its ids are the IMDb ones the app asks streams by.
   let ownSearchTimer = null;
   $("ownQuery").addEventListener("input", () => { clearTimeout(ownSearchTimer); ownSearchTimer = setTimeout(ownSearchTitles, 400); });
+  // A TMDB or IMDb link pasted in the search box fills in the title (and season/episode).
+  function ownSetType(type) { $("ownType").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x.dataset.v === type)); $("ownEpRow").classList.toggle("hidden", type !== "series"); }
+  function ownShowPick(p, type) {
+    ownPick = p;
+    $("ownResults").replaceChildren();
+    $("ownPicked").replaceChildren(el("img", { src: p.poster || "", alt: "" }), el("div", {}, el("b", {}, p.title), el("div", { class: "sub" }, (type === "series" ? "Série" : "Filme") + " · " + (p.year || "") + " · " + (p.imdb_id || "sem IMDb"))));
+    $("ownPicked").classList.remove("hidden"); ownReady();
+  }
+  async function ownFromLink(link) {
+    const r = await sb.functions.invoke("media/admin", { body: { action: "link", url: link } }).catch((e) => ({ error: e }));
+    let d = r.data;
+    if (!d && r.error && r.error.context) { try { d = await r.error.context.json(); } catch (_) {} }
+    if (!d || d.error) {
+      $("ownMsg").textContent = d && d.error === "tmdb_key_missing" ? "Para usar link do TMDB, coloque TMDB_API_KEY nos Secrets do Supabase (o link do IMDb já funciona)."
+        : "Não achei esse título pelo link.";
+      return;
+    }
+    $("ownMsg").textContent = "";
+    if (!d.imdb_id) { $("ownMsg").textContent = "Esse título não tem IMDb no TMDB: o app não vai achar a fonte. Use outro título."; return; }
+    ownSetType(d.type);
+    if (d.season) $("ownSeason").value = d.season;
+    if (d.episode) $("ownEpisode").value = d.episode;
+    ownShowPick({ imdb_id: d.imdb_id, tmdb_id: d.tmdb_id, title: d.title, year: d.year, poster: d.poster }, d.type);
+  }
   async function ownSearchTitles() {
     const q = $("ownQuery").value.trim();
+    if (/themoviedb\.org\/|imdb\.com\/|^tt\d{5,}$/i.test(q)) return ownFromLink(q);
     if (q.length < 2) { $("ownResults").replaceChildren(); return; }
     const type = segValue("ownType");
     let metas = [];
@@ -3628,6 +3653,14 @@
   function ownSetFile(f) {
     if (!f) return;
     ownFileSel = f; $("ownMsg").textContent = "";
+    // The file name fills in what it tells: S03E01, the quality and the audio.
+    const n = f.name;
+    const se = n.match(/S(\d{1,2})[ ._-]?E(\d{1,3})/i);
+    if (se) { if (segValue("ownType") !== "series") { ownSetType("series"); ownPick = null; $("ownPicked").classList.add("hidden"); } $("ownSeason").value = parseInt(se[1], 10); $("ownEpisode").value = parseInt(se[2], 10); }
+    const qual = /2160p|4k|uhd/i.test(n) ? "4K" : /1080p/i.test(n) ? "1080p" : /720p/i.test(n) ? "720p" : null;
+    const aud = /\bdual\b|dublado|pt-?br/i.test(n.replace(/[._]/g, " ")) ? "dual" : /\bleg(endado)?\b/i.test(n.replace(/[._]/g, " ")) ? "original" : null;
+    const pickSeg = (id, v) => v && $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x.dataset.v === v));
+    pickSeg("ownQuality", qual); pickSeg("ownAudio", aud);
     $("ownDropText").textContent = f.name + " · " + gb(f.size); ownReady();
   }
   $("ownFile").addEventListener("change", () => ownSetFile($("ownFile").files[0]));
@@ -3696,7 +3729,7 @@
     ownCancelFn = null;
     ownXhr = null; $("ownCancel").classList.add("hidden");
     if (!ok) { $("ownMsg").textContent = cancelled ? "Envio cancelado." : "O envio não terminou: uma parte falhou 5 vezes seguidas. Confira a internet e tente de novo."; $("ownProg").classList.add("hidden"); ownReady(); return; }
-    const row = { media_type: type, tmdb_id: 0, imdb_id: pick.imdb_id, title: pick.title, year: pick.year || null, poster: pick.poster,
+    const row = { media_type: type, tmdb_id: pick.tmdb_id || 0, imdb_id: pick.imdb_id, title: pick.title, year: pick.year || null, poster: pick.poster,
       audio: segValue("ownAudio"), quality: segValue("ownQuality"), size_bytes: f.size, file_name: f.name, r2_key: up.key,
       season: type === "series" ? parseInt($("ownSeason").value || "1", 10) : null, episode: type === "series" ? parseInt($("ownEpisode").value || "1", 10) : null };
     const { error: ie } = await sb.from("own_videos").insert(row);
