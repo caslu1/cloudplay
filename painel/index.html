@@ -249,6 +249,9 @@
   .own-prog-t { text-align: left; color: var(--text); font-size: 13px; margin-top: 6px; }
   .own-bar { height: 6px; border-radius: 3px; background: #24242c; overflow: hidden; margin-top: 8px; }
   .own-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #FF74A8, #FF9A9C, #FFB08C); }
+  .own-imp { padding: 10px 0; border-top: 1px solid var(--line); }
+  .own-imp .h { display: flex; gap: 8px; align-items: center; } .own-imp .h b { flex: 1; min-width: 0; }
+  .own-imp .err { color: var(--danger, #ff6b6b); font-size: 12px; margin-top: 4px; }
   .own-item { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
   .own-item img { width: 40px; height: 60px; border-radius: 6px; object-fit: cover; background: var(--panel2); }
   .own-item .t { flex: 1; min-width: 0; } .own-item .t span { display: block; font-size: 12px; color: var(--muted); margin-top: 3px; }
@@ -949,6 +952,7 @@
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
   <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
   <symbol id="i-msg" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></symbol>
   <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13 7 4 4"/></symbol>
@@ -1332,12 +1336,21 @@
           <div><label class="own-l">Áudio</label><div id="ownAudio" class="seg"><button type="button" data-v="dual" class="on">Dual áudio (Português)</button><button type="button" data-v="original">Áudio original</button></div></div>
           <div><label class="own-l">Qualidade</label><div id="ownQuality" class="seg"><button type="button" data-v="1080p" class="on">1080p</button><button type="button" data-v="4K">4K</button><button type="button" data-v="720p">720p</button></div></div>
         </div>
+        <div class="own-form"><div><label class="own-l">De onde vem o vídeo</label><div id="ownSource" class="seg"><button type="button" data-v="file" class="on">Do computador</button><button type="button" data-v="link">Por link</button></div></div></div>
+        <div id="ownLinkBox" class="hidden">
+          <div class="field-icon own-q" style="margin:4px 0 6px"><svg class="i"><use href="#i-link"/></svg><input id="ownLink" placeholder="Cole o link direto do arquivo (https://…/video.mkv)" autocomplete="off"></div>
+          <p class="sub" style="margin:0 0 10px">Link direto do arquivo (MP4 ou MKV). O servidor copia para a Cloudflare: pode fechar o painel enquanto copia.</p>
+        </div>
         <label id="ownDrop" class="own-drop"><input id="ownFile" type="file" accept="video/*,.mkv,.mp4" hidden>
           <span id="ownDropText">Arraste o arquivo de vídeo aqui ou <u>escolha no computador</u> (MP4 ou MKV)</span>
           <div id="ownProg" class="hidden"><div id="ownProgText" class="own-prog-t"></div><div class="own-bar"><i id="ownBar"></i></div></div>
         </label>
         <p id="ownMsg" class="msg"></p>
         <div class="rn-actions" style="justify-content:flex-start"><button type="button" id="ownSend" disabled>Enviar</button><button type="button" class="ghost hidden" id="ownCancel">Cancelar envio</button></div>
+      </div>
+      <div class="card hidden" id="ownImpCard">
+        <div class="card-head"><div><h2>Importações</h2><p class="sub">Vídeos sendo copiados pelo servidor.</p></div></div>
+        <div id="ownImpList"></div>
       </div>
       <div class="card">
         <div class="card-head" style="align-items:center">
@@ -3550,14 +3563,16 @@
   let ownVideos = [], ownPick = null, ownXhr = null, ownCancelFn = null;
   const ownXhrs = new Set();
   const segValue = (id) => ($(id).querySelector("button.on") || {}).dataset?.v;
-  ["ownType", "ownAudio", "ownQuality"].forEach((id) => $(id).addEventListener("click", (e) => {
+  ["ownType", "ownAudio", "ownQuality", "ownSource"].forEach((id) => $(id).addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
     $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+    if (id === "ownSource") { const link = b.dataset.v === "link"; $("ownLinkBox").classList.toggle("hidden", !link); $("ownDrop").classList.toggle("hidden", link); $("ownSend").textContent = link ? "Importar" : "Enviar"; }
     if (id === "ownType") { ownPick = null; $("ownPicked").classList.add("hidden"); $("ownEpRow").classList.toggle("hidden", b.dataset.v !== "series"); ownSearchTitles(); }
     ownReady();
   }));
   const gb = (b) => (b / 1073741824).toFixed(1).replace(".", ",") + " GB";
   async function loadOwn() {
+    loadImports();
     const { data, error } = await sb.from("own_videos").select("*").order("created_at", { ascending: false });
     if (error) { $("ownEmpty").textContent = "Rode o cloudplay_functions.sql no Supabase para ativar Meus conteúdos."; $("ownEmpty").classList.remove("hidden"); return; }
     ownVideos = data || [];
@@ -3648,20 +3663,85 @@
   }
   let ownFileSel = null;
   function ownReady() {
-    $("ownSend").disabled = !(ownPick && ownFileSel) || !!ownXhr;
+    const link = segValue("ownSource") === "link";
+    $("ownSend").disabled = !(ownPick && (link ? /^https?:\/\/\S+$/i.test($("ownLink").value.trim()) : ownFileSel)) || (!link && !!ownXhr);
   }
   function ownSetFile(f) {
     if (!f) return;
     ownFileSel = f; $("ownMsg").textContent = "";
-    // The file name fills in what it tells: S03E01, the quality and the audio.
-    const n = f.name;
+    ownReadName(f.name);
+    $("ownDropText").textContent = f.name + " · " + gb(f.size); ownReady();
+  }
+  // The file name (or the link's) fills in what it tells: S03E01, the quality and the audio.
+  function ownReadName(n) {
     const se = n.match(/S(\d{1,2})[ ._-]?E(\d{1,3})/i);
     if (se) { if (segValue("ownType") !== "series") { ownSetType("series"); ownPick = null; $("ownPicked").classList.add("hidden"); } $("ownSeason").value = parseInt(se[1], 10); $("ownEpisode").value = parseInt(se[2], 10); }
     const qual = /2160p|4k|uhd/i.test(n) ? "4K" : /1080p/i.test(n) ? "1080p" : /720p/i.test(n) ? "720p" : null;
     const aud = /\bdual\b|dublado|pt-?br/i.test(n.replace(/[._]/g, " ")) ? "dual" : /\bleg(endado)?\b/i.test(n.replace(/[._]/g, " ")) ? "original" : null;
     const pickSeg = (id, v) => v && $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x.dataset.v === v));
     pickSeg("ownQuality", qual); pickSeg("ownAudio", aud);
-    $("ownDropText").textContent = f.name + " · " + gb(f.size); ownReady();
+  }
+  $("ownLink").addEventListener("input", () => {
+    const v = $("ownLink").value.trim();
+    if (/^https?:\/\//i.test(v)) { try { ownReadName(decodeURIComponent(new URL(v).pathname.split("/").pop() || "")); } catch (_) {} }
+    ownReady();
+  });
+  // Links the server copies (own_imports): the list refreshes by itself while one is going.
+  let ownImports = [], ownImpTimer = null;
+  async function loadImports() {
+    const { data, error } = await sb.from("own_imports").select("id, url, video, status, progress, size_bytes, error, created_at").order("created_at", { ascending: false }).limit(30);
+    if (error) return;
+    const wasActive = ownImports.filter((i) => i.status === "queued" || i.status === "copying").map((i) => i.id);
+    ownImports = data || [];
+    if (ownImports.some((i) => wasActive.includes(i.id) && i.status === "done")) loadOwn();
+    renderImports();
+    clearTimeout(ownImpTimer);
+    if (ownImports.some((i) => i.status === "queued" || i.status === "copying")) ownImpTimer = setTimeout(loadImports, 5000);
+  }
+  function renderImports() {
+    $("ownImpCard").classList.toggle("hidden", !ownImports.length);
+    $("ownImpList").replaceChildren(...ownImports.map((i) => {
+      const v = i.video || {};
+      const name = v.title + (v.media_type === "series" ? " · T" + v.season + " E" + v.episode : "");
+      const size = i.size_bytes ? gb(i.size_bytes) + " · " : "";
+      const state = i.status === "queued" ? "na fila" : i.status === "copying" ? (i.progress > 0 ? "copiando " + Math.floor(i.progress * 100) + "%" : "copiando…")
+        : i.status === "done" ? "pronto ✓" : "não deu certo";
+      const pct = i.status === "done" ? 100 : i.status === "copying" ? i.progress * 100 : 0;
+      const remove = el("button", { class: "ghost small", onclick: async () => {
+        if (i.status !== "done" && !confirm("Parar e remover a importação de \"" + name + "\"?")) return;
+        await sb.functions.invoke("media/admin", { body: { action: "import_remove", id: i.id } }).catch(() => {});
+        loadImports();
+      } }, i.status === "done" ? "Tirar da lista" : "Remover");
+      const retry = i.status === "error" ? el("button", { class: "ghost small", onclick: async () => {
+        await sb.functions.invoke("media/admin", { body: { action: "import_retry", id: i.id } }).catch(() => {});
+        loadImports();
+      } }, "Tentar de novo") : null;
+      return el("div", { class: "own-imp" },
+        el("div", { class: "h" }, el("b", {}, name), ...(retry ? [retry] : []), remove),
+        el("div", { class: "own-prog-t" }, size + state),
+        ...(i.status === "error" && i.error ? [el("div", { class: "err" }, i.error)] : []),
+        el("div", { class: "own-bar" }, el("i", { style: "width:" + pct.toFixed(1) + "%" })));
+    }));
+  }
+  async function ownImport() {
+    const pick = ownPick, type = segValue("ownType"), url = $("ownLink").value.trim();
+    const video = { media_type: type, tmdb_id: pick.tmdb_id || 0, imdb_id: pick.imdb_id, title: pick.title, year: pick.year || null, poster: pick.poster,
+      audio: segValue("ownAudio"), quality: segValue("ownQuality"),
+      season: type === "series" ? parseInt($("ownSeason").value || "1", 10) : null, episode: type === "series" ? parseInt($("ownEpisode").value || "1", 10) : null };
+    $("ownSend").disabled = true; $("ownMsg").textContent = "";
+    const r = await sb.functions.invoke("media/admin", { body: { action: "import", url, video } }).catch((e) => ({ error: e }));
+    let d = r.data;
+    if (!d && r.error && r.error.context) { try { d = await r.error.context.json(); } catch (_) {} }
+    if (!d || !d.ok) {
+      $("ownMsg").textContent = d && d.error === "github_token_missing" ? "Falta o token do GitHub: coloque GITHUB_DISPATCH_TOKEN em Supabase > Edge Functions > Secrets."
+        : d && d.error === "unknown_action" ? "A função \"media\" no Supabase ainda é a antiga: cole o arquivo novo e clique em Deploy."
+        : "Não deu para importar. Resposta: " + ((d && [d.error, d.detail].filter(Boolean).join(" · ")) || "sem resposta");
+      loadImports(); ownReady(); return;
+    }
+    toast("Importação na fila");
+    $("ownLink").value = "";
+    if (type === "series") $("ownEpisode").value = parseInt($("ownEpisode").value || "1", 10) + 1; else { ownPick = null; $("ownPicked").classList.add("hidden"); $("ownQuery").value = ""; }
+    ownReady(); loadImports();
   }
   $("ownFile").addEventListener("change", () => ownSetFile($("ownFile").files[0]));
   ["dragover", "dragenter"].forEach((ev) => $("ownDrop").addEventListener(ev, (e) => { e.preventDefault(); $("ownDrop").classList.add("over"); }));
@@ -3669,6 +3749,7 @@
   $("ownDrop").addEventListener("drop", (e) => ownSetFile(e.dataTransfer.files[0]));
   $("ownCancel").addEventListener("click", () => { if (ownCancelFn) ownCancelFn(); });
   $("ownSend").addEventListener("click", async () => {
+    if (segValue("ownSource") === "link") return ownImport();
     const f = ownFileSel, pick = ownPick, type = segValue("ownType");
     $("ownMsg").textContent = "";
     let lastErr = "";
