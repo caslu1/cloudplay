@@ -3810,11 +3810,15 @@
     };
     ownCancelFn = () => { cancelled = true; ownXhrs.forEach((x) => x.abort()); };
     await Promise.all([worker(), worker(), worker()]);
-    let ok = !cancelled && !failed && etags.length === total;
-    if (ok) {
+    let ok = false;
+    if (!cancelled && !failed && etags.length === total) {
       $("ownProgText").textContent = f.name + " · " + gb(f.size) + " · finalizando o envio…";
-      const done = await call({ action: "mp_complete", key: up.key, upload_id: start.upload_id, parts: etags, total });
-      ok = !!(done && done.ok);
+      // Tried a few times: the function can be busy for a moment (all the parts are already in R2).
+      for (let attempt = 0; attempt < 6 && !ok; attempt++) {
+        if (attempt) { $("ownProgText").textContent = f.name + " · " + gb(f.size) + " · finalizando o envio (tentativa " + (attempt + 1) + ")…"; await new Promise((r) => setTimeout(r, 5000 * attempt)); }
+        const done = await call({ action: "mp_complete", key: up.key, upload_id: start.upload_id, parts: etags, total });
+        ok = !!(done && done.ok);
+      }
     }
     if (!ok) call({ action: "mp_abort", key: up.key, upload_id: start.upload_id });
     ownCancelFn = null;
