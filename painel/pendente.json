@@ -47,6 +47,10 @@
     {
       "text": "Menu de legendas e áudio na TV: some o nome da fonte/arquivo no topo (ex.: \"★ Hollymovies\").",
       "added": "2026-10-23"
+    },
+    {
+      "text": "Áudio original nas configurações: o app passa a escolher primeiro as fontes com áudio original (ou dual, tocando a faixa original), mesmo com a legenda desligada.",
+      "added": "2026-10-23"
     }
   ],
   "sent_at": null,
