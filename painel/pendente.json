@@ -51,6 +51,10 @@
     {
       "text": "Áudio original nas configurações: o app passa a escolher primeiro as fontes com áudio original (ou dual, tocando a faixa original), mesmo com a legenda desligada.",
       "added": "2026-10-23"
+    },
+    {
+      "text": "Legendas: quando a fonte diz LEGENDADO/LEG (e não é dual), o app não liga legenda sozinho, para não ficar duas na tela; dá para ligar à mão no menu.",
+      "added": "2026-10-23"
     }
   ],
   "sent_at": null,
