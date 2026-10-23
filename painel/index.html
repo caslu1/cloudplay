@@ -241,6 +241,8 @@
   .own-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-top: 10px; }
   .own-results button { all: unset; cursor: pointer; display: block; }
   .own-results img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 8px; background: var(--panel2); }
+  .rc-else { color: #ffb08c !important; }
+  .linklike { all: unset; cursor: pointer; text-decoration: underline; color: var(--text); }
   .own-results .own-other { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
   .own-results.small { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); max-width: 620px; }
   .own-results.small span { font-size: 11px; }
@@ -1597,7 +1599,7 @@
     <main class="page hidden" data-section="recentes" data-title="Conteúdos recentes">
       <div class="card">
         <div class="card-head">
-          <div><h2>O que entrou nos addons</h2><p class="sub">Títulos novos nos catálogos dos addons de conteúdo. O painel lê sozinho ao abrir esta página (no máximo 1 vez por hora).</p></div>
+          <div><h2>O que entrou nos addons</h2><p class="sub">Títulos novos nos catálogos dos addons de conteúdo: só os deste ano que nenhum outro addon já tinha. O painel lê sozinho ao abrir esta página (no máximo 1 vez por hora).</p></div>
           <button type="button" id="rcScan" class="small"><svg class="i"><use href="#i-refresh"/></svg>Procurar novidades</button>
         </div>
         <div class="er-tools">
@@ -3452,6 +3454,58 @@
     }
     rcItems = data || [];
     renderRecent();
+    if (!latest) rcCheckElsewhere();
+  }
+  // CloudPlay: "new" only when no other content addon already had it. Each new title is asked
+  // of the other addons (their streams); what one of them plays is hidden, unless "Mostrar".
+  // The answers are kept 3 days in this browser.
+  let rcElse = {}, rcChecking = 0, rcShowAll = false;
+  try { rcElse = JSON.parse(localStorage.getItem("rcElsewhere") || "{}"); } catch (_) { rcElse = {}; }
+  const rcElseOf = (r) => { const e = rcElse[r.item_id]; return e && Date.now() - e.at < 3 * 86400e3 ? e.w : null; };
+  // Hidden from "Novos": a title from before this year (an old one that only entered a list
+  // like "Em Alta"); one from this year only when another addon's catalog had it earlier; one
+  // with no year when another addon plays it.
+  function rcYear(r) { const m = String(r.year || "").match(/(19|20)\d{2}/); return m ? Number(m[0]) : null; }
+  function rcOldOrElsewhere(r) {
+    const y = rcYear(r), now = new Date().getFullYear();
+    if (y && y < now) return "antigo";
+    if (y) return rcItems.some((x) => x.item_id === r.item_id && x.addon_name !== r.addon_name && new Date(x.first_seen) < new Date(r.first_seen)) ? "já existia" : null;
+    return (rcElseOf(r) || []).length ? "já existia" : null;
+  }
+  async function rcCheckElsewhere() {
+    const content = addons.filter((x) => x.enabled && kindOf(x) === "content");
+    // Seen in the catalogs of more than one addon: it is in the other one already.
+    const by = {};
+    rcItems.forEach((r) => { (by[r.item_id] ||= new Set()).add(r.addon_name); });
+    const todo = rcItems.filter((r) => !rcYear(r) && !rcElseOf(r)).filter((r, i, all) => all.findIndex((x) => x.item_id === r.item_id) === i);
+    if (!todo.length) return;
+    rcChecking = todo.length; renderRecent();
+    let next = 0;
+    const worker = async () => {
+      while (next < todo.length) {
+        const r = todo[next++];
+        const series = /series|tv|show/i.test(r.type || "");
+        const others = content.filter((a) => !by[r.item_id].has(a.name));
+        const found = [...by[r.item_id]].filter((n) => n !== r.addon_name);
+        await Promise.all(others.map(async (a) => {
+          const { base, q } = addonParts(a.manifest_url);
+          const id = encodeURIComponent(series ? r.item_id + ":1:1" : r.item_id);
+          try {
+            const res = await fetch(base + "/stream/" + (series ? "series" : "movie") + "/" + id + ".json" + q, { signal: AbortSignal.timeout(9000) });
+            const j = res.ok ? await res.json() : null;
+            if (j && Array.isArray(j.streams) && j.streams.length) found.push(a.name);
+          } catch (_) { /* no answer: counts as not having it */ }
+        }));
+        rcElse[r.item_id] = { at: Date.now(), w: found };
+        rcChecking--; if (rcChecking % 5 === 0) renderRecent();
+      }
+    };
+    await Promise.all([worker(), worker(), worker(), worker()]);
+    rcChecking = 0;
+    // Only the last 3 days' answers are kept.
+    Object.keys(rcElse).forEach((k) => { if (Date.now() - rcElse[k].at > 3 * 86400e3) delete rcElse[k]; });
+    try { localStorage.setItem("rcElsewhere", JSON.stringify(rcElse)); } catch (_) {}
+    renderRecent();
   }
   const addonColor = (name) => (addons || []).find((a) => a.name === name)?.color || "#ff74a8";
   function renderRecent() {
@@ -3462,11 +3516,23 @@
       sel.replaceChildren(el("option", { value: "" }, "Todos os addons"), ...names.map((n) => el("option", { value: n }, n)));
       sel.value = names.includes(ad) ? ad : ""; sel.dataset.filled = names.join("|");
     }
-    const list = rcItems.filter((r) => (!t || (t === "series" ? /series|tv|show/i.test(r.type || "") : (r.type || "movie") === t)) && (!sel.value || r.addon_name === sel.value));
+    let list = rcItems.filter((r) => (!t || (t === "series" ? /series|tv|show/i.test(r.type || "") : (r.type || "movie") === t)) && (!sel.value || r.addon_name === sel.value));
     let last = null; try { last = localStorage.getItem("rcLastScan"); } catch (_) {}
     const latest = ($("rcView").dataset.value || "new") === "latest";
+    // Already in another addon: out of "Novos" (one per title, too).
+    let hidden = 0;
+    if (!latest) {
+      // One per title: the addon that had it first.
+      const firsts = {};
+      list.forEach((r) => { const f = firsts[r.item_id]; if (!f || new Date(r.first_seen) < new Date(f.first_seen)) firsts[r.item_id] = r; });
+      list = list.filter((r) => firsts[r.item_id] === r);
+      if (!rcShowAll) { const before = list.length; list = list.filter((r) => !rcOldOrElsewhere(r)); hidden = before - list.length; }
+    }
+    const showAll = el("button", { type: "button", class: "linklike", onclick: () => { rcShowAll = !rcShowAll; renderRecent(); } }, rcShowAll ? "Esconder" : "Mostrar");
     if (!rcScanning) $("rcInfo").replaceChildren(el("b", {}, list.length + (list.length === 1 ? " título" : " títulos")),
-      last ? " · última leitura " + ago(new Date(Number(last)).toISOString()) : " · ainda não leu os catálogos");
+      last ? " · última leitura " + ago(new Date(Number(last)).toISOString()) : " · ainda não leu os catálogos",
+      ...(rcChecking ? [" · conferindo " + rcChecking + " nos outros addons…"] : []),
+      ...(!latest && (hidden || rcShowAll) ? [" · " + (rcShowAll ? "mostrando também os antigos e os que já existiam em outro addon " : hidden + (hidden === 1 ? " escondido (antigo ou já existia em outro addon) " : " escondidos (antigos ou que já existiam em outro addon) ")), showAll] : []));
     $("rcEmpty").classList.toggle("hidden", list.length > 0);
     $("rcEmpty").textContent = rcScanning ? "Lendo os catálogos dos addons…"
       : !last ? "Toque em Procurar novidades para ler os catálogos dos addons."
@@ -3479,7 +3545,9 @@
       el("b", { title: r.name || "" }, r.name || r.item_id),
       el("span", {}, (/series|tv|show/i.test(r.type || "") ? "Série" : "Filme") + (r.year ? " · " + r.year : "") +
         (latest ? (r.released ? " · " + new Date(r.released).toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "2-digit" }) : "") : " · " + ago(r.first_seen))),
-      el("span", { title: r.catalog_name || r.catalog }, r.catalog_name || r.catalog))));
+      el("span", { title: r.catalog_name || r.catalog }, r.catalog_name || r.catalog),
+      ...(!latest && rcOldOrElsewhere(r) ? [el("span", { class: "rc-else" }, rcOldOrElsewhere(r) === "antigo" ? "Antigo (" + rcYear(r) + ")"
+        : "Já tinha em: " + ((rcElseOf(r) || []).length ? rcElseOf(r) : rcItems.filter((x) => x.item_id === r.item_id && x.addon_name !== r.addon_name).map((x) => x.addon_name)).join(", "))] : []))));
   }
   async function scanCatalogs() {
     if (rcScanning) return;
