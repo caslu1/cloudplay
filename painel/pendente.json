@@ -43,6 +43,10 @@
     {
       "text": "Áudio: quando o arquivo é dual áudio, \"Português (Dublado)\" e \"Legendado\" trocam o áudio do próprio arquivo, sem recarregar (Legendado liga a legenda PT); a lista \"Faixas deste arquivo\" some nesse caso.",
       "added": "2026-10-23"
+    },
+    {
+      "text": "Menu de legendas e áudio na TV: some o nome da fonte/arquivo no topo (ex.: \"★ Hollymovies\").",
+      "added": "2026-10-23"
     }
   ],
   "sent_at": null,
