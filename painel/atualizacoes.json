@@ -1,5 +1,14 @@
 [
   {
+    "version": "2.20",
+    "date": null,
+    "items": [
+      "\"Ver tudo\" de Filmes Populares e Séries Populares vai carregando mais títulos de todos os addons ao rolar",
+      "Na TV, a janela de atualização não fecha mais sozinha: se o instalador fechar sem instalar, é só apertar \"Instalar\" de novo (a segunda vez usa outro jeito de instalar)",
+      "Logos em SVG voltam a aparecer (ex.: The Walking Dead mostrava o nome escrito)"
+    ]
+  },
+  {
     "version": "2.19",
     "date": null,
     "items": [
