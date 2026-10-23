@@ -3703,8 +3703,14 @@
       const x = new XMLHttpRequest(); ownXhr = x; ownXhrs.add(x);
       x.open("PUT", url);
       x.upload.onprogress = (e) => { if (e.lengthComputable) { sent[i] = e.loaded; draw(); } };
-      x.onload = () => { ownXhrs.delete(x); resolve(x.status >= 200 && x.status < 300 ? (x.getResponseHeader("ETag") || "") : null); };
-      x.onerror = x.onabort = () => { ownXhrs.delete(x); resolve(null); };
+      // A part that sends nothing for 2 minutes (or never gets its answer) is stopped and tried again.
+      let lastMove = Date.now();
+      const watch = setInterval(() => { if (Date.now() - lastMove > 120000) x.abort(); }, 5000);
+      x.upload.addEventListener("progress", () => { lastMove = Date.now(); });
+      x.upload.addEventListener("load", () => { lastMove = Date.now(); });
+      const end = (v) => { clearInterval(watch); ownXhrs.delete(x); resolve(v); };
+      x.onload = () => end(x.status >= 200 && x.status < 300 ? (x.getResponseHeader("ETag") || "ok") : null);
+      x.onerror = x.onabort = x.ontimeout = () => end(null);
       x.send(blob);
     });
     const worker = async () => {
@@ -3724,11 +3730,15 @@
     ownCancelFn = () => { cancelled = true; ownXhrs.forEach((x) => x.abort()); };
     await Promise.all([worker(), worker(), worker()]);
     let ok = !cancelled && !failed && etags.length === total;
-    if (ok) { const done = await call({ action: "mp_complete", key: up.key, upload_id: start.upload_id, parts: etags }); ok = !!(done && done.ok); }
+    if (ok) {
+      $("ownProgText").textContent = f.name + " · " + gb(f.size) + " · finalizando o envio…";
+      const done = await call({ action: "mp_complete", key: up.key, upload_id: start.upload_id, parts: etags, total });
+      ok = !!(done && done.ok);
+    }
     if (!ok) call({ action: "mp_abort", key: up.key, upload_id: start.upload_id });
     ownCancelFn = null;
     ownXhr = null; $("ownCancel").classList.add("hidden");
-    if (!ok) { $("ownMsg").textContent = cancelled ? "Envio cancelado." : "O envio não terminou: uma parte falhou 5 vezes seguidas. Confira a internet e tente de novo."; $("ownProg").classList.add("hidden"); ownReady(); return; }
+    if (!ok) { $("ownMsg").textContent = cancelled ? "Envio cancelado." : (failed ? "O envio não terminou: uma parte falhou 5 vezes seguidas. Confira a internet e tente de novo." : "Não deu para finalizar o envio. Resposta: " + (lastErr || "sem resposta")); $("ownProg").classList.add("hidden"); ownReady(); return; }
     const row = { media_type: type, tmdb_id: pick.tmdb_id || 0, imdb_id: pick.imdb_id, title: pick.title, year: pick.year || null, poster: pick.poster,
       audio: segValue("ownAudio"), quality: segValue("ownQuality"), size_bytes: f.size, file_name: f.name, r2_key: up.key,
       season: type === "series" ? parseInt($("ownSeason").value || "1", 10) : null, episode: type === "series" ? parseInt($("ownEpisode").value || "1", 10) : null };
