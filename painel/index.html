@@ -3636,9 +3636,22 @@
   $("ownSend").addEventListener("click", async () => {
     const f = ownFileSel, pick = ownPick, type = segValue("ownType");
     $("ownMsg").textContent = "";
-    const call = async (body) => { const r = await sb.functions.invoke("media/admin", { body }).catch((e) => ({ error: e })); return r.error ? null : r.data; };
+    let lastErr = "";
+    const call = async (body) => {
+      const r = await sb.functions.invoke("media/admin", { body }).catch((e) => ({ error: e }));
+      if (!r.error) return r.data;
+      // What the function answered (it says why), for the message below.
+      try { const b = await r.error.context.json(); lastErr = (b.error || "") + (b.status ? " " + b.status : "") + (b.detail ? " · " + b.detail : ""); }
+      catch (_) { lastErr = String((r.error && r.error.message) || r.error); }
+      return null;
+    };
     const start = await call({ action: "mp_start", file_name: f.name });
-    if (!start || !start.upload_id) { $("ownMsg").textContent = "Não deu para começar o envio (atualize a função \"media\" no Supabase e confira a Cloudflare)."; return; }
+    if (!start || !start.upload_id) {
+      $("ownMsg").textContent = /unknown_action/.test(lastErr)
+        ? "A função \"media\" no Supabase ainda é a antiga: cole o arquivo novo (com mp_start) e clique em Deploy."
+        : "Não deu para começar o envio. Resposta: " + (lastErr || "sem resposta");
+      return;
+    }
     const up = { key: start.key };
     ownXhr = {}; ownReady();
     $("ownProg").classList.remove("hidden"); $("ownCancel").classList.remove("hidden");
