@@ -3607,7 +3607,10 @@
     if (q.length < 2) { $("ownResults").replaceChildren(); return; }
     const type = segValue("ownType");
     let metas = [];
-    try { metas = (await (await fetch("https://v3-cinemeta.strem.io/catalog/" + type + "/top/search=" + encodeURIComponent(q) + ".json")).json()).metas || []; } catch (_) {}
+    // Through the media function (Cinemeta does not always answer a browser page); straight
+    // from the page while that function is the older one.
+    try { const { data } = await sb.functions.invoke("media/admin", { body: { action: "search", type, q } }); metas = (data && data.metas) || []; } catch (_) {}
+    if (!metas.length) try { metas = (await (await fetch("https://v3-cinemeta.strem.io/catalog/" + type + "/top/search=" + encodeURIComponent(q) + ".json")).json()).metas || []; } catch (_) {}
     $("ownResults").replaceChildren(...metas.slice(0, 12).map((m) => el("button", { type: "button", onclick: () => {
       ownPick = { imdb_id: m.id, title: m.name, year: (m.releaseInfo || m.year || "").toString().slice(0, 4), poster: m.poster || null };
       $("ownResults").replaceChildren();
@@ -3652,7 +3655,7 @@
       ownXhr.send(f);
     });
     ownXhr = null; $("ownCancel").classList.add("hidden");
-    if (!ok) { $("ownMsg").textContent = "O envio não terminou. Se for o primeiro, confira o CORS do bucket na Cloudflare."; $("ownProg").classList.add("hidden"); ownReady(); return; }
+    if (!ok) { $("ownMsg").textContent = "O envio não terminou. Se aparecer \"blocked by CORS\" no F12, a regra de CORS do bucket na Cloudflare ainda não está ativa."; $("ownProg").classList.add("hidden"); ownReady(); return; }
     const row = { media_type: type, tmdb_id: 0, imdb_id: pick.imdb_id, title: pick.title, year: pick.year || null, poster: pick.poster,
       audio: segValue("ownAudio"), quality: segValue("ownQuality"), size_bytes: f.size, file_name: f.name, r2_key: up.key,
       season: type === "series" ? parseInt($("ownSeason").value || "1", 10) : null, episode: type === "series" ? parseInt($("ownEpisode").value || "1", 10) : null };
