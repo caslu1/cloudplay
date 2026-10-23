@@ -320,6 +320,19 @@
   .sec-tag { color: var(--pink); background: rgba(255, 116, 168, .1); }
   #svcCard { margin-top: 18px; }
   .rc { min-width: 0; }
+  .rc .rc-pick { position: absolute; bottom: 8px; right: 8px; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 99px; border: 1px solid rgba(255,255,255,.18); background: rgba(10,10,15,.82); color: var(--text); backdrop-filter: blur(6px); cursor: pointer; height: auto; }
+  .rc .rc-pick.on { background: #fff; color: #0A0A0F; border-color: #fff; }
+  .pk-cols { display: grid; gap: 18px; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 900px) { .pk-cols { grid-template-columns: 1fr; } }
+  .pk-h { font-size: 13px; font-weight: 600; margin-bottom: 10px; display: flex; gap: 8px; align-items: center; }
+  .pk-h .n { font-size: 11px; color: var(--muted); background: var(--panel2); border-radius: 99px; padding: 2px 8px; }
+  .pk-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; min-height: 40px; }
+  .pk-row .pk-empty { font-size: 12.5px; color: var(--muted); align-self: center; }
+  .pk { flex: none; width: 84px; position: relative; }
+  .pk img, .pk .np { width: 84px; aspect-ratio: 2/3; border-radius: 9px; object-fit: cover; background: var(--field); display: block; }
+  .pk .np { display: grid; place-items: center; font-size: 10px; color: var(--faint); text-align: center; padding: 4px; }
+  .pk b { display: block; font-size: 11px; font-weight: 500; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+  .pk .x { all: unset; cursor: pointer; position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 50%; background: rgba(10,10,15,.85); display: grid; place-items: center; font-size: 13px; color: #fff; border: 1px solid rgba(255,255,255,.2); }
   .rc-poster { position: relative; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; background: var(--field); border: 1px solid var(--line); }
   .rc-poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .rc-poster .np { position: absolute; inset: 0; display: grid; place-items: center; color: var(--faint); font-size: 12px; padding: 10px; text-align: center; }
@@ -1597,6 +1610,13 @@
 
     <!-- Conteúdos recentes -->
     <main class="page hidden" data-section="recentes" data-title="Conteúdos recentes">
+      <div class="card">
+        <div class="card-head"><div><h2>Fileiras do app</h2><p class="sub">O que aparece em "Filmes adicionados recentemente" e "Séries adicionadas recentemente" no app. Escolha abaixo com "+ No app"; fica até você tirar. Sem nenhum escolhido, a fileira mostra os recentes dos addons, como antes.</p></div></div>
+        <div class="pk-cols">
+          <div><div class="pk-h">Filmes adicionados recentemente <span id="pkCountMovie" class="n">0</span></div><div id="pkMovie" class="pk-row"></div></div>
+          <div><div class="pk-h">Séries adicionadas recentemente <span id="pkCountSeries" class="n">0</span></div><div id="pkSeries" class="pk-row"></div></div>
+        </div>
+      </div>
       <div class="card">
         <div class="card-head">
           <div><h2>O que entrou nos addons</h2><p class="sub">Títulos novos nos catálogos dos addons de conteúdo: só os deste ano que nenhum outro addon já tinha. O painel lê sozinho ao abrir esta página (no máximo 1 vez por hora).</p></div>
@@ -3440,6 +3460,42 @@
 
   // ── Conteúdos recentes: new items in the default addons' catalogs (admin_catalog_seen) ──
   let rcItems = [], rcScanning = false;
+  // CloudPlay: the titles chosen for the app's "adicionados recentemente" rows (recent_picks),
+  // newest pick first; the app shows them instead of the addons' recent catalogs.
+  let rcPicks = [];
+  const rcIsSeries = (r) => /series|tv|show/i.test(r.type || r.media_type || "");
+  const rcPicked = (r) => rcPicks.find((p) => p.item_id === r.item_id && (p.media_type === "series") === rcIsSeries(r));
+  async function loadPicks() {
+    const { data, error } = await sb.from("recent_picks").select("*").order("created_at", { ascending: false });
+    rcPicks = error ? [] : data || [];
+    renderPicks();
+  }
+  function renderPicks() {
+    [["movie", "pkMovie", "pkCountMovie"], ["series", "pkSeries", "pkCountSeries"]].forEach(([type, box, count]) => {
+      const list = rcPicks.filter((p) => p.media_type === type);
+      $(count).textContent = list.length;
+      $(box).replaceChildren(...(list.length ? list.map((p) => el("div", { class: "pk", title: p.title || p.item_id },
+        p.poster ? el("img", { src: p.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, p.title || ""),
+        el("button", { type: "button", class: "x", title: "Tirar da fileira", onclick: () => unpick(p) }, "×"),
+        el("b", {}, p.title || p.item_id)))
+        : [el("span", { class: "pk-empty" }, "Nenhum escolhido: mostra os recentes dos addons.")]));
+    });
+  }
+  async function pickToggle(r) {
+    const had = rcPicked(r);
+    if (had) return unpick(had);
+    const row = { media_type: rcIsSeries(r) ? "series" : "movie", item_id: r.item_id, title: r.name || null, poster: r.poster || null, year: r.year || null };
+    const { data, error } = await sb.from("recent_picks").insert(row).select().single();
+    if (error) { toast(/recent_picks/i.test(error.message) ? "Rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não deu para salvar: " + error.message); return; }
+    rcPicks = [data || { ...row, id: "tmp" + Date.now(), created_at: new Date().toISOString() }, ...rcPicks];
+    toast("Na fileira " + (row.media_type === "series" ? "de séries" : "de filmes") + " do app");
+    renderPicks(); renderRecent();
+  }
+  async function unpick(p) {
+    await sb.from("recent_picks").delete().eq("id", p.id);
+    rcPicks = rcPicks.filter((x) => x !== p);
+    renderPicks(); renderRecent();
+  }
   async function loadRecent() {
     const latest = ($("rcView").dataset.value || "new") === "latest";
     $("rcDays").classList.toggle("hidden", latest);
@@ -3541,7 +3597,8 @@
     $("rcList").replaceChildren(...list.map((r) => el("div", { class: "rc" },
       el("div", { class: "rc-poster" }, r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, r.name || ""),
         r.addon_name ? el("span", { class: "rc-addon", title: r.addon_name }, el("i", { style: "background:" + addonColor(r.addon_name) }), r.addon_name) : "",
-        latest ? "" : el("span", { class: "rc-new" }, "NOVO")),
+        latest ? "" : el("span", { class: "rc-new" }, "NOVO"),
+        el("button", { type: "button", class: "rc-pick" + (rcPicked(r) ? " on" : ""), onclick: () => pickToggle(r) }, rcPicked(r) ? "✓ No app" : "+ No app")),
       el("b", { title: r.name || "" }, r.name || r.item_id),
       el("span", {}, (/series|tv|show/i.test(r.type || "") ? "Série" : "Filme") + (r.year ? " · " + r.year : "") +
         (latest ? (r.released ? " · " + new Date(r.released).toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "2-digit" }) : "") : " · " + ago(r.first_seen))),
@@ -3598,6 +3655,7 @@
     loadRecent();
   }
   function openRecent() {
+    loadPicks();
     loadRecent().then(() => {
       let last = 0; try { last = Number(localStorage.getItem("rcLastScan") || 0); } catch (_) {}
       if (addons.length && Date.now() - last > 3600e3) scanCatalogs();
