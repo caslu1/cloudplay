@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CloudPlay · Revenda</title>
+<link rel="icon" href="../painel/icon.png">
+<!-- CloudPlay: the resellers' panel. Same Supabase project as the admin panel; everything a
+     reseller can do goes through the reseller_* functions (cloudplay_functions.sql). -->
+<script src="../painel/config.js?v=7"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0f; --panel: #121218; --panel2: #18181f; --field: #0e0e13; --line: #1f1f27; --line2: #2a2a33;
+    --text: #f4f4f5; --muted: #a1a1aa; --faint: #6b6b73;
+    --ok: #3ccf8e; --warn: #f5a524; --bad: #f2555a; --info: #8fa3b8;
+    --grad: linear-gradient(90deg, #FF74A8, #FF9A9C, #FFB08C);
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--text); font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 14px; min-height: 100vh; }
+  .hidden { display: none !important; }
+  button, input, select { font: inherit; color: inherit; }
+  .btn { height: 40px; border-radius: 10px; padding: 0 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-weight: 600; background: var(--panel2); border: 1px solid var(--line2); cursor: pointer; white-space: nowrap; }
+  .btn:hover { border-color: #3a3a40; }
+  .btn.main { background: var(--grad); border: none; color: #fff; }
+  .btn.small { height: 32px; font-size: 12.5px; padding: 0 11px; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  input.f, select.f { height: 42px; width: 100%; border-radius: 10px; border: 1px solid var(--line2); background: var(--field); padding: 0 12px; outline: none; }
+  input.f:focus { border-color: #FF9A9C; }
+  label.l { display: block; font-size: 12px; color: var(--muted); margin: 12px 0 6px; }
+  .msg { font-size: 13px; color: var(--bad); margin-top: 10px; min-height: 18px; }
+  .msg.ok { color: var(--ok); }
+
+  /* Login */
+  .center { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .box { width: 100%; max-width: 400px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 26px; }
+  .box img { height: 36px; display: block; margin-bottom: 16px; }
+  .box h1 { font-size: 20px; margin-bottom: 4px; }
+  .box p { color: var(--muted); font-size: 13px; line-height: 1.5; }
+  .tabs { display: flex; gap: 6px; margin: 18px 0 4px; background: var(--field); border-radius: 10px; padding: 4px; }
+  .tabs button { flex: 1; height: 34px; border-radius: 8px; border: none; background: none; color: var(--muted); font-weight: 600; cursor: pointer; }
+  .tabs button.on { background: var(--panel2); color: var(--text); }
+  .link { background: none; border: none; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: 12.5px; margin-top: 12px; padding: 0; }
+
+  /* App */
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(10,10,15,.92); backdrop-filter: blur(8px); z-index: 5; }
+  .top img { height: 30px; }
+  .who { font-size: 13px; color: var(--muted); display: flex; gap: 12px; align-items: center; }
+  .who b { color: var(--text); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 22px 24px 60px; display: flex; flex-direction: column; gap: 16px; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+  .k { font-size: 11px; letter-spacing: 1.1px; color: var(--faint); font-weight: 600; text-transform: uppercase; }
+  .big { font-size: 32px; font-weight: 700; margin-top: 4px; }
+  .big small { font-size: 13.5px; color: var(--muted); font-weight: 500; margin-left: 6px; }
+  .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .head h2 { font-size: 16px; }
+  .sub { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+  .plans { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+  .plan { border: 1px solid var(--line2); border-radius: 12px; padding: 12px; background: var(--panel2); cursor: pointer; text-align: left; }
+  .plan b { display: block; font-size: 16px; }
+  .plan span { font-size: 12.5px; color: var(--muted); }
+  .plan.sel { border-color: #FF9A9C; box-shadow: 0 0 0 1px #FF9A9C inset; }
+  .newrow { display: flex; gap: 10px; margin-top: 12px; }
+  .newrow input { flex: 1; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; font-size: 11px; letter-spacing: 1px; color: var(--faint); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line); text-transform: uppercase; }
+  td { padding: 11px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  .code { font-family: ui-monospace, Menlo, monospace; font-weight: 700; letter-spacing: 2px; }
+  .pill { font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 50px; display: inline-flex; gap: 5px; align-items: center; white-space: nowrap; }
+  .pill i { width: 6px; height: 6px; border-radius: 50%; display: block; background: currentColor; }
+  .p-ok { color: var(--ok); background: rgba(60,207,142,.12); }
+  .p-warn { color: var(--warn); background: rgba(245,165,36,.12); }
+  .p-bad { color: var(--bad); background: rgba(242,85,90,.12); }
+  .p-info { color: var(--info); background: rgba(143,163,184,.12); }
+  .p-free { color: var(--muted); background: rgba(255,255,255,.06); }
+  .act { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+  .on { color: var(--ok); font-size: 12.5px; }
+  .dim { color: var(--faint); }
+  .empty { color: var(--faint); padding: 18px 10px; text-align: center; }
+  .search { max-width: 260px; height: 36px; }
+  details summary { cursor: pointer; font-weight: 600; font-size: 15px; }
+  .hist div { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .plus { color: var(--ok); font-weight: 600; } .minus { color: var(--bad); font-weight: 600; }
+
+  /* Dialog */
+  .shade { position: fixed; inset: 0; background: rgba(0,0,0,.66); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 20; }
+  .dlg { width: 100%; max-width: 440px; background: #15141B; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 22px; }
+  .dlg h3 { font-size: 17px; margin-bottom: 6px; }
+  .dlg .bar { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
+  .bigcode { font-family: ui-monospace, Menlo, monospace; font-size: 34px; font-weight: 800; letter-spacing: 6px; text-align: center; margin: 14px 0 6px; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: #1a1e28; border: 1px solid var(--line2); padding: 10px 16px; border-radius: 12px; opacity: 0; transition: .2s; z-index: 30; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%); }
+
+  @media (max-width: 760px) {
+    .top { padding: 12px 16px; }
+    .wrap { padding: 16px 14px 60px; }
+    .stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .big { font-size: 26px; }
+    .plans { grid-template-columns: repeat(2, 1fr); }
+    .newrow { flex-direction: column; }
+    .newrow input { flex: none; }
+    .who .mail { display: none; }
+    /* Tables become one card per row. */
+    table, tbody, tr, td { display: block; width: 100%; }
+    thead { display: none; }
+    tr { border-bottom: 1px solid var(--line); padding: 10px 0; }
+    td { border: none; padding: 3px 0; }
+    td[data-l]::before { content: attr(data-l) ": "; color: var(--faint); font-size: 12px; }
+    .act { justify-content: flex-start; margin-top: 6px; }
+    .search { max-width: none; width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sign in / first access -->
+<div id="login" class="center hidden">
+  <div class="box">
+    <img src="../painel/logo.png" alt="CloudPlay">
+    <h1>Painel de revenda</h1>
+    <p>Entre com o e-mail e a senha da sua revenda.</p>
+    <div class="tabs"><button id="tabIn" class="on">Entrar</button><button id="tabFirst">Primeiro acesso</button></div>
+    <form id="formIn">
+      <label class="l">E-mail</label><input class="f" id="inEmail" type="email" autocomplete="email" required>
+      <label class="l">Senha</label><input class="f" id="inPass" type="password" autocomplete="current-password" required>
+      <div class="msg" id="inMsg"></div>
+      <button class="btn main" style="width:100%">Entrar</button>
+      <button type="button" class="link" id="forgot">Esqueci minha senha</button>
+    </form>
+    <form id="formFirst" class="hidden">
+      <p style="margin-top:10px">Use o <b>código de convite</b> que você recebeu junto com o cadastro da revenda.</p>
+      <label class="l">E-mail</label><input class="f" id="fEmail" type="email" autocomplete="email" required>
+      <label class="l">Crie uma senha (mínimo 6 caracteres)</label><input class="f" id="fPass" type="password" autocomplete="new-password" minlength="6" required>
+      <label class="l">Código de convite</label><input class="f" id="fInvite" maxlength="8" style="text-transform:uppercase;letter-spacing:3px" required>
+      <div class="msg" id="fMsg"></div>
+      <button class="btn main" style="width:100%">Criar acesso</button>
+    </form>
+  </div>
+</div>
+
+<!-- Signed in but the login is not tied to a reseller yet (or the e-mail confirmation came first) -->
+<div id="claim" class="center hidden">
+  <div class="box">
+    <img src="../painel/logo.png" alt="CloudPlay">
+    <h1>Falta o convite</h1>
+    <p>Digite o código de convite da sua revenda para liberar o painel.</p>
+    <form id="formClaim">
+      <label class="l">Código de convite</label><input class="f" id="cInvite" maxlength="8" style="text-transform:uppercase;letter-spacing:3px" required>
+      <div class="msg" id="cMsg"></div>
+      <button class="btn main" style="width:100%">Liberar</button>
+      <button type="button" class="link" id="claimOut">Sair</button>
+    </form>
+  </div>
+</div>
+
+<!-- New password (link from "Esqueci minha senha") -->
+<div id="recover" class="center hidden">
+  <div class="box">
+    <img src="../painel/logo.png" alt="CloudPlay">
+    <h1>Nova senha</h1>
+    <form id="formRecover">
+      <label class="l">Nova senha (mínimo 6 caracteres)</label><input class="f" id="rPass" type="password" minlength="6" required>
+      <div class="msg" id="rMsg"></div>
+      <button class="btn main" style="width:100%">Salvar senha</button>
+    </form>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="top">
+    <img src="../painel/logo.png" alt="CloudPlay">
+    <div class="who"><span>Revenda · <b id="meName"></b> <span class="mail" id="meMail"></span></span><button class="link" style="margin:0" id="logout">Sair</button></div>
+  </div>
+  <div class="wrap">
+    <div class="stats">
+      <div class="card"><div class="k">Seus créditos</div><div class="big"><span id="sCredits">0</span><small>créditos</small></div></div>
+      <div class="card"><div class="k">Clientes ativos</div><div class="big"><span id="sActive">0</span><small id="sClients">de 0</small></div></div>
+      <div class="card"><div class="k">Assistindo agora</div><div class="big"><span id="sWatching">0</span><small>aparelhos</small></div></div>
+      <div class="card"><div class="k">Testes hoje</div><div class="big"><span id="sTests">0</span><small id="sTestsOf">de 3 grátis</small></div></div>
+    </div>
+
+    <div class="card">
+      <div class="head">
+        <div><h2>Novo cliente</h2><div class="sub">O código é gerado na hora e o prazo começa no primeiro acesso do cliente.</div></div>
+        <button class="btn" id="trialBtn">Teste grátis 24h</button>
+      </div>
+      <div class="plans" id="plans"></div>
+      <div class="newrow">
+        <input class="f" id="newNote" maxlength="80" placeholder="Nome do cliente (opcional)">
+        <button class="btn main" id="createBtn">Gerar código</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="head" style="margin-bottom:8px">
+        <h2>Meus clientes <span class="dim" id="clientsCount"></span></h2>
+        <input class="f search" id="search" placeholder="Buscar código ou nome">
+      </div>
+      <table>
+        <thead><tr><th>Código</th><th>Nome</th><th>Situação</th><th>Vence</th><th>Agora</th><th></th></tr></thead>
+        <tbody id="codes"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="head" style="margin-bottom:8px">
+        <div><h2>Meus revendedores</h2><div class="sub">Os créditos que você passa saem do seu saldo.</div></div>
+        <button class="btn main" id="newChildBtn">+ Novo revendedor</button>
+      </div>
+      <table>
+        <thead><tr><th>Revendedor</th><th>Créditos</th><th>Clientes</th><th>Revendedores dele</th><th>Situação</th><th></th></tr></thead>
+        <tbody id="children"></tbody>
+      </table>
+      <div class="sub" style="margin-top:10px">Bloquear um revendedor só tira o acesso dele ao painel: os clientes dele continuam assistindo. Tirar créditos só pega de volta os que ele ainda não usou.</div>
+    </div>
+
+    <div class="card">
+      <details id="histBox"><summary>Histórico de créditos</summary><div class="hist" id="hist" style="margin-top:10px"></div></details>
+    </div>
+  </div>
+</div>
+
+<div id="shade" class="shade hidden"><div class="dlg" id="dlg"></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const url = window.CLOUDFLIX_SUPABASE_URL || "";
+  const key = window.CLOUDFLIX_SUPABASE_ANON_KEY || "";
+  // Its own saved login, so signing in here never signs the admin panel (same site) out.
+  const sb = supabase.createClient(url, key, { auth: { storageKey: "cloudplay-revenda-auth" } });
+
+  const PLANS = [{ m: 1, c: 1, t: "1 mês" }, { m: 3, c: 3, t: "3 meses" }, { m: 6, c: 5, t: "6 meses" }, { m: 12, c: 10, t: "12 meses" }];
+  const credits = (n) => n === 1 ? "1 crédito" : n + " créditos";
+  const TZ = { timeZone: "America/Sao_Paulo" };
+  const fmt = (d) => d ? new Date(d).toLocaleDateString("pt-BR", TZ) : "—";
+  const fmtTime = (d) => new Date(d).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", ...TZ });
+  const APP_LINK = "https://dl.ntdev.in/14922";
+  const APP_DOWNLOADER = "5259665";
+  const ERR = {
+    not_enough_credits: "Créditos insuficientes.", trial_limit: "Você já gerou os 3 testes grátis de hoje.",
+    email_in_use: "Esse e-mail já tem uma revenda.", name_and_email: "Preencha o nome e um e-mail válido.",
+    invalid_amount: "Quantidade inválida.", "not allowed": "Sua revenda está bloqueada ou sem acesso."
+  };
+  const errText = (e) => { const m = (e && e.message) || ""; for (const k in ERR) if (m.includes(k)) return ERR[k]; return "Não deu certo. Tente de novo."; };
+
+  let me = null, codes = [], children = [], plan = 3;
+
+  function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.h); toast.h = setTimeout(() => el.classList.remove("show"), 1800); }
+  function el(tag, attrs, ...kids) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (k === "class") e.className = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else if (v != null) e.setAttribute(k, v);
+    }
+    for (const c of kids.flat()) if (c != null) e.append(c.nodeType ? c : document.createTextNode(String(c)));
+    return e;
+  }
+  function screen(id) { for (const s of ["login", "claim", "recover", "app"]) $(s).classList.toggle("hidden", s !== id); }
+  function dialog(build) { const d = $("dlg"); d.replaceChildren(...build(close)); $("shade").classList.remove("hidden"); function close() { $("shade").classList.add("hidden"); } return close; }
+  $("shade").addEventListener("click", (e) => { if (e.target.id === "shade") $("shade").classList.add("hidden"); });
+  async function copy(text) { try { await navigator.clipboard.writeText(text); toast("Copiado"); } catch (_) { toast("Não deu para copiar"); } }
+
+  // ── Sign in ──
+  $("tabIn").onclick = () => { $("tabIn").classList.add("on"); $("tabFirst").classList.remove("on"); $("formIn").classList.remove("hidden"); $("formFirst").classList.add("hidden"); };
+  $("tabFirst").onclick = () => { $("tabFirst").classList.add("on"); $("tabIn").classList.remove("on"); $("formFirst").classList.remove("hidden"); $("formIn").classList.add("hidden"); };
+  $("formIn").addEventListener("submit", async (e) => {
+    e.preventDefault(); $("inMsg").textContent = "";
+    const { error } = await sb.auth.signInWithPassword({ email: $("inEmail").value.trim(), password: $("inPass").value });
+    if (error) { $("inMsg").textContent = /confirm/i.test(error.message) ? "Confirme o e-mail (veja sua caixa de entrada) e entre de novo." : "E-mail ou senha incorretos."; return; }
+    start();
+  });
+  $("forgot").onclick = async () => {
+    const email = $("inEmail").value.trim();
+    if (!email) { $("inMsg").textContent = "Digite o seu e-mail acima e toque de novo."; return; }
+    await sb.auth.resetPasswordForEmail(email, { redirectTo: location.href.split("#")[0] });
+    $("inMsg").className = "msg ok"; $("inMsg").textContent = "Se o e-mail tiver revenda, chega um link para criar a nova senha.";
+  };
+  $("formFirst").addEventListener("submit", async (e) => {
+    e.preventDefault(); $("fMsg").className = "msg"; $("fMsg").textContent = "";
+    const email = $("fEmail").value.trim(), password = $("fPass").value, invite = $("fInvite").value.trim().toUpperCase();
+    let { data, error } = await sb.auth.signUp({ email, password });
+    // Already has a login (or a second try): sign in with it instead.
+    if (error && /registered|exists/i.test(error.message)) ({ data, error } = await sb.auth.signInWithPassword({ email, password }));
+    if (error) { $("fMsg").textContent = error.message.includes("Password") ? "A senha precisa de pelo menos 6 caracteres." : "Não deu certo: " + error.message; return; }
+    if (!data.session) {
+      // The project asks for e-mail confirmation first: the invite is asked after the first sign-in.
+      localStorage.setItem("cloudplay-revenda-invite", invite);
+      $("fMsg").className = "msg ok"; $("fMsg").textContent = "Enviamos um e-mail de confirmação. Confirme e depois entre na aba \"Entrar\".";
+      return;
+    }
+    const { data: r } = await sb.rpc("reseller_claim", { p_invite: invite });
+    if (!r || !r.ok) { $("fMsg").textContent = "Código de convite ou e-mail não confere com o cadastro da revenda."; await sb.auth.signOut(); return; }
+    start();
+  });
+  $("formClaim").addEventListener("submit", async (e) => {
+    e.preventDefault(); $("cMsg").textContent = "";
+    const { data: r } = await sb.rpc("reseller_claim", { p_invite: $("cInvite").value.trim().toUpperCase() });
+    if (!r || !r.ok) { $("cMsg").textContent = "Código de convite ou e-mail não confere com o cadastro da revenda."; return; }
+    start();
+  });
+  $("claimOut").onclick = async () => { await sb.auth.signOut(); screen("login"); };
+  $("formRecover").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const { error } = await sb.auth.updateUser({ password: $("rPass").value });
+    if (error) { $("rMsg").textContent = "Não deu certo: " + error.message; return; }
+    history.replaceState(null, "", location.pathname); start();
+  });
+  $("logout").onclick = async () => { await sb.auth.signOut(); screen("login"); };
+
+  async function start() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return screen("login");
+    let { data: info } = await sb.rpc("reseller_me");
+    if (info && !info.ok && info.error === "not_reseller") {
+      // An invite typed before the e-mail confirmation is used now.
+      const saved = localStorage.getItem("cloudplay-revenda-invite");
+      if (saved) {
+        const { data: r } = await sb.rpc("reseller_claim", { p_invite: saved });
+        localStorage.removeItem("cloudplay-revenda-invite");
+        if (r && r.ok) ({ data: info } = await sb.rpc("reseller_me"));
+      }
+    }
+    if (!info || !info.ok) {
+      if (info && info.error === "blocked") { await sb.auth.signOut(); screen("login"); $("inMsg").textContent = "Sua revenda está bloqueada. Fale com quem cadastrou você."; return; }
+      return screen("claim");
+    }
+    screen("app"); render(info); loadLists();
+  }
+
+  // ── Panel ──
+  function render(info) {
+    me = info;
+    $("meName").textContent = info.name; $("meMail").textContent = "· " + info.email;
+    $("sCredits").textContent = info.credits; $("sActive").textContent = info.active; $("sClients").textContent = "de " + info.clients;
+    $("sWatching").textContent = info.watching; $("sTests").textContent = info.tests_today; $("sTestsOf").textContent = "de " + info.tests_limit + " grátis";
+    $("trialBtn").disabled = info.tests_today >= info.tests_limit;
+    renderPlans();
+  }
+  function renderPlans() {
+    $("plans").replaceChildren(...PLANS.map((p) => el("button", { class: "plan" + (p.m === plan ? " sel" : ""), type: "button", onclick: () => { plan = p.m; renderPlans(); } },
+      el("b", null, p.t), el("span", null, credits(p.c)))));
+    const cost = PLANS.find((p) => p.m === plan).c;
+    $("createBtn").disabled = !me || me.credits < cost;
+    $("createBtn").textContent = me && me.credits < cost ? "Créditos insuficientes" : "Gerar código";
+  }
+  async function refreshMe() { const { data } = await sb.rpc("reseller_me"); if (data && data.ok) render(data); }
+  async function loadLists() {
+    const [{ data: c }, { data: k }] = await Promise.all([sb.rpc("reseller_codes"), sb.rpc("reseller_children")]);
+    codes = c || []; children = k || [];
+    renderCodes(); renderChildren();
+    if ($("histBox").open) loadHistory();
+  }
+  $("histBox").addEventListener("toggle", () => { if ($("histBox").open) loadHistory(); });
+  async function loadHistory() {
+    const { data } = await sb.rpc("reseller_credit_history", { p_limit: 60 });
+    $("hist").replaceChildren(...((data || []).length ? data : [null]).map((h) => h
+      ? el("div", null, el("span", null, el("span", { class: h.delta > 0 ? "plus" : "minus" }, (h.delta > 0 ? "+" : "") + h.delta), "  ", h.reason),
+          el("span", { class: "dim" }, fmt(h.created_at) + " " + fmtTime(h.created_at) + " · saldo " + h.balance_after))
+      : el("div", { class: "dim" }, "Nada ainda.")));
+  }
+
+  function statusOf(c) {
+    if (c.revoked) return ["Bloqueado", "p-bad"];
+    if (c.expires_at && new Date(c.expires_at) <= new Date()) return ["Vencido", "p-bad"];
+    if (c.trial) return ["Teste 24h", "p-info"];
+    if (!c.expires_at) return ["Não usado", "p-free"];
+    const days = (new Date(c.expires_at) - new Date()) / 86400000;
+    if (days <= 5) return [days < 1 ? "Vence hoje" : "Vence em " + Math.ceil(days) + " dias", "p-warn"];
+    return ["Ativo", "p-ok"];
+  }
+  function dueOf(c) {
+    if (c.expires_at) {
+      const d = new Date(c.expires_at);
+      return (d - new Date()) < 86400000 && d > new Date() ? "hoje " + fmtTime(d) : fmt(d);
+    }
+    if (c.duration_hours) return c.duration_hours + "h após ativar";
+    if (c.duration_days) return c.duration_days + " dias após ativar";
+    return "—";
+  }
+  function renderCodes() {
+    const q = $("search").value.trim().toLowerCase();
+    const list = codes.filter((c) => !q || c.code.includes(q) || (c.note || "").toLowerCase().includes(q));
+    $("clientsCount").textContent = "(" + codes.length + ")";
+    $("codes").replaceChildren(...(list.length ? list.map((c) => {
+      const [label, cls] = statusOf(c);
+      return el("tr", null,
+        el("td", { class: "code" }, c.code),
+        el("td", { "data-l": "Nome" }, c.note || el("span", { class: "dim" }, "—")),
+        el("td", null, el("span", { class: "pill " + cls }, el("i"), label)),
+        el("td", { "data-l": "Vence" }, dueOf(c)),
+        el("td", null, c.watching ? el("span", { class: "on", title: c.watching_title || "" }, "● Assistindo") : el("span", { class: "dim" }, "—")),
+        el("td", null, el("div", { class: "act" },
+          el("button", { class: "btn small", onclick: () => copy(messageFor(c)) }, "Copiar"),
+          el("button", { class: "btn small", onclick: () => renewDialog(c) }, "Renovar"),
+          el("button", { class: "btn small", onclick: () => setBlocked(c, !c.revoked) }, c.revoked ? "Desbloquear" : "Bloquear"))));
+    }) : [el("tr", null, el("td", { colspan: 6, class: "empty" }, codes.length ? "Nenhum cliente com essa busca." : "Seus clientes aparecem aqui."))]));
+  }
+  $("search").addEventListener("input", renderCodes);
+
+  function messageFor(c) {
+    if (c.trial) return "🚀 CLOUDPLAY – TESTE GRÁTIS\n\n🎬 Experimente o CloudPlay!\n\nLink para baixar o app:\n" + APP_LINK +
+      "\nDownloader: " + APP_DOWNLOADER + "\n\n🔑 Código de teste: *" + c.code + "*\n\n📲 Vale por 24 horas a partir do primeiro acesso.";
+    const due = c.expires_at ? fmt(c.expires_at) : c.duration_days ? c.duration_days + " dias a partir da ativação" : "—";
+    return "🚀 CLOUDPLAY – ACESSO LIBERADO\n\n🎬 Seu acesso ao CloudPlay está pronto!\n\nLink para baixar o app:\n" + APP_LINK +
+      "\nDownloader: " + APP_DOWNLOADER + "\n\n🔑 Código de acesso: *" + c.code + "*\n\n📅 Vencimento: " + due +
+      "\n\n📲 Acesse o aplicativo, digite o código e aproveite.";
+  }
+  function showCode(c, title) {
+    dialog((close) => [el("h3", null, title), el("div", { class: "sub" }, c.trial ? "Teste grátis de 24 horas." : "Envie o código para o cliente."),
+      el("div", { class: "bigcode" }, c.code),
+      el("div", { class: "bar" }, el("button", { class: "btn", onclick: close }, "Fechar"),
+        el("button", { class: "btn", onclick: () => copy(c.code) }, "Copiar código"),
+        el("button", { class: "btn main", onclick: () => copy(messageFor(c)) }, "Copiar mensagem"))]);
+  }
+
+  $("createBtn").onclick = async () => {
+    const p = PLANS.find((x) => x.m === plan);
+    $("createBtn").disabled = true;
+    const { data, error } = await sb.rpc("reseller_create_code", { p_months: p.m, p_note: $("newNote").value.trim() || null });
+    $("createBtn").disabled = false;
+    if (error) return toast(errText(error));
+    $("newNote").value = "";
+    await Promise.all([refreshMe(), loadLists()]);
+    showCode(codes.find((c) => c.code === data.code) || { code: data.code, duration_days: p.m === 12 ? 365 : p.m * 30 }, "Código criado · " + p.t);
+  };
+  $("trialBtn").onclick = async () => {
+    $("trialBtn").disabled = true;
+    const { data, error } = await sb.rpc("reseller_create_trial", { p_note: $("newNote").value.trim() || null });
+    if (error) { $("trialBtn").disabled = false; return toast(errText(error)); }
+    $("newNote").value = "";
+    await Promise.all([refreshMe(), loadLists()]);
+    showCode(codes.find((c) => c.code === data.code) || { code: data.code, trial: true }, "Teste grátis criado");
+  };
+
+  function renewDialog(c) {
+    let pick = 1;
+    dialog((close) => {
+      const grid = el("div", { class: "plans", style: "grid-template-columns:repeat(2,1fr)" });
+      const ok = el("button", { class: "btn main" }, "Renovar");
+      const draw = () => {
+        grid.replaceChildren(...PLANS.map((p) => el("button", { class: "plan" + (p.m === pick ? " sel" : ""), type: "button", onclick: () => { pick = p.m; draw(); } },
+          el("b", null, p.t), el("span", null, credits(p.c)))));
+        const cost = PLANS.find((p) => p.m === pick).c;
+        ok.disabled = me.credits < cost; ok.textContent = me.credits < cost ? "Créditos insuficientes" : "Renovar";
+      };
+      ok.onclick = async () => {
+        ok.disabled = true;
+        const { error } = await sb.rpc("reseller_renew_code", { p_id: c.id, p_months: pick });
+        if (error) { ok.disabled = false; return toast(errText(error)); }
+        close(); toast("Renovado"); refreshMe(); loadLists();
+      };
+      draw();
+      return [el("h3", null, "Renovar " + c.code), el("div", { class: "sub" }, (c.note ? c.note + " · " : "") + "Você tem " + credits(me.credits) + "."), grid,
+        el("div", { class: "bar" }, el("button", { class: "btn", onclick: close }, "Cancelar"), ok)];
+    });
+  }
+  async function setBlocked(c, blocked) {
+    const { error } = await sb.rpc("reseller_set_code_blocked", { p_id: c.id, p_blocked: blocked });
+    if (error) return toast(errText(error));
+    toast(blocked ? "Cliente bloqueado" : "Cliente desbloqueado"); refreshMe(); loadLists();
+  }
+
+  // ── Resellers under this one ──
+  function renderChildren() {
+    $("children").replaceChildren(...(children.length ? children.map((s) => el("tr", null,
+      el("td", null, el("b", null, s.name), el("div", { class: "sub" }, s.email + (s.joined ? "" : " · ainda não entrou"))),
+      el("td", { "data-l": "Créditos" }, el("b", null, s.credits)),
+      el("td", { "data-l": "Clientes" }, s.active + " ativos"),
+      el("td", { "data-l": "Revendedores dele" }, s.children),
+      el("td", null, s.blocked ? el("span", { class: "pill p-bad" }, el("i"), "Bloqueado") : el("span", { class: "pill p-ok" }, el("i"), "Ativo")),
+      el("td", null, el("div", { class: "act" },
+        s.joined ? null : el("button", { class: "btn small", onclick: () => inviteDialog(s.name, s.email, s.invite_code) }, "Convite"),
+        el("button", { class: "btn small", onclick: () => moveDialog(s, 1) }, "Passar créditos"),
+        el("button", { class: "btn small", onclick: () => moveDialog(s, -1) }, "Tirar créditos"),
+        el("button", { class: "btn small", onclick: () => blockChild(s, !s.blocked) }, s.blocked ? "Desbloquear" : "Bloquear")))))
+      : [el("tr", null, el("td", { colspan: 6, class: "empty" }, "Você ainda não tem revendedores."))]));
+  }
+  function inviteText(name, email, invite) {
+    return "Olá, " + name + "! Sua revenda CloudPlay está pronta.\n\nPainel: " + location.href.split("#")[0].split("?")[0] +
+      "\nE-mail: " + email + "\nCódigo de convite: " + invite + "\n\nNo painel, toque em \"Primeiro acesso\" e crie a sua senha.";
+  }
+  function inviteDialog(name, email, invite) {
+    dialog((close) => [el("h3", null, "Convite de " + name), el("div", { class: "sub" }, "Envie para o revendedor. Ele usa no \"Primeiro acesso\" do painel."),
+      el("div", { class: "bigcode", style: "font-size:28px" }, invite),
+      el("div", { class: "bar" }, el("button", { class: "btn", onclick: close }, "Fechar"), el("button", { class: "btn main", onclick: () => copy(inviteText(name, email, invite)) }, "Copiar mensagem"))]);
+  }
+  $("newChildBtn").onclick = () => {
+    dialog((close) => {
+      const name = el("input", { class: "f", maxlength: 60 }), email = el("input", { class: "f", type: "email" }), msg = el("div", { class: "msg" });
+      const ok = el("button", { class: "btn main" }, "Criar");
+      ok.onclick = async () => {
+        ok.disabled = true;
+        const { data, error } = await sb.rpc("reseller_create_child", { p_name: name.value.trim(), p_email: email.value.trim() });
+        if (error) { ok.disabled = false; msg.textContent = errText(error); return; }
+        close(); await loadLists(); inviteDialog(name.value.trim(), email.value.trim().toLowerCase(), data.invite_code);
+      };
+      return [el("h3", null, "Novo revendedor"), el("div", { class: "sub" }, "Depois você passa créditos para ele dos seus."),
+        el("label", { class: "l" }, "Nome"), name, el("label", { class: "l" }, "E-mail"), email, msg,
+        el("div", { class: "bar" }, el("button", { class: "btn", onclick: close }, "Cancelar"), ok)];
+    });
+  };
+  function moveDialog(s, sign) {
+    dialog((close) => {
+      const n = el("input", { class: "f", type: "number", min: 1, value: sign > 0 ? Math.min(10, me.credits) || 1 : Math.min(1, s.credits) || 1 });
+      const info = el("div", { class: "sub" }), msg = el("div", { class: "msg" });
+      const ok = el("button", { class: "btn main" }, sign > 0 ? "Passar" : "Tirar");
+      const upd = () => {
+        const v = Math.max(0, parseInt(n.value || "0", 10));
+        const mine = me.credits - sign * v, theirs = s.credits + sign * v;
+        info.textContent = "Você fica com " + mine + " · " + s.name + " fica com " + theirs;
+        ok.disabled = !v || mine < 0 || theirs < 0;
+      };
+      n.addEventListener("input", upd); upd();
+      ok.onclick = async () => {
+        ok.disabled = true;
+        const { error } = await sb.rpc("reseller_move_credits", { p_child: s.id, p_amount: sign * parseInt(n.value, 10) });
+        if (error) { ok.disabled = false; msg.textContent = errText(error); return; }
+        close(); toast(sign > 0 ? "Créditos passados" : "Créditos devolvidos para você"); refreshMe(); loadLists();
+      };
+      return [el("h3", null, (sign > 0 ? "Passar créditos para " : "Tirar créditos de ") + s.name), n, info, msg,
+        el("div", { class: "bar" }, el("button", { class: "btn", onclick: close }, "Cancelar"), ok)];
+    });
+  }
+  async function blockChild(s, blocked) {
+    const { error } = await sb.rpc("reseller_set_child_blocked", { p_child: s.id, p_blocked: blocked });
+    if (error) return toast(errText(error));
+    toast(blocked ? "Revendedor bloqueado" : "Revendedor desbloqueado"); loadLists();
+  }
+
+  // The "forgot password" link comes back here with a recovery session.
+  sb.auth.onAuthStateChange((event) => { if (event === "PASSWORD_RECOVERY") screen("recover"); });
+  if (/type=recovery/.test(location.hash)) screen("recover"); else start();
+  // Keeps "Assistindo agora" fresh.
+  setInterval(() => { if (!$("app").classList.contains("hidden") && !document.hidden) { refreshMe(); loadLists(); } }, 60000);
+})();
+</script>
+</body>
+</html>

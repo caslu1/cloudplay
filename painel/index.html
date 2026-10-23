@@ -235,6 +235,13 @@
   .count { display: inline-block; padding: 1px 8px; border-radius: 6px; background: var(--brand-soft); color: var(--text); font-size: 12px; font-weight: 600; white-space: nowrap; }
   .table-wrap { overflow-x: auto; margin: 0 -10px; }
   .empty { text-align: center; padding: 28px 10px; color: var(--muted); }
+  .rv-table td { vertical-align: middle; }
+  .rv-table .rv-name b { display: block; } .rv-table .rv-name span { color: var(--muted); font-size: 12.5px; }
+  .rv-acts { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+  .rv-invite { font-family: ui-monospace, monospace; font-size: 28px; font-weight: 800; letter-spacing: 5px; text-align: center; margin: 12px 0; }
+  .rv-hist div { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+  @media (max-width: 760px) { .rv-table thead { display: none; } .rv-table, .rv-table tbody, .rv-table tr, .rv-table td { display: block; width: 100%; }
+    .rv-table tr { border-bottom: 1px solid var(--line); padding: 10px 0; } .rv-table td { border: none; padding: 3px 0; } .rv-acts { justify-content: flex-start; margin-top: 6px; } }
   .pl-list { display: flex; flex-direction: column; gap: 8px; }
   .pl-row { display: flex; align-items: center; gap: 14px; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
   .pl-row.off { opacity: .6; }
@@ -979,6 +986,7 @@
       <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg>Códigos de acesso</a>
       <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg>Dispositivos conectados<span id="navOnline" class="pill count-pill hidden">0</span></a>
       <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-cart"/></svg>Pedidos<span id="navPending" class="pill count-pill hidden">0</span></a>
+      <a href="#revendedores" data-page="revendedores"><svg class="i"><use href="#i-user"/></svg>Revendedores</a>
       <div class="nav-label">Conteúdo do aplicativo</div>
       <a href="#addons" data-page="addons"><svg class="i"><use href="#i-tvplay"/></svg>Fontes de conteúdo</a>
       <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-tag"/></svg>Categorias</a>
@@ -1019,6 +1027,7 @@
       </div>
     </form>
   </dialog>
+  <dialog id="rvDlg" class="renew"><form id="rvForm" method="dialog"><div id="rvBody"></div></form></dialog>
   <dialog id="renewDlg" class="renew">
     <form id="renewForm" method="dialog">
       <h2>Renovar código <span id="rnCode" class="code"></span></h2>
@@ -1046,7 +1055,7 @@
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg><span>Conectados</span></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-tvplay"/></svg><span>Fontes</span></a>
-    <a href="#mais" id="bnMore" data-page="pedidos categorias recentes uso atualizacoes erros melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#mais" id="bnMore" data-page="pedidos revendedores categorias recentes uso atualizacoes erros melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
   </nav>
 
   <div class="content">
@@ -1255,6 +1264,24 @@
         </div>
         <div id="reqList" class="req-grid"></div>
         <p id="reqEmpty" class="empty hidden">Nenhum pedido aqui.</p>
+      </div>
+    </main>
+
+    <!-- CloudPlay: resellers (credits: 1 month = 1, 3 = 3, 6 = 5, 12 = 10; the reseller panel is ../revenda) -->
+    <main class="page hidden" data-section="revendedores" data-title="Revendedores">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Revendedores</h2><p class="sub">Eles vendem códigos com créditos: 1 mês = 1 crédito, 3 meses = 3, 6 meses = 5, 12 meses = 10 (renovar custa igual) e até 3 testes grátis de 24 h por dia. Painel deles: <a id="rvLink" href="../revenda/" target="_blank" style="color:inherit">abrir painel de revenda</a>.</p></div>
+          <button id="rvNew"><svg class="i"><use href="#i-plus"/></svg>Novo revendedor</button>
+        </div>
+        <div class="table-wrap">
+          <table class="rv-table">
+            <thead><tr><th>Revendedor</th><th>Créditos</th><th>Clientes</th><th>Aparelhos por código</th><th style="text-align:right">Ações</th></tr></thead>
+            <tbody id="rvRows"></tbody>
+          </table>
+        </div>
+        <p id="rvEmpty" class="empty hidden">Nenhum revendedor ainda.</p>
+        <p class="sub" style="margin-top:12px">Os códigos dos revendedores aparecem em "Códigos de acesso" com o nome da revenda. Todo crédito dado ou gasto fica no histórico de cada um.</p>
       </div>
     </main>
 
@@ -1684,7 +1711,7 @@
             el("span", { class: "small-line" }, c.activated_at ? "ativado " + fmtTime(c.activated_at) : isTrial(c) ? "conta após ativar" : c.duration_days ? "conta após ativar" : "nunca vence"));
       tbody.append(el("tr", {},
         el("td", { "data-label": "Código", class: "td-code" }, el("div", {}, el("span", { class: "code" }, c.code), isTrial(c) ? el("span", { class: "tag" }, "TESTE") : "")),
-        el("td", { "data-label": "Cliente", class: "td-client" }, el("div", {}, el("span", { class: "cell-main" }, c.note || "—"), el("span", { class: "small-line" }, c.phone ? phoneLabel(c.phone) : "criado " + fmt(c.created_at)))),
+        el("td", { "data-label": "Cliente", class: "td-client" }, el("div", {}, el("span", { class: "cell-main" }, c.note || "—"), el("span", { class: "small-line" }, (c.phone ? phoneLabel(c.phone) : "criado " + fmt(c.created_at)) + resellerTag(c)))),
         el("td", { "data-label": "Status", class: "td-status" }, el("span", { class: "badge b-" + st }, statusLabel[st])),
         el("td", { "data-label": "Validade", class: "td-valid" }, validity),
         el("td", { "data-label": "Aparelhos", class: "td-dev" }, el("div", {}, el("span", { class: "cell-main" }, devs.length + " de " + c.max_devices), devBox)),
@@ -1710,7 +1737,7 @@
         isTrial(c) ? el("span", { class: "cc-flag" }, "Teste") : "",
         el("div", { class: "cc-head" },
           el("div", { class: "cc-av" }, initials(c)),
-          el("div", { class: "cc-id" }, el("b", {}, c.note || "Sem nome"), el("span", { class: "code" }, c.code)),
+          el("div", { class: "cc-id" }, el("b", {}, c.note || "Sem nome"), el("span", { class: "code" }, c.code + resellerTag(c))),
           el("span", { class: "cc-st st-" + st }, statusLabel[st].toUpperCase())),
         row("VENCIMENTO", el("span", { class: "chip st-" + st }, dueChip), dueSub ? el("small", {}, dueSub) : ""),
         row("APARELHOS", el("button", { class: "chip link-chip", onclick: () => devList && devList.classList.toggle("hidden") },
@@ -3453,7 +3480,121 @@
   seg("aiFilter", renderImprovements);
 
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "addons", "categorias", "recentes", "uso", "atualizacoes", "erros", "melhorias"];
+  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "revendedores", "addons", "categorias", "recentes", "uso", "atualizacoes", "erros", "melhorias"];
+  // ── CloudPlay: Revendedores ──
+  let resellers = [], resellerById = {};
+  function resellerTag(c) { const r = c.reseller_id && resellerById[c.reseller_id]; return r ? " · Revenda " + r.name : ""; }
+  async function loadResellers() {
+    const { data, error } = await sb.rpc("admin_resellers");
+    if (error) { $("rvRows").replaceChildren(); $("rvEmpty").textContent = "Rode o cloudplay_functions.sql no Supabase para ativar os revendedores."; $("rvEmpty").classList.remove("hidden"); return; }
+    resellers = data || []; resellerById = Object.fromEntries(resellers.map((r) => [r.id, r]));
+    renderResellers();
+    if (codes.length) render();
+  }
+  function renderResellers() {
+    // Each reseller right under the one who created them (João > Ana > Carla).
+    const kids = {}; resellers.forEach((r) => (kids[r.parent_id || ""] = kids[r.parent_id || ""] || []).push(r));
+    const rows = [];
+    const walk = (pid, depth) => (kids[pid] || []).forEach((r) => { rows.push([r, depth]); walk(r.id, depth + 1); });
+    walk("", 0);
+    resellers.filter((r) => r.parent_id && !resellerById[r.parent_id]).forEach((r) => rows.push([r, 0]));
+    $("rvEmpty").classList.toggle("hidden", rows.length > 0); $("rvEmpty").textContent = "Nenhum revendedor ainda.";
+    $("rvRows").replaceChildren(...rows.map(([r, depth]) => {
+      const parent = r.parent_id && resellerById[r.parent_id];
+      return el("tr", {},
+        el("td", { class: "rv-name", style: "padding-left:" + (10 + depth * 24) + "px" },
+          el("b", {}, (depth ? "↳ " : "") + r.name + (r.blocked ? " · bloqueado" : "")),
+          el("span", {}, r.email + (parent ? " · de " + parent.name : "") + (r.joined ? "" : " · ainda não entrou"))),
+        el("td", {}, el("b", {}, String(r.credits))),
+        el("td", {}, r.active + " ativos" + (r.clients > r.active ? " · " + r.clients + " no total" : "")),
+        el("td", {}, String(r.max_devices)),
+        el("td", {}, el("div", { class: "rv-acts" },
+          el("button", { class: "ghost small", onclick: () => rvCredits(r) }, "+ Créditos"),
+          el("button", { class: "ghost small", onclick: () => rvSee(r) }, "Ver"))));
+    }));
+  }
+  function rvDialog(build) {
+    const body = $("rvBody"); body.replaceChildren(...build(() => $("rvDlg").close())); $("rvDlg").showModal();
+  }
+  const rvMsg = () => el("p", { class: "msg" });
+  function rvInviteText(r, invite) {
+    const link = new URL("../revenda/", location.href).href;
+    return "Olá, " + r.name + "! Sua revenda CloudPlay está pronta.\n\nPainel: " + link + "\nE-mail: " + r.email +
+      "\nCódigo de convite: " + invite + "\n\nNo painel, toque em \"Primeiro acesso\" e crie a sua senha.";
+  }
+  function rvShowInvite(r, invite) {
+    rvDialog((close) => [el("h2", {}, "Convite de " + r.name),
+      el("p", { class: "rn-who" }, "Envie para o revendedor. Ele usa no \"Primeiro acesso\" do painel de revenda."),
+      el("div", { class: "rv-invite" }, invite),
+      el("div", { class: "rn-actions" }, el("button", { type: "button", class: "ghost", onclick: close }, "Fechar"),
+        el("button", { type: "button", onclick: async () => { try { await navigator.clipboard.writeText(rvInviteText(r, invite)); toast("Copiado"); } catch (_) {} } }, "Copiar mensagem"))]);
+  }
+  $("rvNew").addEventListener("click", () => rvDialog((close) => {
+    const name = el("input", { maxlength: 60, placeholder: "Nome da revenda" }), email = el("input", { type: "email", placeholder: "email@revenda.com" });
+    const credits = el("input", { type: "number", min: 0, value: 0 }), devices = el("input", { type: "number", min: 1, max: 20, value: 1 });
+    const msg = rvMsg();
+    const ok = el("button", { type: "button", onclick: async () => {
+      ok.disabled = true;
+      const { data, error } = await sb.rpc("admin_create_reseller", { p_name: name.value.trim(), p_email: email.value.trim(),
+        p_credits: parseInt(credits.value || "0", 10), p_max_devices: parseInt(devices.value || "1", 10) });
+      ok.disabled = false;
+      if (error) { msg.textContent = /email_in_use/.test(error.message) ? "Esse e-mail já tem uma revenda." : /name_and_email/.test(error.message) ? "Preencha o nome e um e-mail válido." : "Erro: " + error.message; return; }
+      close(); await loadResellers(); rvShowInvite({ name: name.value.trim(), email: email.value.trim().toLowerCase() }, data.invite_code);
+    } }, "Criar");
+    return [el("h2", {}, "Novo revendedor"),
+      el("div", { class: "rn-extra" }, el("label", {}, "Nome"), name), el("div", { class: "rn-extra" }, el("label", {}, "E-mail"), email),
+      el("div", { class: "rn-extra" }, el("label", {}, "Créditos iniciais"), credits),
+      el("div", { class: "rn-extra" }, el("label", {}, "Aparelhos por código (telas)"), devices), msg,
+      el("div", { class: "rn-actions" }, el("button", { type: "button", class: "ghost", onclick: close }, "Cancelar"), ok)];
+  }));
+  function rvCredits(r) {
+    rvDialog((close) => {
+      const n = el("input", { type: "number", value: 10 }), note = el("input", { maxlength: 80, placeholder: "Ex.: pagamento via Pix" });
+      const info = el("span", { class: "hint" }), msg = rvMsg();
+      const upd = () => { const v = parseInt(n.value || "0", 10) || 0; info.textContent = "Fica com " + Math.max(0, r.credits + v) + " créditos (use um número negativo para tirar)."; };
+      n.addEventListener("input", upd); upd();
+      const ok = el("button", { type: "button", onclick: async () => {
+        ok.disabled = true;
+        const { error } = await sb.rpc("admin_reseller_credits", { p_id: r.id, p_amount: parseInt(n.value || "0", 10), p_note: note.value.trim() || null });
+        ok.disabled = false;
+        if (error) { msg.textContent = /not_enough/.test(error.message) ? "Ele não tem essa quantidade para tirar." : /invalid_amount/.test(error.message) ? "Digite uma quantidade." : "Erro: " + error.message; return; }
+        close(); toast("Créditos atualizados"); loadResellers();
+      } }, "Salvar");
+      return [el("h2", {}, "Créditos de " + r.name), el("p", { class: "rn-who" }, "Tem " + r.credits + " créditos agora."),
+        el("div", { class: "rn-extra" }, el("label", {}, "Quantidade"), n), info,
+        el("div", { class: "rn-extra" }, el("label", {}, "Observação (opcional)"), note), msg,
+        el("div", { class: "rn-actions" }, el("button", { type: "button", class: "ghost", onclick: close }, "Cancelar"), ok)];
+    });
+  }
+  async function rvSee(r) {
+    const { data } = await sb.rpc("admin_reseller_history", { p_id: r.id, p_limit: 100 });
+    const TZs = { timeZone: "America/Sao_Paulo" };
+    rvDialog((close) => {
+      const devices = el("input", { type: "number", min: 1, max: 20, value: r.max_devices }), msg = rvMsg();
+      const act = async (patch, done) => {
+        const { data: res, error } = await sb.rpc("admin_update_reseller", Object.assign({ p_id: r.id }, patch));
+        if (error) { msg.textContent = "Erro: " + error.message; return; }
+        await loadResellers(); done(res);
+      };
+      return [el("h2", {}, r.name), el("p", { class: "rn-who" }, r.email + " · " + r.credits + " créditos · " + r.active + " clientes ativos"),
+        el("div", { class: "rn-extra" }, el("label", {}, "Aparelhos por código (telas) nos próximos códigos"), devices),
+        el("div", { class: "rn-actions", style: "justify-content:flex-start" },
+          el("button", { type: "button", class: "ghost small", onclick: () => act({ p_max_devices: parseInt(devices.value || "1", 10) }, () => toast("Salvo")) }, "Salvar telas"),
+          el("button", { type: "button", class: r.blocked ? "ghost small" : "danger small", onclick: () => act({ p_blocked: !r.blocked }, () => { close(); toast(r.blocked ? "Desbloqueado" : "Bloqueado"); }) }, r.blocked ? "Desbloquear" : "Bloquear"),
+          el("button", { type: "button", class: "ghost small", onclick: () => {
+            if (!r.joined) return rvShowInvite(r, r.invite_code);
+            if (!confirm("Gerar um convite novo? O login atual de " + r.name + " deixa de valer até ele entrar com o novo convite.")) return;
+            act({ p_new_invite: true }, (res) => rvShowInvite(r, res.invite_code));
+          } }, r.joined ? "Novo convite" : "Ver convite")),
+        msg,
+        el("h3", { style: "margin:14px 0 6px;font-size:14px" }, "Histórico de créditos"),
+        el("div", { class: "rv-hist", style: "max-height:280px;overflow:auto" }, ...((data || []).length ? data.map((h) => el("div", {},
+          el("span", {}, el("b", { style: "color:" + (h.delta > 0 ? "var(--ok)" : "var(--bad)") }, (h.delta > 0 ? "+" : "") + h.delta), " " + h.reason + (h.by_admin ? " (painel)" : "")),
+          el("span", { style: "color:var(--faint)" }, new Date(h.created_at).toLocaleString("pt-BR", TZs) + " · saldo " + h.balance_after))) : [el("div", { style: "color:var(--faint)" }, "Nada ainda.")])),
+        el("div", { class: "rn-actions" }, el("button", { type: "button", class: "ghost", onclick: close }, "Fechar"))];
+    });
+  }
+
   function go() {
     // Moved pages: the M3U lists are in Fontes de conteúdo, the Streamings row in Categorias.
     if (location.hash === "#listas") { history.replaceState(null, "", "#addons"); }
@@ -3470,6 +3611,7 @@
       if (on && page === "erros" && !$("app").classList.contains("hidden")) setTimeout(loadErrors, 0);
       if (on && page === "recentes" && !$("app").classList.contains("hidden")) setTimeout(openRecent, 300);
       if (on && page === "melhorias" && !$("app").classList.contains("hidden")) setTimeout(loadImprovements, 0);
+      if (on && page === "revendedores" && !$("app").classList.contains("hidden")) setTimeout(loadResellers, 0);
     });
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.page === page));
     document.querySelectorAll(".bottom-nav a").forEach((a) => a.classList.toggle("active", a.dataset.page.split(" ").includes(page)));
@@ -3481,7 +3623,7 @@
   $("menuBtn").addEventListener("click", () => document.body.classList.add("nav-open"));
   $("bnMore").addEventListener("click", (e) => { e.preventDefault(); document.body.classList.add("nav-open"); });
   $("backdrop").addEventListener("click", () => document.body.classList.remove("nav-open"));
-  const loadAll = () => { load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); loadPending(); } loadErrors(); if (location.hash === "#recentes") setTimeout(openRecent, 800); if (location.hash === "#melhorias") loadImprovements(); loadPlaylists(); };
+  const loadAll = () => { loadResellers(); load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); loadPending(); } loadErrors(); if (location.hash === "#recentes") setTimeout(openRecent, 800); if (location.hash === "#melhorias") loadImprovements(); loadPlaylists(); };
   $("refreshAll").addEventListener("click", loadAll);
 
   $("search").addEventListener("input", render);
