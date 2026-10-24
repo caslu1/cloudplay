@@ -242,6 +242,8 @@
   .own-results button { all: unset; cursor: pointer; display: block; }
   .own-results img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 8px; background: var(--panel2); }
   .rc-else { color: #ffb08c !important; }
+  .dv-mode { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 99px; background: var(--panel2); border: 1px solid var(--line2); color: var(--text); white-space: nowrap; }
+  .dv-mode svg.i { width: 13px; height: 13px; }
   .up-row { display: grid; grid-template-columns: 210px minmax(0, 1fr) 84px 76px; gap: 14px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
   .up-nm b { display: flex; align-items: center; gap: 7px; font-weight: 600; } .up-nm span { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
   .up-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex: none; } .up-dot.x { background: var(--bad); } .up-dot.n { background: var(--line2); }
@@ -1012,6 +1014,7 @@
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
   <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/></symbol>
   <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 5 12 2.5-6h4"/></symbol>
   <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5"/><path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></symbol>
   <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></symbol>
@@ -2240,14 +2243,22 @@
       session ? el("div", { class: "dv-session" }, el("span", {}, "Sessão"), el("b", {}, mins(session)),
         st === "playing" && d.now_since ? el("span", {}, "neste título há " + mins((Date.now() - new Date(d.now_since)) / 1000)) : "") : "",
       d.force_mode ? el("span", { class: "fm-wait" }, "Vai abrir em modo " + (d.force_mode === "tv" ? "TV" : "celular"))
+        : d.ui_mode === "tv" ? ""
         : el("button", { type: "button", class: "fm-btn", title: "Para TV box que abriu no modo celular", onclick: (ev) => forceMode(c, d, "tv", ev.currentTarget) }, icon("tv"), "Forçar modo TV"));
     return el("div", { class: "dv" + (on ? " on" : "") + (st === "playing" ? " playing" : "") },
       art,
       el("div", { class: "dv-main" },
-        el("div", { class: "dv-top" }, el("b", {}, c.note || "Sem nome"), chip),
+        el("div", { class: "dv-top" }, el("b", {}, c.note || "Sem nome"), chip, modeChip(d)),
         el("span", { class: "dv-sub" }, sub),
         watch),
       side);
+  }
+
+  // CloudPlay: the screen mode the app opened in on this device (sent by apps from 2.30).
+  function modeChip(d) {
+    if (!d.ui_mode) return "";
+    const [ic, text] = d.ui_mode === "tv" ? ["tv", "Modo TV"] : d.ui_mode === "tablet" ? ["layout", "Modo tablet"] : ["phone", "Modo celular"];
+    return el("span", { class: "dv-mode", title: "Como o app está abrindo neste aparelho" }, icon(ic), text);
   }
 
   // "Forçar modo TV": the app switches the next time it opens (report_app_version hands it over).

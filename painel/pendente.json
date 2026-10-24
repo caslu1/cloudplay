@@ -1,5 +1,10 @@
 {
-  "items": [],
+  "items": [
+    {
+      "text": "Dispositivos conectados: o app avisa o painel se abriu em modo TV, celular ou tablet (aparece uma etiqueta em cada aparelho).",
+      "added": "2026-10-24"
+    }
+  ],
   "sent_at": null,
   "updated_at": null
 }
