@@ -3,6 +3,10 @@
     {
       "text": "Dispositivos conectados: o app avisa o painel se abriu em modo TV, celular ou tablet (aparece uma etiqueta em cada aparelho).",
       "added": "2026-10-24"
+    },
+    {
+      "text": "Atualizações: se o GitHub sair do ar, o app busca a versão nova na cópia guardada no Cloudflare R2.",
+      "added": "2026-10-24"
     }
   ],
   "sent_at": null,
