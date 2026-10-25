@@ -27,6 +27,10 @@
     {
       "text": "Capas dos gêneros: o app mostra a capa escolhida no painel (Categorias → Capas dos gêneros), na tela inicial e nas abas Filmes e Séries.",
       "added": "2026-10-25"
+    },
+    {
+      "text": "\"Ver tudo\" de Filmes e Séries Populares: a grade continua carregando mais títulos ao descer, mesmo quando uma fonte demora ou falha por um momento.",
+      "added": "2026-10-25"
     }
   ],
   "sent_at": null,
