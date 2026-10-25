@@ -7,6 +7,10 @@
     {
       "text": "Atualizações: se o GitHub sair do ar, o app busca a versão nova na cópia guardada no Cloudflare R2.",
       "added": "2026-10-24"
+    },
+    {
+      "text": "Página do filme na TV: os gêneros (ex.: \"AÇÃO · DRAMA\") e o botão Coleção aparecem inteiros, sem cortar.",
+      "added": "2026-10-25"
     }
   ],
   "sent_at": null,
