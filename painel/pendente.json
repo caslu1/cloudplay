@@ -15,6 +15,10 @@
     {
       "text": "TV, tela Conta: o quadro \"Seu código\" só aparece, não é mais clicável; o controle já começa em \"Gerenciar conteúdo\".",
       "added": "2026-10-25"
+    },
+    {
+      "text": "Ajustes: \"Rolagem mais suave\" vem desligada por padrão; \"Estatísticas de carregamento\" segue ligada por padrão.",
+      "added": "2026-10-25"
     }
   ],
   "sent_at": null,
