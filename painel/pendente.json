@@ -31,6 +31,10 @@
     {
       "text": "\"Ver tudo\" de Filmes e Séries Populares: a grade continua carregando mais títulos ao descer, mesmo quando uma fonte demora ou falha por um momento.",
       "added": "2026-10-25"
+    },
+    {
+      "text": "Fire TV: na tela inicial do aparelho, o CloudPlay aparece com o banner inteiro (logo + nome), sem as faixas cinzas dos lados.",
+      "added": "2026-10-25"
     }
   ],
   "sent_at": null,
