@@ -19,6 +19,10 @@
     {
       "text": "Ajustes: \"Rolagem mais suave\" vem desligada por padrão; \"Estatísticas de carregamento\" segue ligada por padrão.",
       "added": "2026-10-25"
+    },
+    {
+      "text": "Player na TV: o botão de fontes usa o mesmo ícone de \"Fontes\" da página do filme.",
+      "added": "2026-10-25"
     }
   ],
   "sent_at": null,
