@@ -1,5 +1,20 @@
 [
   {
+    "version": "2.33",
+    "date": null,
+    "items": [
+      "Dispositivos conectados: o app avisa o painel se abriu em modo TV, celular ou tablet (aparece uma etiqueta em cada aparelho).",
+      "Atualizações: se o GitHub sair do ar, o app busca a versão nova na cópia guardada no Cloudflare R2.",
+      "TV: no destaque da tela inicial e na página do filme aparece só o gênero principal; na página do filme os botões ficaram menores e o Coleção não corta mais.",
+      "TV, tela Conta: o quadro \"Seu código\" só aparece, não é mais clicável; o controle já começa em \"Gerenciar conteúdo\".",
+      "Ajustes: \"Rolagem mais suave\" vem desligada por padrão; \"Estatísticas de carregamento\" segue ligada por padrão.",
+      "Player na TV: o botão de fontes usa o mesmo ícone de \"Fontes\" da página do filme.",
+      "Capas dos gêneros: o app mostra a capa escolhida no painel (Categorias → Capas dos gêneros), na tela inicial e nas abas Filmes e Séries.",
+      "\"Ver tudo\" de Filmes e Séries Populares: a grade continua carregando mais títulos ao descer, mesmo quando uma fonte demora ou falha por um momento.",
+      "Fire TV: na tela inicial do aparelho, o CloudPlay aparece com o banner inteiro (logo + nome), sem as faixas cinzas dos lados."
+    ]
+  },
+  {
     "version": "2.29",
     "date": null,
     "items": [

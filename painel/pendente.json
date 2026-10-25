@@ -1,42 +1,5 @@
 {
-  "items": [
-    {
-      "text": "Dispositivos conectados: o app avisa o painel se abriu em modo TV, celular ou tablet (aparece uma etiqueta em cada aparelho).",
-      "added": "2026-10-24"
-    },
-    {
-      "text": "Atualizações: se o GitHub sair do ar, o app busca a versão nova na cópia guardada no Cloudflare R2.",
-      "added": "2026-10-24"
-    },
-    {
-      "text": "TV: no destaque da tela inicial e na página do filme aparece só o gênero principal; na página do filme os botões ficaram menores e o Coleção não corta mais.",
-      "added": "2026-10-25"
-    },
-    {
-      "text": "TV, tela Conta: o quadro \"Seu código\" só aparece, não é mais clicável; o controle já começa em \"Gerenciar conteúdo\".",
-      "added": "2026-10-25"
-    },
-    {
-      "text": "Ajustes: \"Rolagem mais suave\" vem desligada por padrão; \"Estatísticas de carregamento\" segue ligada por padrão.",
-      "added": "2026-10-25"
-    },
-    {
-      "text": "Player na TV: o botão de fontes usa o mesmo ícone de \"Fontes\" da página do filme.",
-      "added": "2026-10-25"
-    },
-    {
-      "text": "Capas dos gêneros: o app mostra a capa escolhida no painel (Categorias → Capas dos gêneros), na tela inicial e nas abas Filmes e Séries.",
-      "added": "2026-10-25"
-    },
-    {
-      "text": "\"Ver tudo\" de Filmes e Séries Populares: a grade continua carregando mais títulos ao descer, mesmo quando uma fonte demora ou falha por um momento.",
-      "added": "2026-10-25"
-    },
-    {
-      "text": "Fire TV: na tela inicial do aparelho, o CloudPlay aparece com o banner inteiro (logo + nome), sem as faixas cinzas dos lados.",
-      "added": "2026-10-25"
-    }
-  ],
+  "items": [],
   "sent_at": null,
   "updated_at": null
 }
