@@ -11,6 +11,10 @@
     {
       "text": "TV: no destaque da tela inicial e na página do filme aparece só o gênero principal; na página do filme os botões ficaram menores e o Coleção não corta mais.",
       "added": "2026-10-25"
+    },
+    {
+      "text": "TV, tela Conta: o quadro \"Seu código\" só aparece, não é mais clicável; o controle já começa em \"Gerenciar conteúdo\".",
+      "added": "2026-10-25"
     }
   ],
   "sent_at": null,
