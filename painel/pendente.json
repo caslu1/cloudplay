@@ -11,6 +11,10 @@
     {
       "text": "Mais rápido ao passar pelos cards: o app volta a buscar antes as informações (TMDB) dos cards vizinhos e, parado 1 segundo num filme, já procura as fontes, também nas fileiras Populares, streamings e nas abas Filmes e Séries.",
       "added": "2026-10-28"
+    },
+    {
+      "text": "Ajustes → Áudio padrão: as opções agora são \"Dublado\" e \"Legendado\". Com Legendado, o app só abre fontes legendadas (e tenta a próxima legendada se uma falhar); se nenhuma abrir, avisa \"Conteúdo legendado indisponível no momento\" e o botão Tentar de novo toca o dublado.",
+      "added": "2026-10-28"
     }
   ],
   "sent_at": null,
