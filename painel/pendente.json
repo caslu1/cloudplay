@@ -7,6 +7,10 @@
     {
       "text": "Tela inicial e abas Filmes e Séries: as fileiras não começam mais com os mesmos títulos; um título que já abriu a fileira de cima vai para o fim da de baixo.",
       "added": "2026-10-28"
+    },
+    {
+      "text": "Mais rápido ao passar pelos cards: o app volta a buscar antes as informações (TMDB) dos cards vizinhos e, parado 1 segundo num filme, já procura as fontes, também nas fileiras Populares, streamings e nas abas Filmes e Séries.",
+      "added": "2026-10-28"
     }
   ],
   "sent_at": null,
