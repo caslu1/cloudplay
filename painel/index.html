@@ -3173,7 +3173,14 @@
     const { data, error } = await sb.from("app_categories").select("*").order("position", { nullsFirst: false }).order("title");
     if (error) { $("catMsg").textContent = "Rode o arquivo categories.sql no Supabase para usar esta seção."; return; }
     $("catMsg").textContent = "";
-    categories = data || [];
+    // CloudPlay: the own-content row ("Exclusivos CloudPlay") used to come with a different id from
+    // every device: they are one row here, and a choice saved on it goes to all those ids.
+    const isOwn = (c) => c.id.startsWith("cloudplay_own_") || (c.source === "CloudPlay" && c.title === "Exclusivos CloudPlay");
+    const own = (data || []).filter(isOwn);
+    categories = (data || []).filter((c) => !isOwn(c));
+    if (own.length) categories.push({ id: "cloudplay_own_movie", title: "Exclusivos CloudPlay", source: "CloudPlay",
+      position: Math.min(...own.map((c) => c.position ?? 9999)),
+      members: [...new Set(["cloudplay_own_movie", "cloudplay_own_series", ...own.map((c) => c.id)])] });
     renderCategories();
   }
   // Where a row shows in the app. Home lists Continuar assistindo first, then the Top 10 rows, then
@@ -3240,7 +3247,7 @@
     const next = Object.assign({}, Object.hasOwn(ov, c.id) ? ov[c.id] : {}, change);
     if (!next.name) delete next.name;
     if (!next.hidden) delete next.hidden;
-    if (Object.keys(next).length) ov[c.id] = next; else delete ov[c.id];
+    (c.members || [c.id]).forEach((id) => { if (Object.keys(next).length) ov[id] = next; else delete ov[id]; });
     const { error } = await sb.from("app_settings").upsert({ key: "category_overrides", value: ov, updated_at: new Date().toISOString() });
     if (error) { alert("Não foi possível salvar: " + error.message); return; }
     settings.category_overrides = ov;

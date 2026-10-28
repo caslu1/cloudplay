@@ -1,5 +1,10 @@
 {
-  "items": [],
+  "items": [
+    {
+      "text": "Painel → Categorias: \"Exclusivos CloudPlay\" passa a ser uma categoria só, em vez de uma cópia para cada aparelho; apagar ou renomear ali vale para todos.",
+      "added": "2026-10-28"
+    }
+  ],
   "sent_at": null,
   "updated_at": null
 }
