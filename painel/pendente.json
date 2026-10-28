@@ -1,26 +1,5 @@
 {
-  "items": [
-    {
-      "text": "Fileiras dos streamings (\"Exclusivo da Netflix\" etc.): mudam todo dia. Os 3 maiores sucessos ficam na frente e o resto vem dos 40 mais populares, numa ordem nova a cada dia.",
-      "added": "2026-10-28"
-    },
-    {
-      "text": "Tela inicial e abas Filmes e Séries: as fileiras não começam mais com os mesmos títulos; um título que já abriu a fileira de cima vai para o fim da de baixo.",
-      "added": "2026-10-28"
-    },
-    {
-      "text": "Mais rápido ao passar pelos cards: o app volta a buscar antes as informações (TMDB) dos cards vizinhos e, parado 1 segundo num filme, já procura as fontes, também nas fileiras Populares, streamings e nas abas Filmes e Séries.",
-      "added": "2026-10-28"
-    },
-    {
-      "text": "Ajustes → Áudio padrão: as opções agora são \"Dublado\" e \"Legendado\". Com Legendado, o app só abre fontes legendadas (e tenta a próxima legendada se uma falhar); se nenhuma abrir, avisa \"Conteúdo legendado indisponível no momento\" e o botão Tentar de novo toca o dublado.",
-      "added": "2026-10-28"
-    },
-    {
-      "text": "Arquivos dual áudio: com Legendado escolhido começa no áudio original (com legenda); com Dublado, no áudio em português. Também quando o arquivo não diz o idioma do áudio original.",
-      "added": "2026-10-28"
-    }
-  ],
+  "items": [],
   "sent_at": null,
   "updated_at": null
 }
