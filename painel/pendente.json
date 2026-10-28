@@ -1,5 +1,14 @@
 {
-  "items": [],
+  "items": [
+    {
+      "text": "Fileiras dos streamings (\"Exclusivo da Netflix\" etc.): mudam todo dia. Os 3 maiores sucessos ficam na frente e o resto vem dos 40 mais populares, numa ordem nova a cada dia.",
+      "added": "2026-10-28"
+    },
+    {
+      "text": "Tela inicial e abas Filmes e Séries: as fileiras não começam mais com os mesmos títulos; um título que já abriu a fileira de cima vai para o fim da de baixo.",
+      "added": "2026-10-28"
+    }
+  ],
   "sent_at": null,
   "updated_at": null
 }
