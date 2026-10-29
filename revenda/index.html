@@ -43,13 +43,39 @@
   .tabs button.on { background: var(--panel2); color: var(--text); }
   .link { background: none; border: none; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: 12.5px; margin-top: 12px; padding: 0; }
 
-  /* App */
-  .top { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(10,10,15,.92); backdrop-filter: blur(8px); z-index: 5; }
-  .top img { height: 30px; }
-  .who { font-size: 13px; color: var(--muted); display: flex; gap: 12px; align-items: center; }
-  .who b { color: var(--text); }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 22px 24px 60px; display: flex; flex-direction: column; gap: 16px; }
+  /* App: sidebar + pages */
+  .i { width: 18px; height: 18px; flex: none; }
+  .side { position: fixed; left: 0; top: 0; bottom: 0; width: 250px; background: #0d0d12; border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 22px 16px 16px; z-index: 6; }
+  .side .logo { height: 34px; align-self: flex-start; margin: 0 6px 22px; }
+  .credit-box { background: linear-gradient(135deg, rgba(255,116,168,.16), rgba(255,176,140,.08)); border: 1px solid rgba(255,116,168,.22); border-radius: 12px; padding: 12px 14px; margin-bottom: 18px; }
+  .credit-box span { display: block; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: #ffb3cf; font-weight: 600; }
+  .credit-box b { font-size: 26px; }
+  .nav { display: flex; flex-direction: column; gap: 4px; }
+  .nav a { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 10px; color: var(--muted); text-decoration: none; font-weight: 500; position: relative; }
+  .nav a:hover { background: rgba(255,255,255,.04); color: var(--text); }
+  .nav a.on { background: rgba(255,255,255,.07); color: var(--text); }
+  .nav a.on::before { content: ""; position: absolute; left: -16px; top: 9px; bottom: 9px; width: 3px; border-radius: 3px; background: var(--grad); }
+  .badge { margin-left: auto; font-style: normal; font-size: 11px; font-weight: 600; color: var(--muted); background: var(--panel2); border-radius: 99px; padding: 1px 8px; }
+  .badge:empty { display: none; }
+  .me { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 12px 6px 0; border-top: 1px solid var(--line); }
+  .av { width: 34px; height: 34px; border-radius: 50%; background: var(--grad); display: grid; place-items: center; font-weight: 700; color: #fff; flex: none; }
+  .me-t { min-width: 0; flex: 1; } .me-t b { display: block; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .me-t span { display: block; font-size: 11.5px; color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .iconbtn { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line2); background: var(--panel2); display: grid; place-items: center; cursor: pointer; color: var(--muted); flex: none; }
+  .content { margin-left: 250px; padding: 28px 32px 60px; max-width: 1250px; }
+  .content section { display: flex; flex-direction: column; gap: 16px; }
+  .ptitle { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  .eyebrow { font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--faint); font-weight: 600; }
+  .ptitle h1 { font-size: 26px; margin-top: 2px; }
+  .mtop, .bnav { display: none; }
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+  .soon { margin-top: 10px; display: flex; flex-direction: column; }
+  .soon .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .soon .row:last-child { border-bottom: none; }
+  .soon .row b { font-family: ui-monospace, Menlo, monospace; letter-spacing: 1.5px; }
+  .soon .row .act { flex-wrap: nowrap; }
+  .soon .row span.n { color: var(--muted); font-size: 12.5px; margin-left: 8px; }
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
   .k { font-size: 11px; letter-spacing: 1.1px; color: var(--faint); font-weight: 600; text-transform: uppercase; }
   .big { font-size: 32px; font-weight: 700; margin-top: 4px; }
@@ -64,6 +90,7 @@
   .plan.sel { border-color: #FF9A9C; box-shadow: 0 0 0 1px #FF9A9C inset; }
   .newrow { display: flex; gap: 10px; margin-top: 12px; }
   .newrow input { flex: 1; }
+  a.btn { text-decoration: none; color: var(--text); } a.btn.main { color: #fff; }
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   th { text-align: left; font-size: 11px; letter-spacing: 1px; color: var(--faint); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line); text-transform: uppercase; }
   td { padding: 11px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
@@ -79,9 +106,9 @@
   .on { color: var(--ok); font-size: 12.5px; }
   .dim { color: var(--faint); }
   .empty { color: var(--faint); padding: 18px 10px; text-align: center; }
-  .search { max-width: 260px; height: 36px; }
-  details summary { cursor: pointer; font-weight: 600; font-size: 15px; }
-  .hist div { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .search { max-width: 320px; height: 38px; }
+  .hist div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .hist div:last-child { border-bottom: none; }
   .plus { color: var(--ok); font-weight: 600; } .minus { color: var(--bad); font-weight: 600; }
 
   /* Dialog */
@@ -93,15 +120,25 @@
   .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: #1a1e28; border: 1px solid var(--line2); padding: 10px 16px; border-radius: 12px; opacity: 0; transition: .2s; z-index: 30; pointer-events: none; }
   .toast.show { opacity: 1; transform: translateX(-50%); }
 
+  @media (max-width: 1100px) { .grid2 { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 760px) {
-    .top { padding: 12px 16px; }
-    .wrap { padding: 16px 14px 60px; }
-    .stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .side { display: none; }
+    .mtop { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(10,10,15,.94); backdrop-filter: blur(8px); z-index: 5; }
+    .mtop img { height: 28px; }
+    .mright { display: flex; align-items: center; gap: 8px; }
+    .soon .row span.n { display: none; }
+    .mcred { font-size: 12.5px; color: var(--muted); background: rgba(255,116,168,.12); border: 1px solid rgba(255,116,168,.22); border-radius: 99px; padding: 4px 11px; }
+    .mcred b { color: var(--text); }
+    .content { margin-left: 0; padding: 16px 14px 90px; }
+    .ptitle h1 { font-size: 22px; }
+    .bnav { display: flex; position: fixed; left: 0; right: 0; bottom: 0; background: rgba(13,13,18,.97); border-top: 1px solid var(--line); z-index: 6; padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
+    .bnav a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--faint); text-decoration: none; font-size: 11px; padding: 4px 0; }
+    .bnav a.on { color: var(--text); }
+    .stats { gap: 10px; }
     .big { font-size: 26px; }
     .plans { grid-template-columns: repeat(2, 1fr); }
     .newrow { flex-direction: column; }
     .newrow input { flex: none; }
-    .who .mail { display: none; }
     /* Tables become one card per row. */
     table, tbody, tr, td { display: block; width: 100%; }
     thead { display: none; }
@@ -169,57 +206,86 @@
 </div>
 
 <div id="app" class="hidden">
-  <div class="top">
-    <img src="../painel/logo.png" alt="CloudPlay">
-    <div class="who"><span>Revenda · <b id="meName"></b> <span class="mail" id="meMail"></span></span><button class="link" style="margin:0" id="logout">Sair</button></div>
-  </div>
-  <div class="wrap">
-    <div class="stats">
-      <div class="card"><div class="k">Seus créditos</div><div class="big"><span id="sCredits">0</span><small>créditos</small></div></div>
-      <div class="card"><div class="k">Clientes ativos</div><div class="big"><span id="sActive">0</span><small id="sClients">de 0</small></div></div>
-      <div class="card"><div class="k">Assistindo agora</div><div class="big"><span id="sWatching">0</span><small>aparelhos</small></div></div>
-      <div class="card"><div class="k">Testes hoje</div><div class="big"><span id="sTests">0</span><small id="sTestsOf">de 3 grátis</small></div></div>
-    </div>
-
-    <div class="card">
-      <div class="head">
-        <div><h2>Novo cliente</h2><div class="sub">O código é gerado na hora e o prazo começa no primeiro acesso do cliente.</div></div>
-        <button class="btn" id="trialBtn">Teste grátis 24h</button>
+  <!-- CloudPlay: a sidebar on a computer (bottom tabs on a phone); each page is a section. -->
+  <aside class="side">
+    <img class="logo" src="../painel/logo.png" alt="CloudPlay">
+    <div class="credit-box"><span>Seus créditos</span><b id="sideCredits">0</b></div>
+    <nav class="nav">
+      <a href="#inicio" data-page="inicio"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span>Início</span></a>
+      <a href="#clientes" data-page="clientes"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 010 7M18.5 14.8c1.6.9 2.6 2.6 3 5.2"/></svg><span>Clientes</span><em id="navClients" class="badge"></em></a>
+      <a href="#revendedores" data-page="revendedores"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M12 7.5v4M12 11.5l-5.5 5.5M12 11.5l5.5 5.5"/></svg><span>Revendedores</span></a>
+      <a href="#creditos" data-page="creditos"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><span>Créditos</span></a>
+    </nav>
+    <div class="me"><div class="av" id="meAv">R</div><div class="me-t"><b id="meName"></b><span id="meMail"></span></div>
+      <button class="iconbtn" id="logout" title="Sair"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4"/><path d="M10 8l-4 4 4 4M6 12h10"/></svg></button></div>
+  </aside>
+  <div class="mtop"><img src="../painel/logo.png" alt="CloudPlay"><div class="mright"><span class="mcred"><b id="mCredits">0</b> créditos</span><button class="iconbtn" id="mLogout" title="Sair"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4"/><path d="M10 8l-4 4 4 4M6 12h10"/></svg></button></div></div>
+  <main class="content">
+    <section data-page="inicio">
+      <div class="ptitle"><div><span class="eyebrow">Revenda</span><h1>Olá, <span id="helloName"></span></h1></div></div>
+      <div class="stats">
+        <div class="card stat"><div class="k">Seus créditos</div><div class="big"><span id="sCredits">0</span><small>créditos</small></div></div>
+        <div class="card stat"><div class="k">Clientes ativos</div><div class="big"><span id="sActive">0</span><small id="sClients">de 0</small></div></div>
+        <div class="card stat"><div class="k">Assistindo agora</div><div class="big"><span id="sWatching">0</span><small>aparelhos</small></div></div>
+        <div class="card stat"><div class="k">Testes hoje</div><div class="big"><span id="sTests">0</span><small id="sTestsOf">de 3 grátis</small></div></div>
       </div>
-      <div class="plans" id="plans"></div>
-      <div class="newrow">
-        <input class="f" id="newNote" maxlength="80" placeholder="Nome do cliente (opcional)">
-        <button class="btn main" id="createBtn">Gerar código</button>
+      <div class="grid2">
+        <div class="card">
+          <div class="head">
+            <div><h2>Novo cliente</h2><div class="sub">O código é gerado na hora e o prazo começa no primeiro acesso do cliente.</div></div>
+            <button class="btn" id="trialBtn">Teste grátis 24h</button>
+          </div>
+          <div class="plans" id="plans"></div>
+          <div class="newrow">
+            <input class="f" id="newNote" maxlength="80" placeholder="Nome do cliente (opcional)">
+            <button class="btn main" id="createBtn">Gerar código</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="head"><div><h2>Vencendo em breve</h2><div class="sub">Clientes que vencem nos próximos 5 dias.</div></div>
+            <a class="btn small" href="#clientes">Ver todos</a></div>
+          <div id="soon" class="soon"></div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="card">
-      <div class="head" style="margin-bottom:8px">
-        <h2>Meus clientes <span class="dim" id="clientsCount"></span></h2>
-        <input class="f search" id="search" placeholder="Buscar código ou nome">
+    <section data-page="clientes" class="hidden">
+      <div class="ptitle"><div><span class="eyebrow">Revenda</span><h1>Meus clientes <span class="dim" id="clientsCount"></span></h1></div>
+        <a class="btn main" href="#inicio"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Novo cliente</a></div>
+      <div class="card">
+        <div class="head" style="margin-bottom:8px">
+          <input class="f search" id="search" placeholder="Buscar código ou nome">
+        </div>
+        <table>
+          <thead><tr><th>Código</th><th>Nome</th><th>Situação</th><th>Vence</th><th>Agora</th><th></th></tr></thead>
+          <tbody id="codes"></tbody>
+        </table>
       </div>
-      <table>
-        <thead><tr><th>Código</th><th>Nome</th><th>Situação</th><th>Vence</th><th>Agora</th><th></th></tr></thead>
-        <tbody id="codes"></tbody>
-      </table>
-    </div>
+    </section>
 
-    <div class="card">
-      <div class="head" style="margin-bottom:8px">
-        <div><h2>Meus revendedores</h2><div class="sub">Os créditos que você passa saem do seu saldo.</div></div>
-        <button class="btn main" id="newChildBtn">+ Novo revendedor</button>
+    <section data-page="revendedores" class="hidden">
+      <div class="ptitle"><div><span class="eyebrow">Revenda</span><h1>Meus revendedores</h1><div class="sub">Os créditos que você passa saem do seu saldo.</div></div>
+        <button class="btn main" id="newChildBtn"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Novo revendedor</button></div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Revendedor</th><th>Créditos</th><th>Clientes</th><th>Revendedores dele</th><th>Situação</th><th></th></tr></thead>
+          <tbody id="children"></tbody>
+        </table>
+        <div class="sub" style="margin-top:10px">Bloquear um revendedor só tira o acesso dele ao painel: os clientes dele continuam assistindo. Tirar créditos só pega de volta os que ele ainda não usou.</div>
       </div>
-      <table>
-        <thead><tr><th>Revendedor</th><th>Créditos</th><th>Clientes</th><th>Revendedores dele</th><th>Situação</th><th></th></tr></thead>
-        <tbody id="children"></tbody>
-      </table>
-      <div class="sub" style="margin-top:10px">Bloquear um revendedor só tira o acesso dele ao painel: os clientes dele continuam assistindo. Tirar créditos só pega de volta os que ele ainda não usou.</div>
-    </div>
+    </section>
 
-    <div class="card">
-      <details id="histBox"><summary>Histórico de créditos</summary><div class="hist" id="hist" style="margin-top:10px"></div></details>
-    </div>
-  </div>
+    <section data-page="creditos" class="hidden">
+      <div class="ptitle"><div><span class="eyebrow">Revenda</span><h1>Créditos</h1><div class="sub">Tudo o que entrou e saiu do seu saldo.</div></div></div>
+      <div class="card"><div class="hist" id="hist"></div></div>
+    </section>
+  </main>
+  <nav class="bnav">
+    <a href="#inicio" data-page="inicio"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span>Início</span></a>
+    <a href="#clientes" data-page="clientes"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 010 7M18.5 14.8c1.6.9 2.6 2.6 3 5.2"/></svg><span>Clientes</span></a>
+    <a href="#revendedores" data-page="revendedores"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M12 7.5v4M12 11.5l-5.5 5.5M12 11.5l5.5 5.5"/></svg><span>Revenda</span></a>
+    <a href="#creditos" data-page="creditos"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><span>Créditos</span></a>
+  </nav>
 </div>
 
 <div id="shade" class="shade hidden"><div class="dlg" id="dlg"></div></div>
@@ -308,7 +374,7 @@
     if (error) { $("rMsg").textContent = "Não deu certo: " + error.message; return; }
     history.replaceState(null, "", location.pathname); start();
   });
-  $("logout").onclick = async () => { await sb.auth.signOut(); screen("login"); };
+  $("logout").onclick = $("mLogout").onclick = async () => { await sb.auth.signOut(); screen("login"); };
 
   async function start() {
     const { data: { session } } = await sb.auth.getSession();
@@ -333,7 +399,10 @@
   // ── Panel ──
   function render(info) {
     me = info;
-    $("meName").textContent = info.name; $("meMail").textContent = "· " + info.email;
+    $("meName").textContent = info.name; $("meMail").textContent = info.email;
+    $("helloName").textContent = String(info.name || "").split(" ")[0];
+    $("meAv").textContent = String(info.name || "R").trim().charAt(0).toUpperCase() || "R";
+    $("sideCredits").textContent = info.credits; $("mCredits").textContent = info.credits;
     $("sCredits").textContent = info.credits; $("sActive").textContent = info.active; $("sClients").textContent = "de " + info.clients;
     $("sWatching").textContent = info.watching; $("sTests").textContent = info.tests_today; $("sTestsOf").textContent = "de " + info.tests_limit + " grátis";
     $("trialBtn").disabled = info.tests_today >= info.tests_limit;
@@ -350,10 +419,32 @@
   async function loadLists() {
     const [{ data: c }, { data: k }] = await Promise.all([sb.rpc("reseller_codes"), sb.rpc("reseller_children")]);
     codes = c || []; children = k || [];
-    renderCodes(); renderChildren();
-    if ($("histBox").open) loadHistory();
+    renderCodes(); renderChildren(); renderSoon();
+    if (currentPage() === "creditos") loadHistory();
   }
-  $("histBox").addEventListener("toggle", () => { if ($("histBox").open) loadHistory(); });
+  // Pages: #inicio, #clientes, #revendedores, #creditos (the sidebar / bottom tabs).
+  const PAGES = ["inicio", "clientes", "revendedores", "creditos"];
+  const currentPage = () => { const h = location.hash.slice(1); return PAGES.includes(h) ? h : "inicio"; };
+  function showPage() {
+    const p = currentPage();
+    document.querySelectorAll("#app section[data-page]").forEach((s) => s.classList.toggle("hidden", s.dataset.page !== p));
+    document.querySelectorAll("#app .nav a, #app .bnav a").forEach((a) => a.classList.toggle("on", a.dataset.page === p));
+    if (p === "creditos" && me) loadHistory();
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", showPage);
+  showPage();
+  // Início: the clients whose access ends in the next 5 days.
+  function renderSoon() {
+    const soon = codes.filter((c) => !c.revoked && c.expires_at && new Date(c.expires_at) > new Date() && new Date(c.expires_at) - new Date() <= 5 * 86400e3)
+      .sort((a, b) => new Date(a.expires_at) - new Date(b.expires_at)).slice(0, 6);
+    $("navClients").textContent = codes.length || "";
+    $("soon").replaceChildren(...(soon.length ? soon.map((c) => el("div", { class: "row" },
+      el("div", null, el("b", null, c.code), el("span", { class: "n" }, c.note || "")),
+      el("div", { class: "act" }, el("span", { class: "pill p-warn" }, el("i"), statusOf(c)[0]),
+        el("button", { class: "btn small", onclick: () => renewDialog(c) }, "Renovar"))))
+      : [el("div", { class: "empty" }, "Ninguém vence nos próximos 5 dias.")]));
+  }
   async function loadHistory() {
     const { data } = await sb.rpc("reseller_credit_history", { p_limit: 60 });
     $("hist").replaceChildren(...((data || []).length ? data : [null]).map((h) => h
