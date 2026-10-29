@@ -338,24 +338,23 @@
   .pl-row .state { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--muted); font-size: 12.5px; user-select: none; }
   .pl-row .state.on .switch { background: var(--ok); } .pl-row .state.on .switch::after { left: 18px; }
   @media (max-width: 640px) { .pl-row { flex-wrap: wrap; } .pl-meta { flex-basis: 100%; } .pl-row .actions { margin-left: auto; } }
-  .rc-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .rc-right select { width: 200px; }
-  .rc-info { color: var(--muted); font-size: 12.5px; margin: -4px 0 14px; }
+  .rc-tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .rc-tools .rc-search { flex: 1 1 150px; min-width: 0; }
+  .rc-tools select { width: auto; min-width: 140px; }
+  .rc-count { margin-left: 10px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 99px; background: rgba(255, 116, 168, .15); color: #ff9ac0; vertical-align: 2px; }
+  .rc-info { color: var(--muted); font-size: 12.5px; margin: 0 0 14px; }
   .rc-info b { color: var(--text); }
-  .rc-grid { display: grid; gap: 18px 14px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .rc-grid { display: grid; gap: 18px 14px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
   .sec-tag { color: var(--pink); background: rgba(255, 116, 168, .1); }
   #svcCard { margin-top: 18px; }
   .rc { min-width: 0; }
-  .rc .rc-pick { position: absolute; bottom: 8px; right: 8px; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 99px; border: 1px solid rgba(255,255,255,.18); background: rgba(10,10,15,.82); color: var(--text); backdrop-filter: blur(6px); cursor: pointer; height: auto; }
-  .rc .rc-pick.on { background: #fff; color: #0A0A0F; border-color: #fff; }
-  .pk-cols { display: grid; gap: 18px; grid-template-columns: 1fr 1fr; }
-  @media (max-width: 900px) { .pk-cols { grid-template-columns: 1fr; } }
-  .pk-h { font-size: 13px; font-weight: 600; margin-bottom: 10px; display: flex; gap: 8px; align-items: center; }
-  .pk-h .n { font-size: 11px; color: var(--muted); background: var(--panel2); border-radius: 99px; padding: 2px 8px; }
-  .pk-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; min-height: 40px; }
-  .pk-row .pk-empty { font-size: 12.5px; color: var(--muted); align-self: center; }
-  .pk { flex: none; width: 84px; position: relative; }
-  .pk img, .pk .np { width: 84px; aspect-ratio: 2/3; border-radius: 9px; object-fit: cover; background: var(--field); display: block; }
+  .rc .rc-pick { position: absolute; left: 8px; right: 8px; bottom: 8px; font-size: 12.5px; font-weight: 600; padding: 7px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,.16); background: rgba(10,10,15,.82); color: var(--text); backdrop-filter: blur(6px); cursor: pointer; height: auto; }
+  .rc .rc-pick.on { background: #ff74a8; color: #fff; border-color: #ff74a8; }
+  #pkType .n { margin-left: 6px; font-size: 11px; color: var(--muted); }
+  .pk-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; }
+  .pk-row .pk-add { flex: none; width: 96px; aspect-ratio: 2 / 3; border: 1px dashed var(--line2); border-radius: 10px; display: grid; place-items: center; text-align: center; padding: 8px; font-size: 12px; color: var(--muted); }
+  .pk { flex: none; width: 96px; position: relative; }
+  .pk img, .pk .np { width: 96px; aspect-ratio: 2/3; border-radius: 10px; object-fit: cover; background: var(--field); display: block; }
   .pk .np { display: grid; place-items: center; font-size: 10px; color: var(--faint); text-align: center; padding: 4px; }
   .pk b { display: block; font-size: 11px; font-weight: 500; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
   .pk .x { all: unset; cursor: pointer; position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 50%; background: rgba(10,10,15,.85); display: grid; place-items: center; font-size: 13px; color: #fff; border: 1px solid rgba(255,255,255,.2); }
@@ -367,8 +366,8 @@
   .rc .rc-new { position: absolute; bottom: 8px; left: 8px; font-size: 10.5px; font-weight: 700; letter-spacing: .5px; padding: 3px 8px; border-radius: 99px; background: rgba(10, 10, 15, .78); color: var(--pink); backdrop-filter: blur(6px); }
   .rc b { display: block; margin-top: 8px; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .rc span { display: block; color: var(--faint); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  @media (max-width: 720px) { .rc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; } .rc-right { width: 100%; } .rc-right select { flex: 1; width: auto; }
-    .rc-right .seg { width: 100%; flex-wrap: nowrap; } .rc-right select + .seg { width: auto; flex: 1.4; } .rc-right .seg button { flex: 1 1 0; white-space: nowrap; padding: 0 8px; } }
+  @media (max-width: 720px) { .rc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .rc-tools .rc-search { flex-basis: 100%; }
+    .rc-tools .seg { flex: 1 1 auto; } .rc-tools .seg button { flex: 1 1 0; white-space: nowrap; padding: 0 8px; } .rc-tools select { flex: 1 1 140px; } }
   .tst { grid-column: 1 / -1; }
   .ht-list { display: grid; gap: 8px; }
   .ht-item { background: var(--panel2); border: 1px solid var(--line2); border-radius: 12px; overflow: hidden; }
@@ -1648,26 +1647,23 @@
     <!-- Conteúdos recentes -->
     <main class="page hidden" data-section="recentes" data-title="Conteúdos recentes">
       <div class="card">
-        <div class="card-head"><div><h2>Fileiras do app</h2><p class="sub">O que aparece em "Filmes adicionados recentemente" e "Séries adicionadas recentemente" no app. Escolha abaixo com "+ No app"; fica até você tirar. Sem nenhum escolhido, a fileira mostra os recentes dos addons, como antes.</p></div></div>
-        <div class="pk-cols">
-          <div><div class="pk-h">Filmes adicionados recentemente <span id="pkCountMovie" class="n">0</span></div><div id="pkMovie" class="pk-row"></div></div>
-          <div><div class="pk-h">Séries adicionadas recentemente <span id="pkCountSeries" class="n">0</span></div><div id="pkSeries" class="pk-row"></div></div>
+        <div class="card-head">
+          <div><h2>No app agora</h2><p class="sub">O que aparece em "Adicionados recentemente" no app. Sem nenhum, o app mostra os recentes das fontes.</p></div>
+          <div id="pkType" class="seg"><button type="button" data-v="movie" class="on">Filmes<span class="n" id="pkCountMovie">0</span></button><button type="button" data-v="series">Séries<span class="n" id="pkCountSeries">0</span></button></div>
         </div>
+        <div id="pkRow" class="pk-row"></div>
       </div>
       <div class="card">
         <div class="card-head">
-          <div><h2>O que entrou nos addons</h2><p class="sub">Títulos novos nos catálogos dos addons de conteúdo: só os deste ano que nenhum outro addon já tinha. O painel lê sozinho ao abrir esta página (no máximo 1 vez por hora).</p></div>
-          <button type="button" id="rcScan" class="small"><svg class="i"><use href="#i-refresh"/></svg>Procurar novidades</button>
+          <div><h2>Novidades das fontes<span id="rcNewCount" class="rc-count hidden"></span></h2><p class="sub">Títulos deste ano que entraram nos addons. Lido sozinho a cada hora.</p></div>
+          <button type="button" id="rcScan" class="small"><svg class="i"><use href="#i-refresh"/></svg>Procurar agora</button>
         </div>
-        <div class="er-tools">
-          <div class="rc-right">
-            <div id="rcView" class="seg"><button type="button" data-v="new" class="on">Novos desde a última leitura</button><button type="button" data-v="latest">Lançamentos</button></div>
-            <div id="rcType" class="seg"><button type="button" data-v="" class="on">Todos</button><button type="button" data-v="movie">Filmes</button><button type="button" data-v="series">Séries</button></div>
-          </div>
-          <div class="rc-right">
-            <select id="rcAddon"><option value="">Todos os addons</option></select>
-            <div id="rcDays" class="seg"><button type="button" data-v="1">Hoje</button><button type="button" data-v="7" class="on">7 dias</button><button type="button" data-v="30">30 dias</button></div>
-          </div>
+        <div class="rc-tools">
+          <div class="field-icon rc-search"><svg class="i"><use href="#i-search"/></svg><input id="rcSearch" placeholder="Buscar título" autocomplete="off"></div>
+          <div id="rcView" class="seg"><button type="button" data-v="new" class="on">Novos</button><button type="button" data-v="latest">Todos os lançamentos</button></div>
+          <div id="rcType" class="seg"><button type="button" data-v="" class="on">Tudo</button><button type="button" data-v="movie">Filmes</button><button type="button" data-v="series">Séries</button></div>
+          <select id="rcAddon"><option value="">Todas as fontes</option></select>
+          <select id="rcDays"><option value="1">Hoje</option><option value="7" selected>Últimos 7 dias</option><option value="30">Últimos 30 dias</option></select>
         </div>
         <p id="rcInfo" class="rc-info"></p>
         <div id="rcList" class="rc-grid"></div>
@@ -3703,15 +3699,16 @@
     renderPicks();
   }
   function renderPicks() {
-    [["movie", "pkMovie", "pkCountMovie"], ["series", "pkSeries", "pkCountSeries"]].forEach(([type, box, count]) => {
-      const list = rcPicks.filter((p) => p.media_type === type);
-      $(count).textContent = list.length;
-      $(box).replaceChildren(...(list.length ? list.map((p) => el("div", { class: "pk", title: p.title || p.item_id },
-        p.poster ? el("img", { src: p.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, p.title || ""),
-        el("button", { type: "button", class: "x", title: "Tirar da fileira", onclick: () => unpick(p) }, "×"),
-        el("b", {}, p.title || p.item_id)))
-        : [el("span", { class: "pk-empty" }, "Nenhum escolhido: mostra os recentes dos addons.")]));
-    });
+    $("pkCountMovie").textContent = rcPicks.filter((p) => p.media_type === "movie").length;
+    $("pkCountSeries").textContent = rcPicks.filter((p) => p.media_type === "series").length;
+    const type = $("pkType").dataset.value || "movie";
+    const list = rcPicks.filter((p) => p.media_type === type);
+    $("pkRow").replaceChildren(...list.map((p) => el("div", { class: "pk", title: p.title || p.item_id },
+      p.poster ? el("img", { src: p.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, p.title || ""),
+      el("button", { type: "button", class: "x", title: "Tirar do app", onclick: () => unpick(p) }, "×"),
+      el("b", {}, p.title || p.item_id))),
+      el("div", { class: "pk-add" }, list.length ? "Escolha mais abaixo com \"+ No app\""
+        : "Nenhum escolhido: o app mostra os recentes das fontes. Escolha abaixo com \"+ No app\"."));
   }
   async function pickToggle(r) {
     const had = rcPicked(r);
@@ -3733,7 +3730,7 @@
     $("rcDays").classList.toggle("hidden", latest);
     const { data, error } = latest
       ? await sb.rpc("admin_latest_catalog_items", { p_days: 120 })
-      : await sb.rpc("admin_recent_catalog_items", { p_days: parseInt($("rcDays").dataset.value || "7", 10) });
+      : await sb.rpc("admin_recent_catalog_items", { p_days: parseInt($("rcDays").value || "7", 10) });
     if (error) {
       rcItems = [];
       $("rcList").replaceChildren(); $("rcEmpty").classList.remove("hidden");
@@ -3801,10 +3798,12 @@
     const names = [...new Set(rcItems.map((r) => r.addon_name).filter(Boolean))].sort();
     const sel = $("rcAddon");
     if (sel.dataset.filled !== names.join("|")) {
-      sel.replaceChildren(el("option", { value: "" }, "Todos os addons"), ...names.map((n) => el("option", { value: n }, n)));
+      sel.replaceChildren(el("option", { value: "" }, "Todas as fontes"), ...names.map((n) => el("option", { value: n }, n)));
       sel.value = names.includes(ad) ? ad : ""; sel.dataset.filled = names.join("|");
     }
-    let list = rcItems.filter((r) => (!t || (t === "series" ? /series|tv|show/i.test(r.type || "") : (r.type || "movie") === t)) && (!sel.value || r.addon_name === sel.value));
+    const q = ($("rcSearch").value || "").trim().toLowerCase();
+    let list = rcItems.filter((r) => (!t || (t === "series" ? /series|tv|show/i.test(r.type || "") : (r.type || "movie") === t)) && (!sel.value || r.addon_name === sel.value) &&
+      (!q || String(r.name || "").toLowerCase().includes(q)));
     let last = null; try { last = localStorage.getItem("rcLastScan"); } catch (_) {}
     const latest = ($("rcView").dataset.value || "new") === "latest";
     // Already in another addon: out of "Novos" (one per title, too).
@@ -3819,22 +3818,27 @@
     const showAll = el("button", { type: "button", class: "linklike", onclick: () => { rcShowAll = !rcShowAll; renderRecent(); } }, rcShowAll ? "Esconder" : "Mostrar");
     if (!rcScanning) $("rcInfo").replaceChildren(el("b", {}, list.length + (list.length === 1 ? " título" : " títulos")),
       last ? " · última leitura " + ago(new Date(Number(last)).toISOString()) : " · ainda não leu os catálogos",
-      ...(rcChecking ? [" · conferindo " + rcChecking + " nos outros addons…"] : []),
-      ...(!latest && (hidden || rcShowAll) ? [" · " + (rcShowAll ? "mostrando também os antigos e os que já existiam em outro addon " : hidden + (hidden === 1 ? " escondido (antigo ou já existia em outro addon) " : " escondidos (antigos ou que já existiam em outro addon) ")), showAll] : []));
+      ...(rcChecking ? [" · conferindo " + rcChecking + " nas outras fontes…"] : []),
+      ...(!latest && (hidden || rcShowAll) ? [" · " + (rcShowAll ? "mostrando também os antigos e os que outra fonte já tinha " : hidden + (hidden === 1 ? " escondido (antigo ou outra fonte já tinha) " : " escondidos (antigos ou que outra fonte já tinha) ")), showAll] : []));
+    // How many new ones (not yet in the app), next to the title.
+    const fresh = latest ? 0 : list.filter((r) => !rcPicked(r) && !rcOldOrElsewhere(r)).length;
+    $("rcNewCount").textContent = fresh + (fresh === 1 ? " novo" : " novos");
+    $("rcNewCount").classList.toggle("hidden", !fresh);
     $("rcEmpty").classList.toggle("hidden", list.length > 0);
     $("rcEmpty").textContent = rcScanning ? "Lendo os catálogos dos addons…"
-      : !last ? "Toque em Procurar novidades para ler os catálogos dos addons."
+      : q ? "Nenhum título com esse nome."
+      : !last ? "Toque em Procurar agora para ler os catálogos das fontes."
       : latest ? "Os addons de conteúdo não têm catálogos com lançamentos. Os títulos aparecem aqui quando algum addon tiver um catálogo de novidades ou datas de lançamento."
       : "Nada novo desde a leitura anterior. Conforme os addons colocarem títulos, eles aparecem aqui.";
     $("rcList").replaceChildren(...list.map((r) => el("div", { class: "rc" },
       el("div", { class: "rc-poster" }, r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, r.name || ""),
-        r.addon_name ? el("span", { class: "rc-addon", title: r.addon_name }, el("i", { style: "background:" + addonColor(r.addon_name) }), r.addon_name) : "",
-        latest ? "" : el("span", { class: "rc-new" }, "NOVO"),
-        el("button", { type: "button", class: "rc-pick" + (rcPicked(r) ? " on" : ""), onclick: () => pickToggle(r) }, rcPicked(r) ? "✓ No app" : "+ No app")),
+        el("button", { type: "button", class: "rc-pick" + (rcPicked(r) ? " on" : ""), title: rcPicked(r) ? "Tirar do app" : "Colocar no app",
+          onclick: () => pickToggle(r) }, rcPicked(r) ? "✓ No app" : "+ No app")),
       el("b", { title: r.name || "" }, r.name || r.item_id),
-      el("span", {}, (/series|tv|show/i.test(r.type || "") ? "Série" : "Filme") + (r.year ? " · " + r.year : "") +
-        (latest ? (r.released ? " · " + new Date(r.released).toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "2-digit" }) : "") : " · " + ago(r.first_seen))),
-      el("span", { title: r.catalog_name || r.catalog }, r.catalog_name || r.catalog),
+      el("span", { title: (r.addon_name || "") + (r.catalog_name ? " · " + r.catalog_name : "") },
+        (/series|tv|show/i.test(r.type || "") ? "Série" : "Filme") + (r.year ? " · " + r.year : "") + (r.addon_name ? " · " + r.addon_name : "")),
+      el("span", {}, latest ? (r.released ? "Lançado em " + new Date(r.released).toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "2-digit" }) : "")
+        : "Entrou " + ago(r.first_seen)),
       ...(!latest && rcOldOrElsewhere(r) ? [el("span", { class: "rc-else" }, rcOldOrElsewhere(r) === "antigo" ? "Antigo (" + rcYear(r) + ")"
         : "Já tinha em: " + ((rcElseOf(r) || []).length ? rcElseOf(r) : rcItems.filter((x) => x.item_id === r.item_id && x.addon_name !== r.addon_name).map((x) => x.addon_name)).join(", "))] : []))));
   }
@@ -3893,8 +3897,10 @@
       if (addons.length && Date.now() - last > 3600e3) scanCatalogs();
     });
   }
-  seg("rcType", renderRecent); seg("rcDays", loadRecent); seg("rcView", loadRecent);
+  seg("rcType", renderRecent); seg("rcView", loadRecent); seg("pkType", renderPicks);
+  $("rcDays").addEventListener("change", loadRecent);
   $("rcAddon").addEventListener("change", renderRecent);
+  $("rcSearch").addEventListener("input", renderRecent);
   $("rcScan").addEventListener("click", scanCatalogs);
 
   // ── Status: uptime of each source (admin_uptime; Supabase checks every 5 minutes) ──
