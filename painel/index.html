@@ -3792,6 +3792,44 @@
     try { localStorage.setItem("rcElsewhere", JSON.stringify(rcElse)); } catch (_) {}
     renderRecent();
   }
+  // CloudPlay: a catalog can list titles its source has nothing to play for. Each title shown is
+  // asked of its own source (/stream); one with no stream is hidden like the old ones ("Mostrar"
+  // shows it, marked). The answers are kept 12 hours in this browser.
+  let rcAvail = {}, rcAvailRunning = false;
+  try { rcAvail = JSON.parse(localStorage.getItem("rcAvailable") || "{}"); } catch (_) { rcAvail = {}; }
+  const rcAvailKey = (r) => (r.addon_name || "") + "|" + r.item_id;
+  const rcAvailOf = (r) => { const e = rcAvail[rcAvailKey(r)]; return e && Date.now() - e.at < 12 * 3600e3 ? e.ok : null; };
+  async function rcCheckAvailable(list) {
+    if (rcAvailRunning) return;
+    const todo = list.filter((r) => rcAvailOf(r) === null).slice(0, 80);
+    if (!todo.length) return;
+    rcAvailRunning = true;
+    let next = 0, done = 0;
+    const worker = async () => {
+      while (next < todo.length) {
+        const r = todo[next++];
+        const a = (addons || []).find((x) => x.name === r.addon_name);
+        let ok = true;
+        if (a) {
+          const { base, q } = addonParts(a.manifest_url);
+          const series = /series|tv|show/i.test(r.type || "");
+          const id = encodeURIComponent(series ? r.item_id + ":1:1" : r.item_id);
+          try {
+            const res = await fetch(base + "/stream/" + (series ? "series" : "movie") + "/" + id + ".json" + q, { signal: AbortSignal.timeout(10000) });
+            const j = res.ok ? await res.json() : null;
+            ok = !!(j && Array.isArray(j.streams) && j.streams.some((x) => x && (x.url || x.externalUrl || x.infoHash)));
+          } catch (_) { ok = null; /* no answer: asked again next time, shown meanwhile */ }
+        }
+        if (ok !== null) rcAvail[rcAvailKey(r)] = { at: Date.now(), ok };
+        if (++done % 6 === 0) renderRecent();
+      }
+    };
+    await Promise.all([worker(), worker(), worker(), worker()]);
+    Object.keys(rcAvail).forEach((k) => { if (Date.now() - rcAvail[k].at > 12 * 3600e3) delete rcAvail[k]; });
+    try { localStorage.setItem("rcAvailable", JSON.stringify(rcAvail)); } catch (_) {}
+    rcAvailRunning = false;
+    renderRecent();
+  }
   const addonColor = (name) => (addons || []).find((a) => a.name === name)?.color || "#ff74a8";
   function renderRecent() {
     const t = $("rcType").dataset.value || "", ad = $("rcAddon").value;
@@ -3819,11 +3857,15 @@
       list = list.filter((r) => firsts[r.item_id] === r);
       if (!rcShowAll) { const before = list.length; list = list.filter((r) => !rcOldOrElsewhere(r)); hidden = before - list.length; }
     }
+    // Nothing to play at its source: out too (in both views), unless "Mostrar".
+    if (!rcShowAll) { const before = list.length; list = list.filter((r) => rcAvailOf(r) !== false); hidden += before - list.length; }
+    setTimeout(() => rcCheckAvailable(list), 0);
     const showAll = el("button", { type: "button", class: "linklike", onclick: () => { rcShowAll = !rcShowAll; renderRecent(); } }, rcShowAll ? "Esconder" : "Mostrar");
     if (!rcScanning) $("rcInfo").replaceChildren(el("b", {}, list.length + (list.length === 1 ? " título" : " títulos")),
       last ? " · última leitura " + ago(new Date(Number(last)).toISOString()) : " · ainda não leu os catálogos",
       ...(rcChecking ? [" · conferindo " + rcChecking + " nas outras fontes…"] : []),
-      ...(!latest && (hidden || rcShowAll) ? [" · " + (rcShowAll ? "mostrando também os antigos e os que outra fonte já tinha " : hidden + (hidden === 1 ? " escondido (antigo ou outra fonte já tinha) " : " escondidos (antigos ou que outra fonte já tinha) ")), showAll] : []));
+      ...(rcAvailRunning ? [" · conferindo se as fontes têm o vídeo…"] : []),
+      ...((hidden || rcShowAll) ? [" · " + (rcShowAll ? "mostrando também os escondidos " : hidden + (hidden === 1 ? " escondido " : " escondidos ") + "(sem vídeo na fonte, antigos ou que outra fonte já tinha) "), showAll] : []));
     // How many new ones (not yet in the app), next to the title.
     const fresh = latest ? 0 : list.filter((r) => !rcPicked(r) && !rcOldOrElsewhere(r)).length;
     $("rcNewCount").textContent = fresh + (fresh === 1 ? " novo" : " novos");
@@ -3843,6 +3885,7 @@
         (/series|tv|show/i.test(r.type || "") ? "Série" : "Filme") + (r.year ? " · " + r.year : "") + (r.addon_name ? " · " + r.addon_name : "")),
       el("span", {}, latest ? (r.released ? "Lançado em " + new Date(r.released).toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "2-digit" }) : "")
         : "Entrou " + ago(r.first_seen)),
+      ...(rcAvailOf(r) === false ? [el("span", { class: "rc-else" }, "Sem vídeo na fonte agora")] : []),
       ...(!latest && rcOldOrElsewhere(r) ? [el("span", { class: "rc-else" }, rcOldOrElsewhere(r) === "antigo" ? "Antigo (" + rcYear(r) + ")"
         : "Já tinha em: " + ((rcElseOf(r) || []).length ? rcElseOf(r) : rcItems.filter((x) => x.item_id === r.item_id && x.addon_name !== r.addon_name).map((x) => x.addon_name)).join(", "))] : []))));
   }
