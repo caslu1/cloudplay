@@ -3692,7 +3692,10 @@
   // newest pick first; the app shows them instead of the addons' recent catalogs.
   let rcPicks = [];
   const rcIsSeries = (r) => /series|tv|show/i.test(r.type || r.media_type || "");
-  const rcPicked = (r) => rcPicks.find((p) => p.item_id === r.item_id && (p.media_type === "series") === rcIsSeries(r));
+  // A list title chosen by its name: the id it was found as (kept in this browser).
+  let rcFoundAs = {};
+  try { rcFoundAs = JSON.parse(localStorage.getItem("rcFoundAs") || "{}"); } catch (_) { rcFoundAs = {}; }
+  const rcPicked = (r) => rcPicks.find((p) => (p.item_id === r.item_id || p.item_id === rcFoundAs[r.item_id]) && (p.media_type === "series") === rcIsSeries(r));
   async function loadPicks() {
     const { data, error } = await sb.from("recent_picks").select("*").order("created_at", { ascending: false });
     rcPicks = error ? [] : data || [];
@@ -3713,10 +3716,20 @@
   async function pickToggle(r) {
     const had = rcPicked(r);
     if (had) return unpick(had);
-    const row = { media_type: rcIsSeries(r) ? "series" : "movie", item_id: r.item_id, title: r.name || null, poster: r.poster || null, year: r.year || null };
+    let itemId = r.item_id;
+    if (itemId.startsWith("m3u:")) {
+      // A list title without a TMDB id: found by its name (and year) like the panel's search.
+      const s = await sb.functions.invoke("media/admin", { body: { action: "search", type: rcIsSeries(r) ? "series" : "movie", q: r.name } }).catch(() => ({ data: null }));
+      const metas = (s.data && s.data.metas) || [];
+      const m = metas.find((x) => r.year && String(x.releaseInfo || "").startsWith(r.year)) || metas[0];
+      if (!m || !m.id) { toast("Não achei \"" + r.name + "\" no TMDB para colocar no app."); return; }
+      itemId = m.id;
+    }
+    const row = { media_type: rcIsSeries(r) ? "series" : "movie", item_id: itemId, title: r.name || null, poster: r.poster || null, year: r.year || null };
     const { data, error } = await sb.from("recent_picks").insert(row).select().single();
     if (error) { toast(/recent_picks/i.test(error.message) ? "Rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não deu para salvar: " + error.message); return; }
     rcPicks = [data || { ...row, id: "tmp" + Date.now(), created_at: new Date().toISOString() }, ...rcPicks];
+    if (itemId !== r.item_id) { rcFoundAs[r.item_id] = itemId; try { localStorage.setItem("rcFoundAs", JSON.stringify(rcFoundAs)); } catch (_) {} }
     toast("Na fileira " + (row.media_type === "series" ? "de séries" : "de filmes") + " do app");
     renderPicks(); renderRecent();
   }
@@ -3752,14 +3765,24 @@
     rcM3uLoading = true;
     const r = await sb.functions.invoke("m3u-test", { body: { action: "recent" } }).catch(() => ({ data: null }));
     rcM3uLoading = false;
-    if (!r.data || !r.data.ok) { rcM3u = { at: Date.now(), items: [], skipped: [] }; return false; }
-    rcM3u = { at: Date.now(), items: r.data.items || [], skipped: r.data.skipped || [] };
+    if (!r.data || !r.data.ok) { rcM3u = { at: Date.now(), items: [], skipped: [], diag: [], failed: true }; renderRecent(); return false; }
+    rcM3u = { at: Date.now(), items: r.data.items || [], skipped: r.data.skipped || [], diag: r.data.diag || [] };
     return rcM3u.items.length > 0;
+  }
+  // What happened with each list, when it brought nothing (to know where it stops).
+  function rcM3uNotes() {
+    if (rcM3uLoading || !rcM3u.at) return [];
+    if (rcM3u.failed) return [" · as listas M3U não responderam (confira a função m3u-test no Supabase)"];
+    const notes = (rcM3u.diag || []).filter((d) => !d.recent).map((d) => d.list + ": " +
+      (d.movies || d.series ? "a lista não diz quando os títulos entraram" : d.error === "demorou" ? "a lista demorou demais" : "não respondeu"));
+    (rcM3u.skipped || []).forEach((n) => notes.push(n + ": não é Xtream (sem usuário e senha)"));
+    return notes.length ? [" · " + notes.join(" · ")] : [];
   }
   function rcM3uFor(latest) {
     const days = parseInt($("rcDays").value || "7", 10);
     return rcM3u.items.filter((m) => latest || Date.now() - new Date(m.added) < days * 86400e3).map((m) => ({
-      addon_name: m.list, item_id: "tmdb:" + m.tmdb, type: m.type, name: m.name, year: m.year, poster: m.poster,
+      // Without a TMDB id from the list, the title is looked up by name when chosen ("+ No app").
+      addon_name: m.list, item_id: m.tmdb ? "tmdb:" + m.tmdb : "m3u:" + m.list + ":" + m.name, type: m.type, name: m.name, year: m.year, poster: m.poster,
       first_seen: m.added, released: m.added, catalog_name: "Lista M3U", m3u: true }));
   }
   // CloudPlay: "new" only when no other content addon already had it. Each new title is asked
@@ -3891,7 +3914,9 @@
     // from one that was removed stay out.
     const sources = new Set((addons || []).filter((x) => x.enabled && kindOf(x) === "content").map((x) => x.name));
     const items = sources.size ? rcItems.filter((r) => r.m3u || sources.has(r.addon_name)) : rcItems;
-    const names = [...new Set(items.map((r) => r.addon_name).filter(Boolean))].sort();
+    // Every active source in the filter (content addons and M3U lists), with titles or not.
+    const names = [...new Set([...sources, ...(playlists || []).filter((p) => p.enabled).map((p) => p.name),
+      ...items.map((r) => r.addon_name)].filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt-BR"));
     const sel = $("rcAddon");
     if (sel.dataset.filled !== names.join("|")) {
       sel.replaceChildren(el("option", { value: "" }, "Todas as fontes"), ...names.map((n) => el("option", { value: n }, n)));
@@ -3919,6 +3944,8 @@
       last ? " · última leitura " + ago(new Date(Number(last)).toISOString()) : " · ainda não leu os catálogos",
       ...(rcChecking ? [" · conferindo " + rcChecking + " nas outras fontes…"] : []),
       ...(rcAvailRunning ? [" · abrindo os vídeos para ver se tocam…"] : []),
+      ...(rcM3uLoading ? [" · lendo as listas M3U…"] : []),
+      ...rcM3uNotes(),
       ...((hidden || rcShowAll) ? [" · " + (rcShowAll ? "mostrando também os escondidos " : hidden + (hidden === 1 ? " escondido " : " escondidos ") + "(o vídeo não abriu, antigos ou que outra fonte já tinha) "), showAll] : []));
     // How many new ones (not yet in the app), next to the title.
     const fresh = latest ? 0 : list.filter((r) => !rcPicked(r) && !rcOldOrElsewhere(r)).length;
@@ -3962,7 +3989,9 @@
       (m?.catalogs || []).filter((c) => !(c.extra || []).some((e) => e.isRequired) && !(c.extraRequired || []).length)
         .forEach((c) => jobs.push({ a, key, base, q, c }));
     }
-    const take = jobs.slice(0, 60), rows = [];
+    // Up to 10 catalogs of each addon (so one with many does not leave the others unread), 150 in all.
+    const per = {};
+    const take = jobs.filter((j) => (per[j.a.name] = (per[j.a.name] || 0) + 1) <= 10).slice(0, 150), rows = [];
     let next = 0, done = 0, failedCats = 0;
     const worker = async () => {
       while (next < take.length) {
