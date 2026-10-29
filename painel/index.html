@@ -3796,9 +3796,18 @@
   // asked of its own source (/stream); one with no stream is hidden like the old ones ("Mostrar"
   // shows it, marked). The answers are kept 12 hours in this browser.
   let rcAvail = {}, rcAvailRunning = false;
-  try { rcAvail = JSON.parse(localStorage.getItem("rcAvailable") || "{}"); } catch (_) { rcAvail = {}; }
+  try { rcAvail = JSON.parse(localStorage.getItem("rcAvailable2") || "{}"); } catch (_) { rcAvail = {}; }
   const rcAvailKey = (r) => (r.addon_name || "") + "|" + r.item_id;
-  const rcAvailOf = (r) => { const e = rcAvail[rcAvailKey(r)]; return e && Date.now() - e.at < 12 * 3600e3 ? e.ok : null; };
+  // A title without an IMDb id never plays in the app (it looks titles up by it): not available.
+  // A source that did not answer twice counts as not having it, asked again after an hour.
+  const rcAvailOf = (r) => {
+    if (!/^tt\d+/.test(String(r.item_id || ""))) return false;
+    const e = rcAvail[rcAvailKey(r)];
+    return e && Date.now() - e.at < (e.ok || e.answered ? 12 : 1) * 3600e3 ? e.ok : null;
+  };
+  // What a source's answer has to hold: a video the app can open (a link or a torrent), not
+  // only a web page.
+  const rcPlayable = (streams) => (streams || []).some((x) => x && (typeof x.url === "string" && /^https?:\/\//.test(x.url) || x.infoHash));
   async function rcCheckAvailable(list) {
     if (rcAvailRunning) return;
     const todo = list.filter((r) => rcAvailOf(r) === null).slice(0, 80);
@@ -3809,24 +3818,28 @@
       while (next < todo.length) {
         const r = todo[next++];
         const a = (addons || []).find((x) => x.name === r.addon_name);
-        let ok = true;
+        let ok = false, answered = false;
         if (a) {
           const { base, q } = addonParts(a.manifest_url);
           const series = /series|tv|show/i.test(r.type || "");
           const id = encodeURIComponent(series ? r.item_id + ":1:1" : r.item_id);
+          const url = base + "/stream/" + (series ? "series" : "movie") + "/" + id + ".json" + q;
           try {
-            const res = await fetch(base + "/stream/" + (series ? "series" : "movie") + "/" + id + ".json" + q, { signal: AbortSignal.timeout(10000) });
-            const j = res.ok ? await res.json() : null;
-            ok = !!(j && Array.isArray(j.streams) && j.streams.some((x) => x && (x.url || x.externalUrl || x.infoHash)));
-          } catch (_) { ok = null; /* no answer: asked again next time, shown meanwhile */ }
+            const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+            if (res.ok) { ok = rcPlayable((await res.json()).streams); answered = true; }
+          } catch (_) { /* blocked for a web page, or slow: asked from the server below */ }
+          if (!answered) {
+            const p = await sb.functions.invoke("m3u-test", { body: { action: "streams", url, timeout: 12000 } }).catch(() => ({ data: null }));
+            if (p.data && p.data.ok) { ok = rcPlayable(p.data.streams); answered = true; }
+          }
         }
-        if (ok !== null) rcAvail[rcAvailKey(r)] = { at: Date.now(), ok };
+        rcAvail[rcAvailKey(r)] = { at: Date.now(), ok, answered };
         if (++done % 6 === 0) renderRecent();
       }
     };
     await Promise.all([worker(), worker(), worker(), worker()]);
     Object.keys(rcAvail).forEach((k) => { if (Date.now() - rcAvail[k].at > 12 * 3600e3) delete rcAvail[k]; });
-    try { localStorage.setItem("rcAvailable", JSON.stringify(rcAvail)); } catch (_) {}
+    try { localStorage.setItem("rcAvailable2", JSON.stringify(rcAvail)); } catch (_) {}
     rcAvailRunning = false;
     renderRecent();
   }
@@ -3885,7 +3898,8 @@
         (/series|tv|show/i.test(r.type || "") ? "Série" : "Filme") + (r.year ? " · " + r.year : "") + (r.addon_name ? " · " + r.addon_name : "")),
       el("span", {}, latest ? (r.released ? "Lançado em " + new Date(r.released).toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "2-digit" }) : "")
         : "Entrou " + ago(r.first_seen)),
-      ...(rcAvailOf(r) === false ? [el("span", { class: "rc-else" }, "Sem vídeo na fonte agora")] : []),
+      ...(rcAvailOf(r) === false ? [el("span", { class: "rc-else" }, !/^tt\d+/.test(String(r.item_id || "")) ? "Sem código IMDb: não toca no app"
+        : rcAvail[rcAvailKey(r)]?.answered === false ? "A fonte não respondeu" : "Sem vídeo na fonte agora")] : []),
       ...(!latest && rcOldOrElsewhere(r) ? [el("span", { class: "rc-else" }, rcOldOrElsewhere(r) === "antigo" ? "Antigo (" + rcYear(r) + ")"
         : "Já tinha em: " + ((rcElseOf(r) || []).length ? rcElseOf(r) : rcItems.filter((x) => x.item_id === r.item_id && x.addon_name !== r.addon_name).map((x) => x.addon_name)).join(", "))] : []))));
   }
