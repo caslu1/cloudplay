@@ -563,11 +563,48 @@
       el("td", { "data-l": "Revendedores dele" }, s.children),
       el("td", null, s.blocked ? el("span", { class: "pill p-bad" }, el("i"), "Bloqueado") : el("span", { class: "pill p-ok" }, el("i"), "Ativo")),
       el("td", null, el("div", { class: "act" },
-        s.joined ? null : el("button", { class: "btn small", onclick: () => inviteDialog(s.name, s.email, s.invite_code) }, "Convite"),
+        s.joined ? el("button", { class: "btn small", onclick: () => passwordDialog(s) }, "Senha")
+          : el("button", { class: "btn small", onclick: () => inviteDialog(s.name, s.email, s.invite_code) }, "Convite"),
         el("button", { class: "btn small", onclick: () => moveDialog(s, 1) }, "Passar créditos"),
         el("button", { class: "btn small", onclick: () => moveDialog(s, -1) }, "Tirar créditos"),
         el("button", { class: "btn small", onclick: () => blockChild(s, !s.blocked) }, s.blocked ? "Desbloquear" : "Bloquear")))))
       : [el("tr", null, el("td", { colspan: 6, class: "empty" }, "Você ainda não tem revendedores."))]));
+  }
+const LOGIN_ERR = { email_in_use: "Esse e-mail já tem uma revenda.", name_and_email: "Preencha o nome e um e-mail válido.",
+    weak_password: "A senha precisa ter pelo menos 6 caracteres.", email_has_account: "Esse e-mail já tem uma conta no CloudPlay. Use outro e-mail.",
+    no_login: "Esse revendedor ainda não tem login. Envie o convite para ele.", not_allowed: "Você não pode fazer isso.", login_failed: "Não deu para criar o login. Tente de novo." };
+  // CloudPlay: the "media" function makes the reseller's login (its service key can; this page cannot).
+  async function resellerLogin(body) {
+    const r = await sb.functions.invoke("media/reseller-login", { body }).catch((e) => ({ error: e }));
+    let d = r.data;
+    if (!d && r.error && r.error.context) { try { d = await r.error.context.json(); } catch (_) {} }
+    if (d && d.ok) return { ok: true, id: d.id };
+    return { ok: false, text: (d && LOGIN_ERR[d.error]) || "Não deu para salvar. Confira se a função media está atualizada no Supabase." };
+  }
+  function loginText(name, email, password) {
+    return "Olá, " + name + "! Sua revenda CloudPlay está pronta.\n\nPainel: " + location.href.split("#")[0].split("?")[0] +
+      "\nE-mail: " + email + "\nSenha: " + password + "\n\nEntre no painel com esse e-mail e senha.";
+  }
+  function loginDialog(name, email, password, title) {
+    dialog((close) => [el("h3", null, title || "Revenda de " + name + " pronta"), el("div", { class: "sub" }, "Ele já pode entrar no painel com este e-mail e senha."),
+      el("label", { class: "l" }, "E-mail"), el("div", null, el("b", null, email)),
+      el("label", { class: "l" }, "Senha"), el("div", null, el("b", null, password)),
+      el("div", { class: "bar" }, el("button", { class: "btn", onclick: close }, "Fechar"), el("button", { class: "btn main", onclick: () => copy(loginText(name, email, password)) }, "Copiar mensagem"))]);
+  }
+  function passwordDialog(s) {
+    dialog((close) => {
+      const pass = el("input", { class: "f", type: "text", minlength: 6, maxlength: 72, autocomplete: "off", placeholder: "Mínimo 6 caracteres" }), msg = el("div", { class: "msg" });
+      const ok = el("button", { class: "btn main" }, "Salvar");
+      ok.onclick = async () => {
+        ok.disabled = true;
+        const res = await resellerLogin({ action: "password", reseller_id: s.id, password: pass.value });
+        ok.disabled = false;
+        if (!res.ok) { msg.textContent = res.text; return; }
+        close(); loginDialog(s.name, s.email, pass.value, "Senha nova de " + s.name);
+      };
+      return [el("h3", null, "Senha de " + s.name), el("div", { class: "sub" }, "Defina uma senha nova para " + s.email + "."),
+        el("label", { class: "l" }, "Senha nova"), pass, msg, el("div", { class: "bar" }, el("button", { class: "btn", onclick: close }, "Cancelar"), ok)];
+    });
   }
   function inviteText(name, email, invite) {
     return "Olá, " + name + "! Sua revenda CloudPlay está pronta.\n\nPainel: " + location.href.split("#")[0].split("?")[0] +
@@ -581,15 +618,16 @@
   $("newChildBtn").onclick = () => {
     dialog((close) => {
       const name = el("input", { class: "f", maxlength: 60 }), email = el("input", { class: "f", type: "email" }), msg = el("div", { class: "msg" });
+      const pass = el("input", { class: "f", type: "text", minlength: 6, maxlength: 72, autocomplete: "off", placeholder: "Mínimo 6 caracteres" });
       const ok = el("button", { class: "btn main" }, "Criar");
       ok.onclick = async () => {
         ok.disabled = true;
-        const { data, error } = await sb.rpc("reseller_create_child", { p_name: name.value.trim(), p_email: email.value.trim() });
-        if (error) { ok.disabled = false; msg.textContent = errText(error); return; }
-        close(); await loadLists(); inviteDialog(name.value.trim(), email.value.trim().toLowerCase(), data.invite_code);
+        const res = await resellerLogin({ action: "create", name: name.value.trim(), email: email.value.trim(), password: pass.value });
+        if (!res.ok) { ok.disabled = false; msg.textContent = res.text; return; }
+        close(); await loadLists(); loginDialog(name.value.trim(), email.value.trim().toLowerCase(), pass.value);
       };
-      return [el("h3", null, "Novo revendedor"), el("div", { class: "sub" }, "Depois você passa créditos para ele dos seus."),
-        el("label", { class: "l" }, "Nome"), name, el("label", { class: "l" }, "E-mail"), email, msg,
+      return [el("h3", null, "Novo revendedor"), el("div", { class: "sub" }, "Ele entra no painel com o e-mail e a senha que você definir. Depois você passa créditos para ele dos seus."),
+        el("label", { class: "l" }, "Nome"), name, el("label", { class: "l" }, "E-mail"), email, el("label", { class: "l" }, "Senha"), pass, msg,
         el("div", { class: "bar" }, el("button", { class: "btn", onclick: close }, "Cancelar"), ok)];
     });
   };

@@ -4487,6 +4487,7 @@
         el("td", {}, String(r.max_devices)),
         el("td", {}, el("div", { class: "rv-acts" },
           el("button", { class: "ghost small", onclick: () => rvCredits(r) }, "+ Créditos"),
+          r.joined ? el("button", { class: "ghost small", onclick: () => rvPassword(r) }, "Senha") : "",
           el("button", { class: "ghost small", onclick: () => rvSee(r) }, "Ver"))));
     }));
   }
@@ -4494,6 +4495,45 @@
     const body = $("rvBody"); body.replaceChildren(...build(() => $("rvDlg").close())); $("rvDlg").showModal();
   }
   const rvMsg = () => el("p", { class: "msg" });
+  const LOGIN_ERR = { email_in_use: "Esse e-mail já tem uma revenda.", name_and_email: "Preencha o nome e um e-mail válido.",
+    weak_password: "A senha precisa ter pelo menos 6 caracteres.", email_has_account: "Esse e-mail já tem uma conta no CloudPlay. Use outro e-mail.",
+    no_login: "Esse revendedor ainda não tem login. Envie o convite para ele.", not_allowed: "Você não pode fazer isso.", login_failed: "Não deu para criar o login. Tente de novo." };
+  // CloudPlay: the "media" function makes the reseller's login (its service key can; this page cannot).
+  async function resellerLogin(body) {
+    const r = await sb.functions.invoke("media/reseller-login", { body }).catch((e) => ({ error: e }));
+    let d = r.data;
+    if (!d && r.error && r.error.context) { try { d = await r.error.context.json(); } catch (_) {} }
+    if (d && d.ok) return { ok: true, id: d.id };
+    return { ok: false, text: (d && LOGIN_ERR[d.error]) || "Não deu para salvar. Confira se a função media está atualizada no Supabase." };
+  }
+  function rvLoginText(r, password) {
+    const link = new URL("../revenda/", location.href).href;
+    return "Olá, " + r.name + "! Sua revenda CloudPlay está pronta.\n\nPainel: " + link + "\nE-mail: " + r.email + "\nSenha: " + password +
+      "\n\nEntre no painel com esse e-mail e senha.";
+  }
+  function rvShowLogin(r, password, title) {
+    rvDialog((close) => [el("h2", {}, title || "Revenda de " + r.name + " pronta"),
+      el("p", { class: "rn-who" }, "Ele já pode entrar no painel de revenda com este e-mail e senha."),
+      el("div", { class: "rn-extra" }, el("label", {}, "E-mail"), el("b", {}, r.email)),
+      el("div", { class: "rn-extra" }, el("label", {}, "Senha"), el("b", {}, password)),
+      el("div", { class: "rn-actions" }, el("button", { type: "button", class: "ghost", onclick: close }, "Fechar"),
+        el("button", { type: "button", onclick: async () => { try { await navigator.clipboard.writeText(rvLoginText(r, password)); toast("Copiado"); } catch (_) {} } }, "Copiar mensagem"))]);
+  }
+  function rvPassword(r) {
+    rvDialog((close) => {
+      const pass = el("input", { type: "text", minlength: 6, maxlength: 72, placeholder: "Mínimo 6 caracteres", autocomplete: "off" }), msg = rvMsg();
+      const ok = el("button", { type: "button", onclick: async () => {
+        ok.disabled = true;
+        const res = await resellerLogin({ action: "password", reseller_id: r.id, password: pass.value });
+        ok.disabled = false;
+        if (!res.ok) { msg.textContent = res.text; return; }
+        close(); rvShowLogin(r, pass.value, "Senha nova de " + r.name);
+      } }, "Salvar");
+      return [el("h2", {}, "Senha de " + r.name), el("p", { class: "rn-who" }, "Defina uma senha nova para " + r.email + "."),
+        el("div", { class: "rn-extra" }, el("label", {}, "Senha nova"), pass), msg,
+        el("div", { class: "rn-actions" }, el("button", { type: "button", class: "ghost", onclick: close }, "Cancelar"), ok)];
+    });
+  }
   function rvInviteText(r, invite) {
     const link = new URL("../revenda/", location.href).href;
     return "Olá, " + r.name + "! Sua revenda CloudPlay está pronta.\n\nPainel: " + link + "\nE-mail: " + r.email +
@@ -4509,17 +4549,19 @@
   $("rvNew").addEventListener("click", () => rvDialog((close) => {
     const name = el("input", { maxlength: 60, placeholder: "Nome da revenda" }), email = el("input", { type: "email", placeholder: "email@revenda.com" });
     const credits = el("input", { type: "number", min: 0, value: 0 }), devices = el("input", { type: "number", min: 1, max: 20, value: 1 });
+    const pass = el("input", { type: "text", minlength: 6, maxlength: 72, placeholder: "Mínimo 6 caracteres", autocomplete: "off" });
     const msg = rvMsg();
     const ok = el("button", { type: "button", onclick: async () => {
       ok.disabled = true;
-      const { data, error } = await sb.rpc("admin_create_reseller", { p_name: name.value.trim(), p_email: email.value.trim(),
-        p_credits: parseInt(credits.value || "0", 10), p_max_devices: parseInt(devices.value || "1", 10) });
+      const res = await resellerLogin({ action: "create", name: name.value.trim(), email: email.value.trim(), password: pass.value,
+        credits: parseInt(credits.value || "0", 10), max_devices: parseInt(devices.value || "1", 10) });
       ok.disabled = false;
-      if (error) { msg.textContent = /email_in_use/.test(error.message) ? "Esse e-mail já tem uma revenda." : /name_and_email/.test(error.message) ? "Preencha o nome e um e-mail válido." : "Erro: " + error.message; return; }
-      close(); await loadResellers(); rvShowInvite({ name: name.value.trim(), email: email.value.trim().toLowerCase() }, data.invite_code);
+      if (!res.ok) { msg.textContent = res.text; return; }
+      close(); await loadResellers(); rvShowLogin({ name: name.value.trim(), email: email.value.trim().toLowerCase() }, pass.value);
     } }, "Criar");
     return [el("h2", {}, "Novo revendedor"),
       el("div", { class: "rn-extra" }, el("label", {}, "Nome"), name), el("div", { class: "rn-extra" }, el("label", {}, "E-mail"), email),
+      el("div", { class: "rn-extra" }, el("label", {}, "Senha"), pass),
       el("div", { class: "rn-extra" }, el("label", {}, "Créditos iniciais"), credits),
       el("div", { class: "rn-extra" }, el("label", {}, "Aparelhos por código (telas)"), devices), msg,
       el("div", { class: "rn-actions" }, el("button", { type: "button", class: "ghost", onclick: close }, "Cancelar"), ok)];
