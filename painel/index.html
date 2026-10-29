@@ -3737,9 +3737,30 @@
       $("rcEmpty").textContent = /admin_(recent|latest)_catalog_items|function/i.test(error.message) ? "Para usar esta página, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível carregar: " + error.message;
       return;
     }
-    rcItems = data || [];
+    rcItems = (data || []).concat(rcM3uFor(latest));
     renderRecent();
     if (!latest) rcCheckElsewhere();
+    // The M3U (Xtream) lists' last added titles, read from the server (once every 30 minutes).
+    if (!rcM3u.at || Date.now() - rcM3u.at > 30 * 60e3) rcLoadM3u().then((got) => { if (got) loadRecent(); });
+  }
+  // CloudPlay: what the enabled Xtream lists added last (m3u-test "recent"), as items of this page:
+  // the list is the source, the TMDB id the title ("+ No app" works with it), no video check
+  // needed (the list itself plays it).
+  let rcM3u = { at: 0, items: [], skipped: [] }, rcM3uLoading = false;
+  async function rcLoadM3u() {
+    if (rcM3uLoading || !(playlists || []).some((p) => p.enabled)) return false;
+    rcM3uLoading = true;
+    const r = await sb.functions.invoke("m3u-test", { body: { action: "recent" } }).catch(() => ({ data: null }));
+    rcM3uLoading = false;
+    if (!r.data || !r.data.ok) { rcM3u = { at: Date.now(), items: [], skipped: [] }; return false; }
+    rcM3u = { at: Date.now(), items: r.data.items || [], skipped: r.data.skipped || [] };
+    return rcM3u.items.length > 0;
+  }
+  function rcM3uFor(latest) {
+    const days = parseInt($("rcDays").value || "7", 10);
+    return rcM3u.items.filter((m) => latest || Date.now() - new Date(m.added) < days * 86400e3).map((m) => ({
+      addon_name: m.list, item_id: "tmdb:" + m.tmdb, type: m.type, name: m.name, year: m.year, poster: m.poster,
+      first_seen: m.added, released: m.added, catalog_name: "Lista M3U", m3u: true }));
   }
   // CloudPlay: "new" only when no other content addon already had it. Each new title is asked
   // of the other addons (their streams); what one of them plays is hidden, unless "Mostrar".
@@ -3801,6 +3822,7 @@
   // A title without an IMDb id never plays in the app (it looks titles up by it): not available.
   // A source that did not answer twice counts as not having it, asked again after an hour.
   const rcAvailOf = (r) => {
+    if (r.m3u) return true;
     if (!/^tt\d+/.test(String(r.item_id || ""))) return false;
     const e = rcAvail[rcAvailKey(r)];
     if (!e || Date.now() - e.at >= (e.ok || e.answered ? 12 : 1) * 3600e3) return null;
@@ -3868,7 +3890,7 @@
     // Only the content sources in use now: titles read earlier from an info addon (TMDB…) or
     // from one that was removed stay out.
     const sources = new Set((addons || []).filter((x) => x.enabled && kindOf(x) === "content").map((x) => x.name));
-    const items = sources.size ? rcItems.filter((r) => sources.has(r.addon_name)) : rcItems;
+    const items = sources.size ? rcItems.filter((r) => r.m3u || sources.has(r.addon_name)) : rcItems;
     const names = [...new Set(items.map((r) => r.addon_name).filter(Boolean))].sort();
     const sel = $("rcAddon");
     if (sel.dataset.filled !== names.join("|")) {
