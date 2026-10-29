@@ -3795,14 +3795,18 @@
   const addonColor = (name) => (addons || []).find((a) => a.name === name)?.color || "#ff74a8";
   function renderRecent() {
     const t = $("rcType").dataset.value || "", ad = $("rcAddon").value;
-    const names = [...new Set(rcItems.map((r) => r.addon_name).filter(Boolean))].sort();
+    // Only the content sources in use now: titles read earlier from an info addon (TMDB…) or
+    // from one that was removed stay out.
+    const sources = new Set((addons || []).filter((x) => x.enabled && kindOf(x) === "content").map((x) => x.name));
+    const items = sources.size ? rcItems.filter((r) => sources.has(r.addon_name)) : rcItems;
+    const names = [...new Set(items.map((r) => r.addon_name).filter(Boolean))].sort();
     const sel = $("rcAddon");
     if (sel.dataset.filled !== names.join("|")) {
       sel.replaceChildren(el("option", { value: "" }, "Todas as fontes"), ...names.map((n) => el("option", { value: n }, n)));
       sel.value = names.includes(ad) ? ad : ""; sel.dataset.filled = names.join("|");
     }
     const q = ($("rcSearch").value || "").trim().toLowerCase();
-    let list = rcItems.filter((r) => (!t || (t === "series" ? /series|tv|show/i.test(r.type || "") : (r.type || "movie") === t)) && (!sel.value || r.addon_name === sel.value) &&
+    let list = items.filter((r) => (!t || (t === "series" ? /series|tv|show/i.test(r.type || "") : (r.type || "movie") === t)) && (!sel.value || r.addon_name === sel.value) &&
       (!q || String(r.name || "").toLowerCase().includes(q)));
     let last = null; try { last = localStorage.getItem("rcLastScan"); } catch (_) {}
     const latest = ($("rcView").dataset.value || "new") === "latest";
