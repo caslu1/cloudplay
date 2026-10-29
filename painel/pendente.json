@@ -3,6 +3,10 @@
     {
       "text": "Painel → Categorias: \"Exclusivos CloudPlay\" passa a ser uma categoria só, em vez de uma cópia para cada aparelho; apagar ou renomear ali vale para todos.",
       "added": "2026-10-28"
+    },
+    {
+      "text": "Pesquisa na TV: ao parar em um resultado, o app já carrega a sinopse e as informações e, num filme, procura as fontes por trás; ao abrir, aparece tudo mais rápido.",
+      "added": "2026-10-29"
     }
   ],
   "sent_at": null,
