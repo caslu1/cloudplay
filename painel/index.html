@@ -3796,20 +3796,31 @@
   // asked of its own source (/stream); one with no stream is hidden like the old ones ("Mostrar"
   // shows it, marked). The answers are kept 12 hours in this browser.
   let rcAvail = {}, rcAvailRunning = false;
-  try { rcAvail = JSON.parse(localStorage.getItem("rcAvailable3") || "{}"); } catch (_) { rcAvail = {}; }
+  try { rcAvail = JSON.parse(localStorage.getItem("rcAvailable4") || "{}"); } catch (_) { rcAvail = {}; }
   const rcAvailKey = (r) => (r.addon_name || "") + "|" + r.item_id;
   // A title without an IMDb id never plays in the app (it looks titles up by it): not available.
   // A source that did not answer twice counts as not having it, asked again after an hour.
   const rcAvailOf = (r) => {
     if (!/^tt\d+/.test(String(r.item_id || ""))) return false;
     const e = rcAvail[rcAvailKey(r)];
-    return e && Date.now() - e.at < (e.ok || e.answered ? 12 : 1) * 3600e3 ? e.ok : null;
+    if (!e || Date.now() - e.at >= (e.ok || e.answered ? 12 : 1) * 3600e3) return null;
+    // A source none of whose videos opened (5 or more tried) is one the check cannot open from
+    // here, not one without titles: its titles stay, marked.
+    if (!e.ok && e.probed && rcSourceUnopenable(r.addon_name)) return null;
+    return e.ok;
   };
+  function rcSourceUnopenable(name) {
+    const tried = Object.entries(rcAvail).filter(([k, v]) => k.startsWith(name + "|") && v.probed);
+    return tried.length >= 5 && !tried.some(([, v]) => v.ok);
+  }
   // The video links of a source's answer (not web pages or torrents, which cannot be opened here).
-  const rcLinks = (streams) => (streams || []).map((x) => x && typeof x.url === "string" && /^https?:\/\//.test(x.url) ? x.url : null).filter(Boolean);
+  // Each with the headers its source asks the player to send (Referer…): without them many refuse.
+  const rcLinks = (streams) => (streams || []).map((x) => x && typeof x.url === "string" && /^https?:\/\//.test(x.url)
+    ? { url: x.url, headers: x.headers || x.behaviorHints?.proxyHeaders?.request || {} } : null).filter(Boolean);
   async function rcCheckAvailable(list) {
     if (rcAvailRunning) return;
-    const todo = list.filter((r) => rcAvailOf(r) === null).slice(0, 80);
+    const stale = (e) => !e || Date.now() - e.at >= (e.ok || e.answered ? 12 : 1) * 3600e3;
+    const todo = list.filter((r) => /^tt\d+/.test(String(r.item_id || "")) && stale(rcAvail[rcAvailKey(r)])).slice(0, 80);
     if (!todo.length) return;
     rcAvailRunning = true;
     let next = 0, done = 0;
@@ -3817,7 +3828,7 @@
       while (next < todo.length) {
         const r = todo[next++];
         const a = (addons || []).find((x) => x.name === r.addon_name);
-        let ok = false, answered = false;
+        let ok = false, answered = false, probed = false;
         if (a) {
           const { base, q } = addonParts(a.manifest_url);
           const series = /series|tv|show/i.test(r.type || "");
@@ -3836,17 +3847,18 @@
           if (links.length) {
             const p = await sb.functions.invoke("m3u-test", { body: { action: "probe", urls: links.slice(0, 2) } }).catch(() => ({ data: null }));
             const results = (p.data && p.data.results) || null;
-            if (results) ok = results.some((x) => x && x.video);
-            else answered = false;
+            // An older m3u-test (no headers yet) answers nothing for these: then having videos counts.
+            if (results && results.length) { ok = results.some((x) => x && x.video); probed = true; }
+            else ok = true;
           }
         }
-        rcAvail[rcAvailKey(r)] = { at: Date.now(), ok, answered };
+        rcAvail[rcAvailKey(r)] = { at: Date.now(), ok, answered, probed };
         if (++done % 6 === 0) renderRecent();
       }
     };
     await Promise.all([worker(), worker(), worker(), worker()]);
     Object.keys(rcAvail).forEach((k) => { if (Date.now() - rcAvail[k].at > 12 * 3600e3) delete rcAvail[k]; });
-    try { localStorage.setItem("rcAvailable3", JSON.stringify(rcAvail)); } catch (_) {}
+    try { localStorage.setItem("rcAvailable4", JSON.stringify(rcAvail)); } catch (_) {}
     rcAvailRunning = false;
     renderRecent();
   }
@@ -3905,6 +3917,8 @@
         (/series|tv|show/i.test(r.type || "") ? "Série" : "Filme") + (r.year ? " · " + r.year : "") + (r.addon_name ? " · " + r.addon_name : "")),
       el("span", {}, latest ? (r.released ? "Lançado em " + new Date(r.released).toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "2-digit" }) : "")
         : "Entrou " + ago(r.first_seen)),
+      ...(rcAvailOf(r) === null && rcAvail[rcAvailKey(r)]?.probed && rcSourceUnopenable(r.addon_name)
+        ? [el("span", { class: "rc-else" }, "Não deu para abrir o vídeo pelo painel")] : []),
       ...(rcAvailOf(r) === false ? [el("span", { class: "rc-else" }, !/^tt\d+/.test(String(r.item_id || "")) ? "Sem código IMDb: não toca no app"
         : rcAvail[rcAvailKey(r)]?.answered === false ? "A fonte não respondeu" : "O vídeo não abriu")] : []),
       ...(!latest && rcOldOrElsewhere(r) ? [el("span", { class: "rc-else" }, rcOldOrElsewhere(r) === "antigo" ? "Antigo (" + rcYear(r) + ")"
