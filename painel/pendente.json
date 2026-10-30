@@ -15,6 +15,10 @@
     {
       "text": "Ajustes → Meus pedidos: o cliente vê os conteúdos que pediu em \"Solicitar conteúdo\" e a situação de cada um (Pendente, Conteúdo adicionado ou Não disponível na fonte).",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Novo gênero \"Guerra\" na tela inicial e nas abas Filmes e Séries, com os filmes e séries de guerra do TMDB. A capa dá para trocar no painel (Categorias → Capas dos gêneros).",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
