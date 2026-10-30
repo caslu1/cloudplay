@@ -43,8 +43,12 @@
     {
       "text": "Troca automática de fonte: quando uma fonte trava, o app sempre tenta as outras (antes podia parar com \"A fonte não iniciou a tempo\" sem tentar nenhuma).",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Página do filme ou série: o botão mostra \"Procurando fontes…\" ao abrir e já vira Reproduzir (achou fonte) ou Solicitar conteúdo (nenhuma fonte tem) antes de o cliente clicar.",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T15:48:58.228072+00:00"
+  "updated_at": "2026-10-30T15:55:55.454571+00:00"
 }
