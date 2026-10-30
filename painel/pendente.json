@@ -19,6 +19,10 @@
     {
       "text": "Novo gênero \"Guerra\" na tela inicial e nas abas Filmes e Séries, com os filmes e séries de guerra do TMDB. A capa dá para trocar no painel (Categorias → Capas dos gêneros).",
       "added": "2026-10-30"
+    },
+    {
+      "text": "\"Ver tudo\" de Filmes e Séries Populares: não fica mais girando sem carregar; busca mais títulos em todas as fontes ativas e, quando acabam, o carregando some.",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
