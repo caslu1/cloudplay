@@ -23,8 +23,12 @@
     {
       "text": "\"Ver tudo\" de Filmes e Séries Populares: não fica mais girando sem carregar; busca mais títulos em todas as fontes ativas e, quando acabam, o carregando some.",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Catálogo M3U: o app lê as listas M3U do painel uma vez por dia (num aparelho no Wi-Fi) e envia os filmes e séries para a página Catálogo M3U do painel.",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
-  "updated_at": null
+  "updated_at": "2026-10-30T14:25:23.141578+00:00"
 }

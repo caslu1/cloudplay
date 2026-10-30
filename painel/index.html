@@ -255,6 +255,15 @@
   .own-results button { all: unset; cursor: pointer; display: block; }
   .own-results img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 8px; background: var(--panel2); }
   .rc-else { color: #ffb08c !important; }
+  .ct-lists { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); margin-bottom: 18px; }
+  .ct-list { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; min-width: 0; }
+  .ct-list h3 { margin: 0 0 8px; font-size: 14px; display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ct-list h3 i { flex: none; width: 8px; height: 8px; border-radius: 50%; }
+  .ct-nums { display: flex; gap: 16px; }
+  .ct-nums div b { display: block; font-size: 19px; }
+  .ct-nums div span { font-size: 12px; color: var(--muted); }
+  .ct-list p { margin: 8px 0 0; font-size: 12px; color: var(--faint); }
+  .rc .ct-in { color: #ffb08c; }
   .dv-mode { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 99px; background: var(--panel2); border: 1px solid var(--line2); color: var(--text); white-space: nowrap; }
   .dv-mode svg.i { width: 13px; height: 13px; }
   .up-row { display: grid; grid-template-columns: 210px minmax(0, 1fr) 84px 76px; gap: 14px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
@@ -339,7 +348,7 @@
   .pl-row .state.on .switch { background: var(--ok); } .pl-row .state.on .switch::after { left: 18px; }
   @media (max-width: 640px) { .pl-row { flex-wrap: wrap; } .pl-meta { flex-basis: 100%; } .pl-row .actions { margin-left: auto; } }
   .rc-tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
-  .rc-tools .rc-search { flex: 1 1 150px; min-width: 0; }
+  .rc-tools .rc-search { flex: 1 1 220px; min-width: 0; }
   .rc-tools select { width: auto; min-width: 140px; }
   .rc-count { margin-left: 10px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 99px; background: rgba(255, 116, 168, .15); color: #ff9ac0; vertical-align: 2px; }
   .rc-info { color: var(--muted); font-size: 12.5px; margin: 0 0 14px; }
@@ -1111,7 +1120,7 @@
       <a href="#addons" data-page="addons"><svg class="i"><use href="#i-tvplay"/></svg>Fontes de conteúdo</a>
       <a href="#meus" data-page="meus"><svg class="i"><use href="#i-new"/></svg>Meus conteúdos</a>
       <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-tag"/></svg>Categorias</a>
-      <a href="#recentes" data-page="recentes"><svg class="i"><use href="#i-new"/></svg>Conteúdos recentes</a>
+      <a href="#catalogo" data-page="catalogo"><svg class="i"><use href="#i-list"/></svg>Catálogo M3U</a>
       <div class="nav-sep"></div>
       <div class="nav-label">Sistema</div>
       <a href="#uso" data-page="uso"><svg class="i"><use href="#i-db"/></svg>Banco de dados</a>
@@ -1177,7 +1186,7 @@
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg><span>Conectados</span></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-tvplay"/></svg><span>Fontes</span></a>
-    <a href="#mais" id="bnMore" data-page="pedidos revendedores meus categorias recentes uso atualizacoes status erros melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#mais" id="bnMore" data-page="pedidos revendedores meus categorias catalogo uso atualizacoes status erros melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
   </nav>
 
   <div class="content">
@@ -1661,30 +1670,29 @@
       </div>
     </main>
 
-    <!-- Conteúdos recentes -->
-    <main class="page hidden" data-section="recentes" data-title="Conteúdos recentes">
+    <!-- Catálogo M3U: what the panel's lists have, read by the app once a day (m3u_catalog) -->
+    <main class="page hidden" data-section="catalogo" data-title="Catálogo M3U">
+      <div id="ctLists" class="ct-lists"></div>
       <div class="card">
         <div class="card-head">
-          <div><h2>No app agora</h2><p class="sub">O que aparece em "Adicionados recentemente" no app. Sem nenhum, o app mostra os recentes das fontes.</p></div>
+          <div><h2>No app agora</h2><p class="sub">O que aparece em "Filmes / Séries adicionados recentemente" no app. Escolha abaixo com "+ No app".</p></div>
           <div id="pkType" class="seg"><button type="button" data-v="movie" class="on">Filmes<span class="n" id="pkCountMovie">0</span></button><button type="button" data-v="series">Séries<span class="n" id="pkCountSeries">0</span></button></div>
         </div>
         <div id="pkRow" class="pk-row"></div>
       </div>
       <div class="card">
         <div class="card-head">
-          <div><h2>Novidades das fontes<span id="rcNewCount" class="rc-count hidden"></span></h2><p class="sub">Títulos deste ano que entraram nos addons. Lido sozinho a cada hora.</p></div>
-          <button type="button" id="rcScan" class="small"><svg class="i"><use href="#i-refresh"/></svg>Procurar agora</button>
+          <div><h2>Conteúdo das listas</h2><p class="sub">Lido pelo app uma vez por dia. Novidades primeiro.</p></div>
         </div>
         <div class="rc-tools">
-          <div class="field-icon rc-search"><svg class="i"><use href="#i-search"/></svg><input id="rcSearch" placeholder="Buscar título" autocomplete="off"></div>
-          <div id="rcView" class="seg"><button type="button" data-v="new" class="on">Novos</button><button type="button" data-v="latest">Todos os lançamentos</button></div>
-          <div id="rcType" class="seg"><button type="button" data-v="" class="on">Tudo</button><button type="button" data-v="movie">Filmes</button><button type="button" data-v="series">Séries</button></div>
-          <select id="rcAddon"><option value="">Todas as fontes</option></select>
-          <select id="rcDays"><option value="1">Hoje</option><option value="7" selected>Últimos 7 dias</option><option value="30">Últimos 30 dias</option></select>
+          <div class="field-icon rc-search"><svg class="i"><use href="#i-search"/></svg><input id="ctSearch" placeholder="Buscar título em todas as listas" autocomplete="off"></div>
+          <div id="ctView" class="seg"><button type="button" data-v="new" class="on">Novidades</button><button type="button" data-v="all">Todos</button><button type="button" data-v="single">Só numa lista</button><button type="button" data-v="unrecognized">Não reconhecidos</button></div>
+          <div id="ctType" class="seg"><button type="button" data-v="" class="on">Tudo</button><button type="button" data-v="movie">Filmes</button><button type="button" data-v="series">Séries</button></div>
+          <select id="ctList"><option value="">Todas as listas</option></select>
         </div>
-        <p id="rcInfo" class="rc-info"></p>
-        <div id="rcList" class="rc-grid"></div>
-        <p id="rcEmpty" class="empty hidden"></p>
+        <p id="ctInfo" class="rc-info"></p>
+        <div id="ctGrid" class="rc-grid"></div>
+        <p id="ctEmpty" class="empty hidden"></p>
       </div>
     </main>
 
@@ -3754,16 +3762,17 @@
     }
   }
 
-  // ── Conteúdos recentes: new items in the default addons' catalogs (admin_catalog_seen) ──
-  let rcItems = [], rcScanning = false;
+  // ── Catálogo M3U: what the enabled lists have, sent by the app once a day (admin_m3u_lists / admin_m3u_catalog) ──
+  let ctLists = [], ctItems = [], ctSeq = 0, ctLoaded = false;
   // CloudPlay: the titles chosen for the app's "adicionados recentemente" rows (recent_picks),
-  // newest pick first; the app shows them instead of the addons' recent catalogs.
+  // newest pick first; the app shows them instead of the sources' recent titles.
   let rcPicks = [];
   const rcIsSeries = (r) => /series|tv|show/i.test(r.type || r.media_type || "");
+  const ctId = (r) => r.tmdb_id ? "tmdb:" + r.tmdb_id : r.key;
   // A list title chosen by its name: the id it was found as (kept in this browser).
   let rcFoundAs = {};
-  try { rcFoundAs = JSON.parse(localStorage.getItem("rcFoundAs") || "{}"); } catch (_) { rcFoundAs = {}; }
-  const rcPicked = (r) => rcPicks.find((p) => (p.item_id === r.item_id || p.item_id === rcFoundAs[r.item_id]) && (p.media_type === "series") === rcIsSeries(r));
+  try { rcFoundAs = JSON.parse(localStorage.getItem("ctFoundAs") || "{}"); } catch (_) { rcFoundAs = {}; }
+  const rcPicked = (r) => rcPicks.find((p) => (p.item_id === ctId(r) || p.item_id === rcFoundAs[r.key]) && (p.media_type === "series") === rcIsSeries(r));
   async function loadPicks() {
     const { data, error } = await sb.from("recent_picks").select("*").order("created_at", { ascending: false });
     rcPicks = error ? [] : data || [];
@@ -3784,8 +3793,8 @@
   async function pickToggle(r) {
     const had = rcPicked(r);
     if (had) return unpick(had);
-    let itemId = r.item_id;
-    if (itemId.startsWith("m3u:")) {
+    let itemId = ctId(r);
+    if (!r.tmdb_id) {
       // A list title without a TMDB id: found by its name (and year) like the panel's search.
       const s = await sb.functions.invoke("media/admin", { body: { action: "search", type: rcIsSeries(r) ? "series" : "movie", q: r.name } }).catch(() => ({ data: null }));
       const metas = (s.data && s.data.metas) || [];
@@ -3797,321 +3806,81 @@
     const { data, error } = await sb.from("recent_picks").insert(row).select().single();
     if (error) { toast(/recent_picks/i.test(error.message) ? "Rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não deu para salvar: " + error.message); return; }
     rcPicks = [data || { ...row, id: "tmp" + Date.now(), created_at: new Date().toISOString() }, ...rcPicks];
-    if (itemId !== r.item_id) { rcFoundAs[r.item_id] = itemId; try { localStorage.setItem("rcFoundAs", JSON.stringify(rcFoundAs)); } catch (_) {} }
+    if (itemId !== ctId(r)) { rcFoundAs[r.key] = itemId; try { localStorage.setItem("ctFoundAs", JSON.stringify(rcFoundAs)); } catch (_) {} }
     toast("Na fileira " + (row.media_type === "series" ? "de séries" : "de filmes") + " do app");
-    renderPicks(); renderRecent();
+    renderPicks(); renderCatalog();
   }
   async function unpick(p) {
     await sb.from("recent_picks").delete().eq("id", p.id);
     rcPicks = rcPicks.filter((x) => x !== p);
-    renderPicks(); renderRecent();
+    renderPicks(); renderCatalog();
   }
-  async function loadRecent() {
-    const latest = ($("rcView").dataset.value || "new") === "latest";
-    $("rcDays").classList.toggle("hidden", latest);
-    const { data, error } = latest
-      ? await sb.rpc("admin_latest_catalog_items", { p_days: 120 })
-      : await sb.rpc("admin_recent_catalog_items", { p_days: parseInt($("rcDays").value || "7", 10) });
-    if (error) {
-      rcItems = [];
-      $("rcList").replaceChildren(); $("rcEmpty").classList.remove("hidden");
-      $("rcEmpty").textContent = /admin_(recent|latest)_catalog_items|function/i.test(error.message) ? "Para usar esta página, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível carregar: " + error.message;
-      return;
-    }
-    rcItems = (data || []).concat(rcM3uFor(latest));
-    renderRecent();
-    if (!latest) rcCheckElsewhere();
-    // The M3U (Xtream) lists' last added titles, read from the server (once every 30 minutes).
-    if (!rcM3u.at || Date.now() - rcM3u.at > 30 * 60e3) rcLoadM3u().then((got) => { if (got) loadRecent(); });
+  const ctNum = (n) => Number(n || 0).toLocaleString("pt-BR");
+  const ctColor = (name) => ctLists.find((l) => l.name === name)?.color || "#ff74a8";
+  function ctReadAt(iso) {
+    if (!iso) return "Ainda não lido";
+    const d = new Date(iso), t = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    const days = Math.round((new Date().setHours(0, 0, 0, 0) - new Date(iso).setHours(0, 0, 0, 0)) / 864e5);
+    return "Lido " + (days === 0 ? "hoje " + t : days === 1 ? "ontem " + t : d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }) + " " + t);
   }
-  // CloudPlay: what the enabled Xtream lists added last (m3u-test "recent"), as items of this page:
-  // the list is the source, the TMDB id the title ("+ No app" works with it), no video check
-  // needed (the list itself plays it).
-  let rcM3u = { at: 0, items: [], skipped: [] }, rcM3uLoading = false;
-  async function rcLoadM3u() {
-    if (rcM3uLoading || !(playlists || []).some((p) => p.enabled)) return false;
-    rcM3uLoading = true;
-    const r = await sb.functions.invoke("m3u-test", { body: { action: "recent" } }).catch((e) => ({ data: null, error: e }));
-    rcM3uLoading = false;
-    if (!r.data || !r.data.ok) {
-      // Why, for the note: an older function (no "recent"), or one stopped by Supabase's limits.
-      const st = r.error && r.error.context && r.error.context.status;
-      rcM3u = { at: Date.now(), items: [], skipped: [], diag: [], failed: true,
-        why: r.data && !r.data.ok ? "a função m3u-test no Supabase é antiga (cole a versão nova)"
-          : st === 546 || st === 504 ? "a lista é grande demais para o Supabase ler de uma vez"
-          : st ? "a função m3u-test respondeu com erro " + st : "a função m3u-test não respondeu" };
-      renderRecent(); return false;
-    }
-    rcM3u = { at: Date.now(), items: r.data.items || [], skipped: r.data.skipped || [], diag: r.data.diag || [] };
-    return rcM3u.items.length > 0;
-  }
-  // What happened with each list, when it brought nothing (to know where it stops).
-  function rcM3uNotes() {
-    if (rcM3uLoading || !rcM3u.at) return [];
-    if (rcM3u.failed) return [" · listas M3U: " + (rcM3u.why || "não responderam")];
-    const notes = (rcM3u.diag || []).filter((d) => !d.recent).map((d) => d.list + ": " +
-      (d.movies || d.series ? "a lista não diz quando os títulos entraram" : d.error === "demorou" ? "o servidor da lista demorou demais para responder ao Supabase"
-        : d.error === "recusou" ? "o servidor da lista recusou o Supabase (pode bloquear servidores de nuvem)" : "o servidor da lista não respondeu ao Supabase"));
-    (rcM3u.skipped || []).forEach((n) => notes.push(n + ": não é Xtream (sem usuário e senha)"));
-    return notes.length ? [" · " + notes.join(" · ")] : [];
-  }
-  function rcM3uFor(latest) {
-    const days = parseInt($("rcDays").value || "7", 10);
-    return rcM3u.items.filter((m) => latest || Date.now() - new Date(m.added) < days * 86400e3).map((m) => ({
-      // Without a TMDB id from the list, the title is looked up by name when chosen ("+ No app").
-      addon_name: m.list, item_id: m.tmdb ? "tmdb:" + m.tmdb : "m3u:" + m.list + ":" + m.name, type: m.type, name: m.name, year: m.year, poster: m.poster,
-      first_seen: m.added, released: m.added, catalog_name: "Lista M3U", m3u: true }));
-  }
-  // CloudPlay: "new" only when no other content addon already had it. Each new title is asked
-  // of the other addons (their streams); what one of them plays is hidden, unless "Mostrar".
-  // The answers are kept 3 days in this browser.
-  let rcElse = {}, rcChecking = 0, rcShowAll = false;
-  try { rcElse = JSON.parse(localStorage.getItem("rcElsewhere") || "{}"); } catch (_) { rcElse = {}; }
-  const rcElseOf = (r) => { const e = rcElse[r.item_id]; return e && Date.now() - e.at < 3 * 86400e3 ? e.w : null; };
-  // Hidden from "Novos": a title from before this year (an old one that only entered a list
-  // like "Em Alta"); one from this year only when another addon's catalog had it earlier; one
-  // with no year when another addon plays it.
-  function rcYear(r) { const m = String(r.year || "").match(/(19|20)\d{2}/); return m ? Number(m[0]) : null; }
-  function rcOldOrElsewhere(r) {
-    const y = rcYear(r), now = new Date().getFullYear();
-    if (y && y < now) return "antigo";
-    if (y) return rcItems.some((x) => x.item_id === r.item_id && x.addon_name !== r.addon_name && new Date(x.first_seen) < new Date(r.first_seen)) ? "já existia" : null;
-    return (rcElseOf(r) || []).length ? "já existia" : null;
-  }
-  async function rcCheckElsewhere() {
-    const content = addons.filter((x) => x.enabled && kindOf(x) === "content");
-    // Seen in the catalogs of more than one addon: it is in the other one already.
-    const by = {};
-    rcItems.forEach((r) => { (by[r.item_id] ||= new Set()).add(r.addon_name); });
-    const todo = rcItems.filter((r) => !rcYear(r) && !rcElseOf(r)).filter((r, i, all) => all.findIndex((x) => x.item_id === r.item_id) === i);
-    if (!todo.length) return;
-    rcChecking = todo.length; renderRecent();
-    let next = 0;
-    const worker = async () => {
-      while (next < todo.length) {
-        const r = todo[next++];
-        const series = /series|tv|show/i.test(r.type || "");
-        const others = content.filter((a) => !by[r.item_id].has(a.name));
-        const found = [...by[r.item_id]].filter((n) => n !== r.addon_name);
-        await Promise.all(others.map(async (a) => {
-          const { base, q } = addonParts(a.manifest_url);
-          const id = encodeURIComponent(series ? r.item_id + ":1:1" : r.item_id);
-          try {
-            const res = await fetch(base + "/stream/" + (series ? "series" : "movie") + "/" + id + ".json" + q, { signal: AbortSignal.timeout(9000) });
-            const j = res.ok ? await res.json() : null;
-            if (j && Array.isArray(j.streams) && j.streams.length) found.push(a.name);
-          } catch (_) { /* no answer: counts as not having it */ }
-        }));
-        rcElse[r.item_id] = { at: Date.now(), w: found };
-        rcChecking--; if (rcChecking % 5 === 0) renderRecent();
-      }
-    };
-    await Promise.all([worker(), worker(), worker(), worker()]);
-    rcChecking = 0;
-    // Only the last 3 days' answers are kept.
-    Object.keys(rcElse).forEach((k) => { if (Date.now() - rcElse[k].at > 3 * 86400e3) delete rcElse[k]; });
-    try { localStorage.setItem("rcElsewhere", JSON.stringify(rcElse)); } catch (_) {}
-    renderRecent();
-  }
-  // CloudPlay: a catalog can list titles its source has nothing to play for. Each title shown is
-  // asked of its own source (/stream); one with no stream is hidden like the old ones ("Mostrar"
-  // shows it, marked). The answers are kept 12 hours in this browser.
-  let rcAvail = {}, rcAvailRunning = false;
-  try { rcAvail = JSON.parse(localStorage.getItem("rcAvailable4") || "{}"); } catch (_) { rcAvail = {}; }
-  const rcAvailKey = (r) => (r.addon_name || "") + "|" + r.item_id;
-  // A title without an IMDb id never plays in the app (it looks titles up by it): not available.
-  // A source that did not answer twice counts as not having it, asked again after an hour.
-  const rcAvailOf = (r) => {
-    if (r.m3u) return true;
-    if (!/^tt\d+/.test(String(r.item_id || ""))) return false;
-    const e = rcAvail[rcAvailKey(r)];
-    if (!e || Date.now() - e.at >= (e.ok || e.answered ? 12 : 1) * 3600e3) return null;
-    // A source none of whose videos opened (5 or more tried) is one the check cannot open from
-    // here, not one without titles: its titles stay, marked.
-    if (!e.ok && e.probed && rcSourceUnopenable(r.addon_name)) return null;
-    return e.ok;
-  };
-  function rcSourceUnopenable(name) {
-    const tried = Object.entries(rcAvail).filter(([k, v]) => k.startsWith(name + "|") && v.probed);
-    return tried.length >= 5 && !tried.some(([, v]) => v.ok);
-  }
-  // The video links of a source's answer (not web pages or torrents, which cannot be opened here).
-  // Each with the headers its source asks the player to send (Referer…): without them many refuse.
-  const rcLinks = (streams) => (streams || []).map((x) => x && typeof x.url === "string" && /^https?:\/\//.test(x.url)
-    ? { url: x.url, headers: x.headers || x.behaviorHints?.proxyHeaders?.request || {} } : null).filter(Boolean);
-  async function rcCheckAvailable(list) {
-    if (rcAvailRunning) return;
-    const stale = (e) => !e || Date.now() - e.at >= (e.ok || e.answered ? 12 : 1) * 3600e3;
-    const todo = list.filter((r) => /^tt\d+/.test(String(r.item_id || "")) && stale(rcAvail[rcAvailKey(r)])).slice(0, 80);
-    if (!todo.length) return;
-    rcAvailRunning = true;
-    let next = 0, done = 0;
-    const worker = async () => {
-      while (next < todo.length) {
-        const r = todo[next++];
-        const a = (addons || []).find((x) => x.name === r.addon_name);
-        let ok = false, answered = false, probed = false;
-        if (a) {
-          const { base, q } = addonParts(a.manifest_url);
-          const series = /series|tv|show/i.test(r.type || "");
-          const id = encodeURIComponent(series ? r.item_id + ":1:1" : r.item_id);
-          const url = base + "/stream/" + (series ? "series" : "movie") + "/" + id + ".json" + q;
-          let links = [];
-          try {
-            const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
-            if (res.ok) { links = rcLinks((await res.json()).streams); answered = true; }
-          } catch (_) { /* blocked for a web page, or slow: asked from the server below */ }
-          if (!answered) {
-            const p = await sb.functions.invoke("m3u-test", { body: { action: "streams", url, timeout: 12000 } }).catch(() => ({ data: null }));
-            if (p.data && p.data.ok) { links = rcLinks(p.data.streams); answered = true; }
-          }
-          // Does it really play? The start of its first two videos is opened from the server.
-          if (links.length) {
-            const p = await sb.functions.invoke("m3u-test", { body: { action: "probe", urls: links.slice(0, 2) } }).catch(() => ({ data: null }));
-            const results = (p.data && p.data.results) || null;
-            // An older m3u-test (no headers yet) answers nothing for these: then having videos counts.
-            if (results && results.length) { ok = results.some((x) => x && x.video); probed = true; }
-            else ok = true;
-          }
-        }
-        rcAvail[rcAvailKey(r)] = { at: Date.now(), ok, answered, probed };
-        if (++done % 6 === 0) renderRecent();
-      }
-    };
-    await Promise.all([worker(), worker(), worker(), worker()]);
-    Object.keys(rcAvail).forEach((k) => { if (Date.now() - rcAvail[k].at > 12 * 3600e3) delete rcAvail[k]; });
-    try { localStorage.setItem("rcAvailable4", JSON.stringify(rcAvail)); } catch (_) {}
-    rcAvailRunning = false;
-    renderRecent();
-  }
-  const addonColor = (name) => (addons || []).find((a) => a.name === name)?.color || "#ff74a8";
-  function renderRecent() {
-    const t = $("rcType").dataset.value || "", ad = $("rcAddon").value;
-    // Only the content sources in use now: titles read earlier from an info addon (TMDB…) or
-    // from one that was removed stay out.
-    const sources = new Set((addons || []).filter((x) => x.enabled && kindOf(x) === "content").map((x) => x.name));
-    const items = sources.size ? rcItems.filter((r) => r.m3u || sources.has(r.addon_name)) : rcItems;
-    // Every active source in the filter (content addons and M3U lists), with titles or not.
-    const names = [...new Set([...sources, ...(playlists || []).filter((p) => p.enabled).map((p) => p.name),
-      ...items.map((r) => r.addon_name)].filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt-BR"));
-    const sel = $("rcAddon");
+  async function loadCatalogLists() {
+    const { data, error } = await sb.rpc("admin_m3u_lists");
+    ctLists = error ? [] : data || [];
+    $("ctLists").replaceChildren(...ctLists.map((l) => {
+      const total = l.movies + l.series;
+      return el("div", { class: "ct-list" },
+        el("h3", { title: l.name }, el("i", { style: "background:" + (l.color || "#ff74a8") }), l.name),
+        el("div", { class: "ct-nums" },
+          el("div", {}, el("b", {}, ctNum(l.movies)), el("span", {}, "filmes")),
+          el("div", {}, el("b", {}, ctNum(l.series)), el("span", {}, "séries")),
+          el("div", {}, el("b", {}, total ? Math.round(100 * l.recognized / total) + "%" : "—"), el("span", {}, "reconhecidos"))),
+        el("p", {}, ctReadAt(l.read_at) + (l.read_at ? " · " + ctNum(l.new7) + (l.new7 === 1 ? " novo" : " novos") + " nos últimos 7 dias" : " · o app lê a lista uma vez por dia")));
+    }));
+    const sel = $("ctList"), names = ctLists.map((l) => l.name);
     if (sel.dataset.filled !== names.join("|")) {
-      sel.replaceChildren(el("option", { value: "" }, "Todas as fontes"), ...names.map((n) => el("option", { value: n }, n)));
-      sel.value = names.includes(ad) ? ad : ""; sel.dataset.filled = names.join("|");
+      const v = sel.value;
+      sel.replaceChildren(el("option", { value: "" }, "Todas as listas"), ...names.map((n) => el("option", { value: n }, n)));
+      sel.value = names.includes(v) ? v : ""; sel.dataset.filled = names.join("|");
     }
-    const q = ($("rcSearch").value || "").trim().toLowerCase();
-    let list = items.filter((r) => (!t || (t === "series" ? /series|tv|show/i.test(r.type || "") : (r.type || "movie") === t)) && (!sel.value || r.addon_name === sel.value) &&
-      (!q || String(r.name || "").toLowerCase().includes(q)));
-    let last = null; try { last = localStorage.getItem("rcLastScan"); } catch (_) {}
-    const latest = ($("rcView").dataset.value || "new") === "latest";
-    // Already in another addon: out of "Novos" (one per title, too).
-    let hidden = 0;
-    if (!latest) {
-      // One per title: the addon that had it first.
-      const firsts = {};
-      list.forEach((r) => { const f = firsts[r.item_id]; if (!f || new Date(r.first_seen) < new Date(f.first_seen)) firsts[r.item_id] = r; });
-      list = list.filter((r) => firsts[r.item_id] === r);
-      if (!rcShowAll) { const before = list.length; list = list.filter((r) => !rcOldOrElsewhere(r)); hidden = before - list.length; }
-    }
-    // Nothing to play at its source: out too (in both views), unless "Mostrar".
-    if (!rcShowAll) { const before = list.length; list = list.filter((r) => rcAvailOf(r) !== false); hidden += before - list.length; }
-    setTimeout(() => rcCheckAvailable(list), 0);
-    const showAll = el("button", { type: "button", class: "linklike", onclick: () => { rcShowAll = !rcShowAll; renderRecent(); } }, rcShowAll ? "Esconder" : "Mostrar");
-    if (!rcScanning) $("rcInfo").replaceChildren(el("b", {}, list.length + (list.length === 1 ? " título" : " títulos")),
-      last ? " · última leitura " + ago(new Date(Number(last)).toISOString()) : " · ainda não leu os catálogos",
-      ...(rcChecking ? [" · conferindo " + rcChecking + " nas outras fontes…"] : []),
-      ...(rcAvailRunning ? [" · abrindo os vídeos para ver se tocam…"] : []),
-      ...(rcM3uLoading ? [" · lendo as listas M3U…"] : []),
-      ...rcM3uNotes(),
-      ...((hidden || rcShowAll) ? [" · " + (rcShowAll ? "mostrando também os escondidos " : hidden + (hidden === 1 ? " escondido " : " escondidos ") + "(o vídeo não abriu, antigos ou que outra fonte já tinha) "), showAll] : []));
-    // How many new ones (not yet in the app), next to the title.
-    const fresh = latest ? 0 : list.filter((r) => !rcPicked(r) && !rcOldOrElsewhere(r)).length;
-    $("rcNewCount").textContent = fresh + (fresh === 1 ? " novo" : " novos");
-    $("rcNewCount").classList.toggle("hidden", !fresh);
-    $("rcEmpty").classList.toggle("hidden", list.length > 0);
-    $("rcEmpty").textContent = rcScanning ? "Lendo os catálogos dos addons…"
-      : q ? "Nenhum título com esse nome."
-      : !last ? "Toque em Procurar agora para ler os catálogos das fontes."
-      : latest ? "Os addons de conteúdo não têm catálogos com lançamentos. Os títulos aparecem aqui quando algum addon tiver um catálogo de novidades ou datas de lançamento."
-      : "Nada novo desde a leitura anterior. Conforme os addons colocarem títulos, eles aparecem aqui.";
-    $("rcList").replaceChildren(...list.map((r) => el("div", { class: "rc" },
-      el("div", { class: "rc-poster" }, r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, r.name || ""),
+    if (error) { $("ctEmpty").textContent = /admin_m3u|function/i.test(error.message) ? "Para usar esta página, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível carregar: " + error.message; $("ctEmpty").classList.remove("hidden"); }
+  }
+  async function loadCatalog() {
+    const seq = ++ctSeq, q = ($("ctSearch").value || "").trim();
+    let view = $("ctView").dataset.value || "new";
+    // A search looks in everything, not only the new ones.
+    if (q && view === "new") view = "all";
+    $("ctInfo").textContent = "Carregando…";
+    const { data, error } = await sb.rpc("admin_m3u_catalog", { p_view: view, p_type: $("ctType").dataset.value || null,
+      p_list: $("ctList").value || null, p_q: q || null, p_days: 7, p_limit: 200 });
+    if (seq !== ctSeq) return;
+    ctLoaded = !error; ctItems = error ? [] : data || [];
+    if (error) { $("ctInfo").textContent = ""; $("ctGrid").replaceChildren(); $("ctEmpty").textContent = /admin_m3u|function/i.test(error.message) ? "Para usar esta página, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível carregar: " + error.message; $("ctEmpty").classList.remove("hidden"); return; }
+    renderCatalog();
+  }
+  function renderCatalog() {
+    if (!ctLoaded) return;
+    const view = $("ctView").dataset.value || "new", q = ($("ctSearch").value || "").trim(), n = ctItems.length;
+    const read = ctLists.filter((l) => l.read_at).length;
+    $("ctInfo").replaceChildren(el("b", {}, (n >= 200 ? "200+" : n) + (n === 1 ? " título" : " títulos") + (view === "new" && !q ? (n === 1 ? " novo" : " novos") : "")),
+      view === "new" && !q ? " nos últimos 7 dias" : view === "single" ? " que só uma lista tem" : view === "unrecognized" ? " sem código TMDB (o app procura pelo nome)" : "",
+      " · " + ctLists.length + (ctLists.length === 1 ? " lista" : " listas"));
+    $("ctEmpty").classList.toggle("hidden", n > 0);
+    $("ctEmpty").textContent = !ctLists.length ? "Nenhuma lista M3U ativa. Adicione em Fontes de conteúdo."
+      : !read ? "Nenhuma lista lida ainda. O app lê cada lista uma vez por dia (num aparelho no Wi-Fi) e os títulos aparecem aqui."
+      : q ? "Nenhum título com esse nome." : view === "new" ? "Nada novo nas listas nos últimos 7 dias." : "Nenhum título aqui.";
+    $("ctGrid").replaceChildren(...ctItems.map((r) => el("div", { class: "rc" },
+      el("div", { class: "rc-poster" }, r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy", onerror: function () { this.replaceWith(el("span", { class: "np" }, r.name || "")); } }) : el("span", { class: "np" }, r.name || ""),
         el("button", { type: "button", class: "rc-pick" + (rcPicked(r) ? " on" : ""), title: rcPicked(r) ? "Tirar do app" : "Colocar no app",
           onclick: () => pickToggle(r) }, rcPicked(r) ? "✓ No app" : "+ No app")),
-      el("b", { title: r.name || "" }, r.name || r.item_id),
-      el("span", { title: (r.addon_name || "") + (r.catalog_name ? " · " + r.catalog_name : "") },
-        (/series|tv|show/i.test(r.type || "") ? "Série" : "Filme") + (r.year ? " · " + r.year : "") + (r.addon_name ? " · " + r.addon_name : "")),
-      el("span", {}, latest ? (r.released ? "Lançado em " + new Date(r.released).toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "2-digit" }) : "")
-        : "Entrou " + ago(r.first_seen)),
-      ...(rcAvailOf(r) === null && rcAvail[rcAvailKey(r)]?.probed && rcSourceUnopenable(r.addon_name)
-        ? [el("span", { class: "rc-else" }, "Não deu para abrir o vídeo pelo painel")] : []),
-      ...(rcAvailOf(r) === false ? [el("span", { class: "rc-else" }, !/^tt\d+/.test(String(r.item_id || "")) ? "Sem código IMDb: não toca no app"
-        : rcAvail[rcAvailKey(r)]?.answered === false ? "A fonte não respondeu" : "O vídeo não abriu")] : []),
-      ...(!latest && rcOldOrElsewhere(r) ? [el("span", { class: "rc-else" }, rcOldOrElsewhere(r) === "antigo" ? "Antigo (" + rcYear(r) + ")"
-        : "Já tinha em: " + ((rcElseOf(r) || []).length ? rcElseOf(r) : rcItems.filter((x) => x.item_id === r.item_id && x.addon_name !== r.addon_name).map((x) => x.addon_name)).join(", "))] : []))));
+      el("b", { title: r.name || "" }, r.name || ""),
+      el("span", {}, (r.media_type === "series" ? "Série" : "Filme") + (r.year ? " · " + r.year : "") + (r.added ? " · entrou " + ago(r.added) : "")),
+      el("span", { class: "ct-in", title: (r.lists || []).join(" · ") }, (r.lists || []).join(" · ")))));
   }
-  async function scanCatalogs() {
-    if (rcScanning) return;
-    rcScanning = true; $("rcScan").disabled = true;
-    if (!rcItems.length) { $("rcEmpty").textContent = "Lendo os catálogos dos addons…"; $("rcEmpty").classList.remove("hidden"); }
-    const say = (t) => $("rcInfo").replaceChildren(t);
-    say("Lendo os addons…");
-    const jobs = [];
-    // Only the content addons: info addons' catalogs are TMDB/Cinemeta lists, not what can be watched.
-    for (const a of addons.filter((x) => x.enabled && kindOf(x) === "content")) {
-      const { base, q } = addonParts(a.manifest_url);
-      let m = null;
-      try { m = await (await fetch(base + "/manifest.json" + q, { signal: AbortSignal.timeout(12000) })).json(); } catch (_) {}
-      const key = await keyFor(a.manifest_url);
-      (m?.catalogs || []).filter((c) => !(c.extra || []).some((e) => e.isRequired) && !(c.extraRequired || []).length)
-        .forEach((c) => jobs.push({ a, key, base, q, c }));
-    }
-    // Up to 10 catalogs of each addon (so one with many does not leave the others unread), 150 in all.
-    const per = {};
-    const take = jobs.filter((j) => (per[j.a.name] = (per[j.a.name] || 0) + 1) <= 10).slice(0, 150), rows = [];
-    let next = 0, done = 0, failedCats = 0;
-    const worker = async () => {
-      while (next < take.length) {
-        const j = take[next++];
-        let metas = [];
-        try {
-          const res = await fetch(j.base + "/catalog/" + encodeURIComponent(j.c.type) + "/" + encodeURIComponent(j.c.id) + ".json" + j.q, { signal: AbortSignal.timeout(8000) });
-          metas = res.ok ? ((await res.json()).metas || []) : [];
-          if (!res.ok) failedCats++;
-        } catch (_) { failedCats++; }
-        metas.slice(0, 100).forEach((m, i) => { if (m && m.id) rows.push({ k: j.key, an: j.a.name, c: j.c.type + "/" + j.c.id, cn: j.c.name || j.c.id,
-          id: String(m.id), t: m.type || j.c.type, n: m.name || "", p: typeof m.poster === "string" && m.poster.startsWith("https://") ? m.poster : null,
-          y: String(m.releaseInfo || m.year || "").slice(0, 12), r: typeof m.released === "string" ? m.released : null, o: String(i) }); });
-        done++; say("Lendo catálogos: " + done + " de " + take.length + "…");
-      }
-    };
-    await Promise.all([worker(), worker(), worker(), worker(), worker(), worker()]);
-    let added = 0, failed = null;
-    for (let i = 0; i < rows.length; i += 1500) {
-      const { data, error } = await sb.rpc("admin_catalog_seen", { p_rows: rows.slice(i, i + 1500) });
-      if (error) { failed = error; break; }
-      added += data?.added || 0;
-    }
-    rcScanning = false; $("rcScan").disabled = false;
-    if (failed) { toast(/admin_catalog_seen|function/i.test(failed.message) ? "Rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível salvar: " + failed.message); renderRecent(); return; }
-    try { localStorage.setItem("rcLastScan", String(Date.now())); } catch (_) {}
-    toast((take.length ? take.length + " catálogos lidos" : "Nenhum addon padrão tem catálogo") + " · " +
-      (added ? added + (added === 1 ? " título novo" : " títulos novos") : "nada novo desde a última leitura") +
-      (failedCats ? " · " + failedCats + " não abriram" : ""));
-    loadRecent();
-  }
-  function openRecent() {
-    loadPicks();
-    loadRecent().then(() => {
-      let last = 0; try { last = Number(localStorage.getItem("rcLastScan") || 0); } catch (_) {}
-      if (addons.length && Date.now() - last > 3600e3) scanCatalogs();
-    });
-  }
-  seg("rcType", renderRecent); seg("rcView", loadRecent); seg("pkType", renderPicks);
-  $("rcDays").addEventListener("change", loadRecent);
-  $("rcAddon").addEventListener("change", renderRecent);
-  $("rcSearch").addEventListener("input", renderRecent);
-  $("rcScan").addEventListener("click", scanCatalogs);
+  function openCatalog() { loadPicks(); loadCatalogLists().then(renderCatalog); loadCatalog(); }
+  seg("ctView", loadCatalog); seg("ctType", loadCatalog); seg("pkType", renderPicks);
+  $("ctList").addEventListener("change", loadCatalog);
+  let ctTimer = 0;
+  $("ctSearch").addEventListener("input", () => { clearTimeout(ctTimer); ctTimer = setTimeout(loadCatalog, 350); });
 
   // ── Status: uptime of each source (admin_uptime; Supabase checks every 5 minutes) ──
   async function loadUptime() {
@@ -4235,7 +4004,7 @@
   seg("aiFilter", renderImprovements);
 
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "revendedores", "meus", "addons", "categorias", "recentes", "uso", "atualizacoes", "status", "erros", "melhorias"];
+  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "revendedores", "meus", "addons", "categorias", "catalogo", "uso", "atualizacoes", "status", "erros", "melhorias"];
   // ── CloudPlay: Meus conteúdos ──
   let ownVideos = [], ownPick = null, ownXhr = null, ownCancelFn = null, ownBusy = false;
   const ownXhrs = new Set();
@@ -4705,7 +4474,7 @@
       if (on && page === "conectados" && !$("app").classList.contains("hidden")) setTimeout(loadPeaks, 0);
       if (on && page === "atualizacoes" && !$("app").classList.contains("hidden")) setTimeout(() => { loadUpdates(); loadBuild(); loadPending(); }, 0);
       if (on && page === "erros" && !$("app").classList.contains("hidden")) setTimeout(loadErrors, 0);
-      if (on && page === "recentes" && !$("app").classList.contains("hidden")) setTimeout(openRecent, 300);
+      if (on && page === "catalogo" && !$("app").classList.contains("hidden")) setTimeout(openCatalog, 0);
       if (on && page === "melhorias" && !$("app").classList.contains("hidden")) setTimeout(loadImprovements, 0);
       if (on && page === "revendedores" && !$("app").classList.contains("hidden")) setTimeout(loadResellers, 0);
       if (on && page === "meus" && !$("app").classList.contains("hidden")) setTimeout(loadOwn, 0);
@@ -4721,7 +4490,7 @@
   $("menuBtn").addEventListener("click", () => document.body.classList.add("nav-open"));
   $("bnMore").addEventListener("click", (e) => { e.preventDefault(); document.body.classList.add("nav-open"); });
   $("backdrop").addEventListener("click", () => document.body.classList.remove("nav-open"));
-  const loadAll = () => { loadResellers(); if (location.hash === "#meus") loadOwn(); load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); loadPending(); } loadErrors(); if (location.hash === "#recentes") setTimeout(openRecent, 800); if (location.hash === "#melhorias") loadImprovements(); if (location.hash === "#status") loadUptime(); loadPlaylists(); };
+  const loadAll = () => { loadResellers(); if (location.hash === "#meus") loadOwn(); load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); loadPending(); } loadErrors(); if (location.hash === "#catalogo") setTimeout(openCatalog, 300); if (location.hash === "#melhorias") loadImprovements(); if (location.hash === "#status") loadUptime(); loadPlaylists(); };
   $("refreshAll").addEventListener("click", loadAll);
 
   $("search").addEventListener("input", render);
