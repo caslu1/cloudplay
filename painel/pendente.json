@@ -71,8 +71,12 @@
     {
       "text": "Listas M3U nas séries: só aparecem episódios da série certa. Antes, uma série como \"Justiça Sem Limites\" mostrava também \"Liga da Justiça Sem Limites\" e outras com nome parecido.",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Player na TV: as telas de legenda e áudio ficam mais claras (opção escolhida em rosa, botões de ajuste maiores, linhas mais arredondadas).",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T19:37:21.081400+00:00"
+  "updated_at": "2026-10-30T21:38:27.363776+00:00"
 }
