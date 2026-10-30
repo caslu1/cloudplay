@@ -55,8 +55,12 @@
     {
       "text": "Séries: o próximo episódio tenta primeiro a mesma fonte em que o episódio anterior tocou, que quase sempre é a melhor.",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Gêneros em ordem de A a Z (Ação, Aventura, Comédia, Crime, Documentário, Família, Fantasia, Ficção científica, Guerra, Infantil, Suspense, Terror).",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T16:53:54.180373+00:00"
+  "updated_at": "2026-10-30T18:12:26.807477+00:00"
 }
