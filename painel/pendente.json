@@ -39,8 +39,12 @@
     {
       "text": "Tela Editar perfil refeita: na TV, o perfil à esquerda e os avatares em abas (Animais, Personagens, Mídia, Natureza) à direita; no celular, tela inteira com Salvar no topo, foto com câmera, nome, avatares, PIN e Excluir perfil no fim.",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Troca automática de fonte: quando uma fonte trava, o app sempre tenta as outras (antes podia parar com \"A fonte não iniciou a tempo\" sem tentar nenhuma).",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T15:42:31.184579+00:00"
+  "updated_at": "2026-10-30T15:48:58.228072+00:00"
 }
