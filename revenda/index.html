@@ -148,6 +148,52 @@
     .act { justify-content: flex-start; margin-top: 6px; }
     .search { max-width: none; width: 100%; }
   }
+  /* ── CloudPlay CRM look (same as the admin panel): calm greys, a header with the profile menu,
+     no big page titles; pink only marks the page you are on. ── */
+  :root { --bg: #0b0b0f; --panel: #131318; --panel2: #18181e; --field: #0f0f14; --line: #22222b; --line2: #2c2c36; --muted: #9a9aa6; --faint: #6b6b76; }
+  .btn.main, a.btn.main { background: #ececf1; color: #111; border: 0; }
+  .btn.main:hover { background: #fff; }
+  .side { width: 248px; padding: 18px 12px; background: #0e0e13; }
+  .side .logo { height: 30px; margin: 4px 10px 18px; }
+  .credit-box { background: var(--panel); border: 1px solid var(--line); }
+  .credit-box span { color: var(--faint); }
+  .nav a { padding: 9px 12px; border-radius: 8px; color: #c9c9d2; font-size: 13.5px; }
+  .nav a .i { width: 17px; height: 17px; color: #8b8b96; }
+  .nav a.on { background: #1c1c23; color: #fff; } .nav a.on .i { color: #ff74a8; }
+  .nav a.on::before { content: none; }
+  .me { display: none; }
+  .av { background: #2a2a33; border-radius: 8px; }
+  .plan.sel { border-color: #d6d6de; box-shadow: 0 0 0 1px #d6d6de inset; }
+  input.f:focus { border-color: #8b8b96; }
+  .content { margin-left: 248px; padding: 24px 28px 60px; }
+  .ptitle h1, .ptitle .eyebrow { display: none; }
+  section[data-page="inicio"] .ptitle { display: none; }
+  .card { border-radius: 12px; }
+  .rtop { position: sticky; top: 0; z-index: 5; margin-left: 248px; height: 60px; display: flex; align-items: center; gap: 10px; padding: 0 28px;
+    background: rgba(11, 11, 15, .92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .rtop .crumb { margin-right: auto; font-size: 13px; color: var(--faint); } .rtop .crumb b { color: var(--text); font-weight: 600; }
+  .tcred { font-size: 12.5px; color: var(--muted); border: 1px solid var(--line); background: var(--panel); border-radius: 9px; padding: 0 12px; height: 36px; display: inline-flex; align-items: center; gap: 5px; }
+  .tcred b { color: var(--text); }
+  .prof-btn { height: 40px; padding: 0 10px 0 5px; display: inline-flex; align-items: center; gap: 9px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+  .prof-btn .av { width: 28px; height: 28px; font-size: 12px; border-radius: 7px; }
+  .prof-who { display: grid; text-align: left; line-height: 1.25; } .prof-who b { font-size: 12.5px; } .prof-who span { font-size: 11.5px; color: var(--faint); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prof-btn .chev { width: 14px; height: 14px; color: var(--faint); }
+  .prof-menu { position: fixed; right: 28px; top: 56px; width: 260px; background: #16161c; border: 1px solid var(--line2); border-radius: 12px; box-shadow: 0 18px 50px rgba(0,0,0,.55); padding: 6px; z-index: 25; }
+  .pm-who { display: flex; gap: 10px; align-items: center; padding: 10px 10px 12px; border-bottom: 1px solid var(--line); margin-bottom: 6px; }
+  .pm-who .av { width: 36px; height: 36px; }
+  .pm-who b { display: block; font-size: 13.5px; } .pm-who div span { display: block; font-size: 12px; color: var(--faint); overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+  .pm-item { display: flex; align-items: center; gap: 10px; width: 100%; height: 36px; padding: 0 10px; border-radius: 8px; background: none; border: 0; color: #d6d6de; font-weight: 500; font-size: 13px; cursor: pointer; }
+  .pm-item .i { width: 16px; height: 16px; color: #8b8b96; }
+  .pm-item:hover { background: #1f1f27; color: #fff; }
+  .pm-out, .pm-out .i { color: #f39a9a; } .pm-out:hover { background: rgba(240,106,106,.08); color: #f39a9a; }
+  .pm-sep { height: 1px; background: var(--line); margin: 6px 4px; }
+  .mav span { font-weight: 700; font-size: 13px; color: var(--text); }
+  @media (max-width: 760px) {
+    .rtop { display: none; }
+    .content { margin-left: 0; padding: 16px 14px 90px; }
+    .mcred { background: var(--panel); border-color: var(--line); }
+    .prof-menu { right: 12px; top: 58px; }
+  }
 </style>
 </head>
 <body>
@@ -219,7 +265,19 @@
     <div class="me"><div class="av" id="meAv">R</div><div class="me-t"><b id="meName"></b><span id="meMail"></span></div>
       <button class="iconbtn" id="logout" title="Sair"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4"/><path d="M10 8l-4 4 4 4M6 12h10"/></svg></button></div>
   </aside>
-  <div class="mtop"><img src="../painel/logo.png" alt="CloudPlay"><div class="mright"><span class="mcred"><b id="mCredits">0</b> créditos</span><button class="iconbtn" id="mLogout" title="Sair"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4"/><path d="M10 8l-4 4 4 4M6 12h10"/></svg></button></div></div>
+  <div class="mtop"><img src="../painel/logo.png" alt="CloudPlay"><div class="mright"><span class="mcred"><b id="mCredits">0</b> créditos</span><button class="iconbtn mav" id="mProf" title="Conta"><span id="mAv">R</span></button><button class="iconbtn hidden" id="mLogout" title="Sair"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4"/><path d="M10 8l-4 4 4 4M6 12h10"/></svg></button></div></div>
+  <!-- Computers: a header with the page, the credits and the profile menu. -->
+  <header class="rtop">
+    <div class="crumb">Revenda / <b id="crumbPage">Início</b></div>
+    <span class="tcred"><b id="tCredits">0</b> créditos</span>
+    <div class="prof"><button type="button" class="prof-btn" id="profBtn"><span class="av" id="topAv">R</span><span class="prof-who"><b id="topName"></b><span id="topMail"></span></span><svg class="i chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button></div>
+  </header>
+  <div id="profMenu" class="prof-menu hidden">
+    <div class="pm-who"><span class="av" id="pmAv">R</span><div><b id="pmName"></b><span id="pmMail"></span></div></div>
+    <button type="button" class="pm-item" id="pmPass"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Trocar senha</button>
+    <div class="pm-sep"></div>
+    <button type="button" class="pm-item pm-out" id="pmOut"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4"/><path d="M10 8l-4 4 4 4M6 12h10"/></svg>Sair da conta</button>
+  </div>
   <main class="content">
     <section data-page="inicio">
       <div class="ptitle"><div><span class="eyebrow">Revenda</span><h1>Olá, <span id="helloName"></span></h1></div></div>
@@ -336,6 +394,8 @@
     e.preventDefault(); $("inMsg").textContent = "";
     const { error } = await sb.auth.signInWithPassword({ email: $("inEmail").value.trim(), password: $("inPass").value });
     if (error) { $("inMsg").textContent = /confirm/i.test(error.message) ? "Confirme o e-mail (veja sua caixa de entrada) e entre de novo." : "E-mail ou senha incorretos."; return; }
+    // The admin panel's "Logs": when a reseller opened the panel.
+    sb.rpc("panel_log_event", { p_action: "login", p_detail: "Painel de revenda" }).then(() => {}, () => {});
     start();
   });
   $("forgot").onclick = async () => {
@@ -374,7 +434,27 @@
     if (error) { $("rMsg").textContent = "Não deu certo: " + error.message; return; }
     history.replaceState(null, "", location.pathname); start();
   });
-  $("logout").onclick = $("mLogout").onclick = async () => { await sb.auth.signOut(); screen("login"); };
+  $("logout").onclick = $("mLogout").onclick = $("pmOut").onclick = async () => { $("profMenu").classList.add("hidden"); await sb.auth.signOut(); screen("login"); };
+  // Profile menu (header on a computer, the round button on a phone): change password, sign out.
+  $("profBtn").onclick = $("mProf").onclick = (e) => { e.stopPropagation(); $("profMenu").classList.toggle("hidden"); };
+  document.addEventListener("click", (e) => { if (!e.target.closest("#profMenu")) $("profMenu").classList.add("hidden"); });
+  $("pmPass").onclick = () => {
+    $("profMenu").classList.add("hidden");
+    const p1 = el("input", { class: "f", type: "password", autocomplete: "new-password", placeholder: "Nova senha (mínimo 6 caracteres)" });
+    const p2 = el("input", { class: "f", type: "password", autocomplete: "new-password", placeholder: "Repita a nova senha" });
+    const msg = el("div", { class: "msg" });
+    const close = dialog((close) => [el("h3", null, "Trocar senha"), el("div", { class: "sub" }, "Vale para o próximo login, em qualquer aparelho."),
+      el("label", { class: "l" }, "Nova senha"), p1, el("label", { class: "l" }, "Repita a nova senha"), p2, msg,
+      el("div", { class: "bar" }, el("button", { class: "btn", type: "button", onclick: close }, "Cancelar"),
+        el("button", { class: "btn main", type: "button", onclick: async () => {
+          if (p1.value.length < 6) { msg.textContent = "A senha precisa ter pelo menos 6 caracteres."; return; }
+          if (p1.value !== p2.value) { msg.textContent = "As duas senhas não são iguais."; return; }
+          const { error } = await sb.auth.updateUser({ password: p1.value });
+          if (error) { msg.textContent = "Não deu certo: " + error.message; return; }
+          close(); toast("Senha trocada");
+        } }, "Salvar senha"))]);
+    setTimeout(() => p1.focus(), 50);
+  };
 
   async function start() {
     const { data: { session } } = await sb.auth.getSession();
@@ -402,6 +482,9 @@
     $("meName").textContent = info.name; $("meMail").textContent = info.email;
     $("helloName").textContent = String(info.name || "").split(" ")[0];
     $("meAv").textContent = String(info.name || "R").trim().charAt(0).toUpperCase() || "R";
+    $("topAv").textContent = $("pmAv").textContent = $("mAv").textContent = $("meAv").textContent;
+    $("topName").textContent = $("pmName").textContent = info.name; $("topMail").textContent = $("pmMail").textContent = info.email;
+    $("tCredits").textContent = info.credits;
     $("sideCredits").textContent = info.credits; $("mCredits").textContent = info.credits;
     $("sCredits").textContent = info.credits; $("sActive").textContent = info.active; $("sClients").textContent = "de " + info.clients;
     $("sWatching").textContent = info.watching; $("sTests").textContent = info.tests_today; $("sTestsOf").textContent = "de " + info.tests_limit + " grátis";
@@ -429,6 +512,7 @@
     const p = currentPage();
     document.querySelectorAll("#app section[data-page]").forEach((s) => s.classList.toggle("hidden", s.dataset.page !== p));
     document.querySelectorAll("#app .nav a, #app .bnav a").forEach((a) => a.classList.toggle("on", a.dataset.page === p));
+    $("crumbPage").textContent = { inicio: "Início", clientes: "Clientes", revendedores: "Revendedores", creditos: "Créditos" }[p];
     if (p === "creditos" && me) loadHistory();
     window.scrollTo(0, 0);
   }
