@@ -3850,7 +3850,8 @@
     if (rcM3uLoading || !rcM3u.at) return [];
     if (rcM3u.failed) return [" · listas M3U: " + (rcM3u.why || "não responderam")];
     const notes = (rcM3u.diag || []).filter((d) => !d.recent).map((d) => d.list + ": " +
-      (d.movies || d.series ? "a lista não diz quando os títulos entraram" : d.error === "demorou" ? "a lista demorou demais" : "não respondeu"));
+      (d.movies || d.series ? "a lista não diz quando os títulos entraram" : d.error === "demorou" ? "o servidor da lista demorou demais para responder ao Supabase"
+        : d.error === "recusou" ? "o servidor da lista recusou o Supabase (pode bloquear servidores de nuvem)" : "o servidor da lista não respondeu ao Supabase"));
     (rcM3u.skipped || []).forEach((n) => notes.push(n + ": não é Xtream (sem usuário e senha)"));
     return notes.length ? [" · " + notes.join(" · ")] : [];
   }
