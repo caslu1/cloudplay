@@ -59,8 +59,12 @@
     {
       "text": "Gêneros em ordem de A a Z (Ação, Aventura, Comédia, Crime, Documentário, Família, Fantasia, Ficção científica, Guerra, Infantil, Suspense, Terror).",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Capas dos gêneros separadas: o painel troca a capa do Início, da aba Filmes e da aba Séries cada uma por si (antes a mesma capa valia em todos os lugares).",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T18:12:26.807477+00:00"
+  "updated_at": "2026-10-30T18:17:28.817772+00:00"
 }

@@ -200,6 +200,10 @@
   .ga-tile b { position: absolute; left: 10px; bottom: 8px; z-index: 1; color: #fff; font-size: 14px; font-weight: 600; }
   .ga-tile em { position: absolute; top: 8px; left: 8px; z-index: 1; font-style: normal; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 6px; background: rgba(255,116,168,.85); color: #fff; }
   .ga-tile.sel { outline: 2px solid #FF74A8; outline-offset: 2px; }
+  .ga-tile.auto { filter: saturate(.55) brightness(.8); }
+  .ga-tile em.ga-auto { background: rgba(10, 10, 15, .78); }
+  .ga-places { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: -4px 0 14px; }
+  .ga-places span { color: var(--faint); font-size: 13px; }
   .ga-edit .msg:empty { display: none; }
   .ga-edit { margin-top: 14px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel2); display: grid; gap: 10px; }
   .ga-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -1739,8 +1743,9 @@
       </div>
       <div class="card" id="genreArtCard">
         <div class="card-head">
-          <div><h2>Capas dos gêneros</h2><p class="sub">A imagem de cada gênero no app. Troque pelo código TMDB de um filme ou série.</p></div>
+          <div><h2>Capas dos gêneros</h2><p class="sub">Cada lugar do app tem a sua capa. Escolha onde quer trocar.</p></div>
         </div>
+        <div class="ga-places"><div id="gaPlace" class="seg"><button type="button" data-v="home" class="on">Início</button><button type="button" data-v="movie">Aba Filmes</button><button type="button" data-v="series">Aba Séries</button></div><span id="gaPlaceNote"></span></div>
         <div id="genreArt" class="ga-grid"></div>
         <div id="genreArtEdit" class="ga-edit hidden"></div>
       </div>
@@ -3549,13 +3554,21 @@
     // From A to Z, as in the app.
     .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
   let gaOpen = null, gaPick = null;
+  // Where the cover shows: "home" keeps the old key (the genre id); the Filmes / Séries tabs of the
+  // app use "<id>:movie" / "<id>:series" (empty there = the app picks a popular title by itself).
+  const gaPlace = () => $("gaPlace").dataset.value || "home";
+  const gaKey = (id) => gaPlace() === "home" ? id : id + ":" + gaPlace();
   function renderGenreArt() {
     const custom = settings.collection_art || {};
+    const home = gaPlace() === "home";
+    $("gaPlaceNote").textContent = home ? "Capas da fileira de gêneros da tela Início"
+      : "Capas da aba " + (gaPlace() === "movie" ? "Filmes" : "Séries") + " · Automática = o app usa um título popular do gênero";
     $("genreArt").replaceChildren(...GENRES.map((g) => {
-      const t = el("div", { role: "button", tabindex: "0", class: "ga-tile" + (gaOpen === g.id ? " sel" : ""), title: "Trocar a capa de " + g.name,
+      const mine = custom[gaKey(g.id)];
+      const t = el("div", { role: "button", tabindex: "0", class: "ga-tile" + (gaOpen === g.id ? " sel" : "") + (!home && !mine ? " auto" : ""), title: "Trocar a capa de " + g.name,
         onclick: () => { gaOpen = gaOpen === g.id ? null : g.id; gaPick = null; renderGenreArt(); } },
-        custom[g.id] ? el("em", {}, "Personalizada") : "", el("b", {}, g.name));
-      t.style.backgroundImage = "url(\"" + (custom[g.id] || g.art) + "\")";
+        mine ? el("em", {}, "Personalizada") : !home ? el("em", { class: "ga-auto" }, "Automática") : "", el("b", {}, g.name));
+      t.style.backgroundImage = "url(\"" + (mine || g.art) + "\")";
       return t;
     }));
     const g = GENRES.find((x) => x.id === gaOpen);
@@ -3591,13 +3604,15 @@
       prev.classList.remove("hidden"); save.disabled = false;
     };
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") find(); });
-    save.onclick = () => gaPick && saveGenreArt(g.id, gaPick);
+    save.onclick = () => gaPick && saveGenreArt(gaKey(g.id), gaPick);
+    const where = gaPlace() === "home" ? "no Início" : gaPlace() === "movie" ? "na aba Filmes" : "na aba Séries";
     $("genreArtEdit").replaceChildren(
-      el("b", {}, "Capa de " + g.name),
+      el("b", {}, "Capa de " + g.name + " " + where),
       el("div", { class: "ga-row" }, type, input, el("button", { class: "ghost small", onclick: find }, "Buscar")),
       msg, prev,
       el("div", { class: "ga-row" }, save,
-        custom[g.id] ? el("button", { class: "ghost small", onclick: () => saveGenreArt(g.id, null) }, "Voltar à capa padrão") : "",
+        custom[gaKey(g.id)] ? el("button", { class: "ghost small", onclick: () => saveGenreArt(gaKey(g.id), null) },
+          gaPlace() === "home" ? "Voltar à capa padrão" : "Voltar à capa automática") : "",
         el("button", { class: "ghost small", onclick: () => { gaOpen = null; renderGenreArt(); } }, "Cancelar")));
     input.focus();
   }
@@ -3610,6 +3625,7 @@
     gaOpen = null; gaPick = null;
     renderGenreArt();
   }
+  seg("gaPlace", () => { gaOpen = null; gaPick = null; renderGenreArt(); });
   $("catSearch").addEventListener("input", renderCategories);
   seg("catFilter", renderCategories);
 
