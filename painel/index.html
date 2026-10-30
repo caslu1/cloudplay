@@ -1156,6 +1156,48 @@
     .lg-row .lg-t { grid-row: span 3; align-self: start; }
     .lg-search { flex-basis: 100%; } .lg-info { margin-left: 0; }
   }
+  /* ── Easier to read: a larger menu, titles and table text, more room inside the cards. ── */
+  :root { --side-w: 268px; }
+  body { font-size: 14.5px; }
+  .sidebar { padding: 20px 14px; }
+  .brand { padding: 4px 12px 16px; } .brand img { width: 142px; }
+  .nav-label { font-size: 12px; letter-spacing: .7px; padding: 16px 14px 6px; }
+  .nav a { height: 40px; padding: 0 14px; gap: 13px; font-size: 15px; border-radius: 10px; margin-bottom: 2px; }
+  .nav a svg.i { width: 20px; height: 20px; }
+  .nav .pill, .nav .pill.count-pill { height: 22px; line-height: 22px; padding: 0 8px; font-size: 12px; }
+  .topbar { height: 64px; padding: 0 32px; }
+  .topbar .crumb { font-size: 14px; }
+  .tb-search input { height: 38px; font-size: 13.5px; } .tb-search svg { top: 11px; } .tb-search kbd { top: 9px; }
+  .tb-gen { height: 38px; font-size: 13.5px; } .topbar .icon-btn { width: 38px; height: 38px; }
+  .page { padding: 28px 32px 56px; max-width: 1480px; }
+  h2 { font-size: 17px; margin-bottom: 3px; }
+  .sub { font-size: 13.5px; line-height: 1.5; }
+  .card { padding: 22px 24px; margin-bottom: 18px; border-radius: 14px; }
+  .card-head { margin-bottom: 18px; }
+  .stat { padding: 18px 20px; border-radius: 14px; }
+  .stat span { font-size: 13.5px; } .stat b { font-size: 30px; } .stat small { font-size: 12.5px; }
+  .stats, .kpis { gap: 16px; margin-bottom: 18px; }
+  .dash2 { gap: 16px; margin-bottom: 16px; }
+  .dc-head h2 { font-size: 16px; } .dc-head .sub { font-size: 13px; }
+  th, table th, thead td { font-size: 11.5px; padding-top: 12px; padding-bottom: 12px; }
+  td { font-size: 14px; padding-top: 14px; padding-bottom: 14px; }
+  .seg button { height: 34px; font-size: 13.5px; padding: 0 13px; }
+  button.small, .dc-link { height: 32px; font-size: 13px; }
+  button.icon { width: 32px; height: 32px; }
+  input, select { height: 42px; font-size: 14.5px; }
+  .empty { padding: 40px 16px; text-align: center; color: var(--faint); font-size: 14px; }
+  .lg-row { font-size: 14px; padding: 12px 20px; } .lg-dh { padding: 14px 20px 10px; font-size: 13px; }
+  .due-who b, .dr-item b, .on-item b { font-size: 14px; }
+  .rv-prices { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 2px; }
+  .rv-prices span { font-size: 12.5px; color: var(--muted); background: var(--panel2); border: 1px solid var(--line2); border-radius: 8px; padding: 5px 10px; }
+  .rv-prices b { color: var(--text); font-weight: 600; margin-right: 4px; }
+  @media (max-width: 1100px) { :root { --side-w: 240px; } .nav a { font-size: 14px; height: 40px; } }
+  @media (max-width: 860px) {
+    .topbar { height: 56px; padding: 0 14px; }
+    .page { padding: 16px 14px 90px; }
+    .card { padding: 18px; } .stat { padding: 14px 16px; } .stat b { font-size: 24px; }
+    td { padding-top: 10px; padding-bottom: 10px; }
+  }
 </style>
 </head>
 <body>
@@ -1353,7 +1395,7 @@
           <div id="histTip" class="hist-tip hidden"></div>
         </div>
         <div class="card">
-          <div class="dc-head"><div><h2>Online agora</h2><p class="sub">Aparelhos com o app aberto · atualiza a cada 10 segundos</p></div><a href="#conectados" class="dc-link">Ver todos</a></div>
+          <div class="dc-head"><div><h2>Online agora</h2><p class="sub">Clientes com o app aberto agora</p></div><a href="#conectados" class="dc-link">Ver todos</a></div>
           <div id="onList" class="online-list"></div>
           <p class="dc-empty">Nenhum aparelho com o app aberto agora.</p>
         </div>
@@ -1456,7 +1498,7 @@
 
       <div class="card">
         <div class="list-head">
-          <div><h2>Todos os códigos</h2><p class="sub" style="margin:0">Veja quando cada código foi ativado, bloqueie, libere aparelhos ou exclua.</p></div>
+          <div><h2>Todos os códigos</h2><p class="sub" style="margin:0">Ative, renove, bloqueie e libere aparelhos.</p></div>
           <button id="reload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
         </div>
         <div class="toolbar">
@@ -1493,7 +1535,7 @@
       </div>
       <div class="card">
         <div class="list-head">
-          <div><h2>Aparelhos</h2><p class="sub" style="margin:0">O que cada cliente está assistindo e por qual fonte. Online = app aberto nos últimos 3 minutos; atualiza a cada 10 segundos.</p></div>
+          <div><h2>Aparelhos</h2><p class="sub" style="margin:0">O que cada cliente está assistindo agora e por qual fonte.</p></div>
           <button id="cnReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
         </div>
         <div class="toolbar">
@@ -1509,7 +1551,7 @@
       </div>
       <div class="card hist-card">
         <div class="hist-head"><div class="hist-ic"><svg class="i"><use href="#i-chart"/></svg></div>
-          <div><h2>Pico por hora</h2><p class="sub" style="margin:0">Mais aparelhos online ao mesmo tempo, hoje</p></div></div>
+          <div><h2>Pico por hora</h2><p class="sub" style="margin:0">O maior número de aparelhos online em cada hora de hoje</p></div></div>
         <div id="peakChart" class="hist-chart"></div>
         <p id="peakMsg" class="empty hidden"></p>
       </div>
@@ -1519,7 +1561,7 @@
     <main class="page hidden" data-section="pedidos" data-title="Pedidos de conteúdo">
       <div class="card">
         <div class="card-head" style="flex-wrap: nowrap">
-          <div><h2>Pedidos dos clientes</h2><p class="sub">Títulos pedidos em "Solicitar conteúdo" quando nenhum addon tinha o título.</p></div>
+          <div><h2>Pedidos dos clientes</h2><p class="sub">Filmes e séries que os clientes pediram pelo app.</p></div>
           <button id="reqReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
         </div>
         <div class="toolbar">
@@ -1537,7 +1579,7 @@
     <main class="page hidden" data-section="revendedores" data-title="Revendedores">
       <div class="card">
         <div class="card-head">
-          <div><h2>Revendedores</h2><p class="sub">Eles vendem códigos com créditos: 1 mês = 1 crédito, 3 meses = 3, 6 meses = 5, 12 meses = 10 (renovar custa igual) e até 3 testes grátis de 24 h por dia. Painel deles: <a id="rvLink" href="../revenda/" target="_blank" style="color:inherit">abrir painel de revenda</a>.</p></div>
+          <div><h2>Revendedores</h2><p class="sub">Vendem códigos com créditos. <a id="rvLink" href="../revenda/" target="_blank" style="color:inherit">Abrir painel de revenda</a></p><div class="rv-prices"><span><b>1 mês</b> 1 crédito</span><span><b>3 meses</b> 3 créditos</span><span><b>6 meses</b> 5 créditos</span><span><b>12 meses</b> 10 créditos</span><span><b>Teste 24 h</b> grátis, até 3 por dia</span></div><p class="sub" style="display:none"></p></div>
           <button id="rvNew"><svg class="i"><use href="#i-plus"/></svg>Novo revendedor</button>
         </div>
         <div class="table-wrap">
@@ -1547,7 +1589,7 @@
           </table>
         </div>
         <p id="rvEmpty" class="empty hidden">Nenhum revendedor ainda.</p>
-        <p class="sub" style="margin-top:12px">Os códigos dos revendedores aparecem em "Códigos de acesso" com o nome da revenda. Todo crédito dado ou gasto fica no histórico de cada um.</p>
+        <p class="sub" style="margin-top:12px">Os códigos de cada revendedor também aparecem em Códigos de acesso, com o nome dele.</p>
       </div>
     </main>
 
@@ -1559,7 +1601,7 @@
         <div class="stat"><span>Custo estimado / mês</span><b id="ownCost">US$ 0</b></div>
       </div>
       <div class="card">
-        <div class="card-head"><div><h2>Enviar vídeo</h2><p class="sub">Escolha o arquivo: título, capa, temporada, episódio, áudio e qualidade são preenchidos sozinhos.</p></div></div>
+        <div class="card-head"><div><h2>Enviar vídeo</h2><p class="sub">Escolha o arquivo: título, capa, episódio, áudio e qualidade são preenchidos sozinhos.</p></div></div>
         <div id="ownSetup" class="own-setup hidden"></div>
         <div class="up-step" id="up1"><div class="up-n">1</div><div class="up-body">
           <h3>Arquivo</h3>
@@ -1599,7 +1641,7 @@
       </div>
       <div class="card">
         <div class="card-head" style="align-items:center">
-          <div><h2>Meus vídeos</h2><p class="sub">No app, aparecem como a fonte "CloudPlay", a primeira da lista (dual áudio para todos; áudio original para quem prefere áudio original).</p></div>
+          <div><h2>Meus vídeos</h2><p class="sub">Aparecem no app como a fonte "CloudPlay", sempre a primeira.</p></div>
           <label class="own-toggle"><input type="checkbox" id="ownCatalog" checked> Fileira "Exclusivos CloudPlay" na tela inicial</label>
         </div>
         <div class="field-icon"><svg class="i"><use href="#i-search"/></svg><input id="ownSearch" placeholder="Buscar" autocomplete="off"></div>
@@ -1611,7 +1653,7 @@
     <!-- Addons -->
     <main class="page hidden" data-section="addons" data-title="Fontes de conteúdo">
       <div id="addonCard" class="card hidden">
-        <div class="card-head"><div><h2 id="addonFormTitle">Nova fonte</h2><p id="addonFormSub" class="sub">Escolha o que vai adicionar: um addon (link manifest.json) ou uma lista M3U.</p></div>
+        <div class="card-head"><div><h2 id="addonFormTitle">Nova fonte</h2><p id="addonFormSub" class="sub">Um addon (link manifest.json) ou uma lista M3U.</p></div>
           <div id="aSrc" class="seg"><button type="button" data-v="addon" class="on">Addon</button><button type="button" data-v="m3u">Lista M3U</button></div></div>
         <form id="addonForm" class="addon-form">
           <div><label for="aName">Nome</label><input id="aName" placeholder="Ex.: Torrentio" maxlength="60" required>
@@ -1629,7 +1671,7 @@
       </div>
       <div class="card">
         <div class="card-head">
-          <div><h2>Fontes instaladas</h2><p class="sub">Addons e listas M3U instalados em todos os aparelhos. Os links ficam ocultos: toque no olho para ver.</p></div>
+          <div><h2>Fontes instaladas</h2><p class="sub">Valem para todos os aparelhos. Toque no olho para ver o link.</p></div>
           <div class="head-btns">
             <button type="button" id="aNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Adicionar addon ou M3U</button>
           </div>
@@ -1640,7 +1682,7 @@
       </div>
       <div class="card" id="hlCard">
         <div class="card-head">
-          <div><h2>Saúde das fontes</h2><p id="hlSub" class="sub">Teste na hora: 20 títulos sorteados por fonte (populares, séries e lançamentos), pedidos de novo se falharem; o começo dos vídeos é aberto para ver se tocam de verdade.</p></div>
+          <div><h2>Saúde das fontes</h2><p id="hlSub" class="sub">Testa 20 títulos de cada fonte e abre o começo dos vídeos para ver se tocam.</p></div>
           <div class="head-btns">
             <div id="hlTab" class="seg"><button type="button" data-v="test" class="on">Teste</button><button type="button" data-v="dev">Nos aparelhos</button></div>
             <button type="button" id="aTestAll" class="small"><svg class="i"><use href="#i-bolt"/></svg>Testar todas</button>
@@ -1660,7 +1702,7 @@
     <main class="page hidden" data-section="listas" data-title="Listas M3U">
       <div class="card">
         <div class="card-head">
-          <div><h2>Listas M3U</h2><p class="sub">Só filmes e séries (sem canais). O conteúdo da lista aparece como mais uma fonte dentro de cada filme e episódio, em todos os aparelhos. Até 5 listas.</p></div>
+          <div><h2>Listas M3U</h2><p class="sub">Só filmes e séries, sem canais. Até 5 listas.</p></div>
           <div class="head-btns"><button type="button" id="plNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Nova lista</button></div>
         </div>
         <div id="plList" class="pl-list"></div>
@@ -1682,7 +1724,7 @@
     <main class="page hidden" data-section="categorias" data-title="Categorias">
       <div class="card">
         <div class="card-head">
-          <div><h2>Categorias do app</h2><p class="sub">As fileiras do app, na ordem em que aparecem. Cada uma mostra onde fica no app. Renomeie ou apague; vale na próxima vez que o app abrir.</p></div>
+          <div><h2>Categorias do app</h2><p class="sub">As fileiras do app, na ordem em que aparecem. Mudanças valem quando o app abrir de novo.</p></div>
         </div>
         <div class="toolbar">
           <div class="field-icon"><svg class="i"><use href="#i-search"/></svg><input id="catSearch" placeholder="Buscar categoria" autocomplete="off"></div>
@@ -1697,14 +1739,14 @@
       </div>
       <div class="card" id="genreArtCard">
         <div class="card-head">
-          <div><h2>Capas dos gêneros</h2><p class="sub">A imagem de fundo de cada gênero (Ação, Comédia…). Troque pelo código de um filme ou série do TMDB; vale na próxima vez que o app abrir.</p></div>
+          <div><h2>Capas dos gêneros</h2><p class="sub">A imagem de cada gênero no app. Troque pelo código TMDB de um filme ou série.</p></div>
         </div>
         <div id="genreArt" class="ga-grid"></div>
         <div id="genreArtEdit" class="ga-edit hidden"></div>
       </div>
       <div class="card" id="svcCard">
         <div class="card-head">
-          <div><h2>Fileira "Streamings"<em class="m3u-tag sec-tag">Streamings</em></h2><p class="sub">Os streamings da fileira "Streamings" da tela Início do app. Apague os que não quer mostrar. Vale na próxima vez que o app abrir.</p></div>
+          <div><h2>Fileira "Streamings"<em class="m3u-tag sec-tag">Streamings</em></h2><p class="sub">Os streamings da tela Início do app. Apague os que não quer mostrar.</p></div>
         </div>
         <div class="toolbar">
           <div id="svcFilter" class="seg">
@@ -1721,7 +1763,7 @@
     <main class="page hidden" data-section="uso" data-title="Banco de dados">
       <div class="card">
         <div class="card-head" style="flex-wrap: nowrap">
-          <div><h2>Tráfego do app neste mês</h2><p class="sub">Estimativa medida pelo próprio banco: biblioteca dos clientes e aberturas do app. O número oficial fica no painel do Supabase.</p></div>
+          <div><h2>Tráfego do app neste mês</h2><p class="sub">Estimativa do próprio banco. O número oficial fica no Supabase.</p></div>
           <button id="usoReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
         </div>
         <div id="usoMsg" class="msg"></div>
@@ -1787,7 +1829,7 @@
         </div>
         <div class="card">
           <h2>Versão mínima</h2>
-          <p class="sub">Quem estiver numa versão mais antiga só vê a tela "Atualização obrigatória", com o botão para baixar a nova.</p>
+          <p class="sub">Quem tiver uma versão mais antiga precisa atualizar para abrir o app.</p>
           <label for="minVer">Versão mínima</label>
           <select id="minVer"><option value="">Desligado (qualquer versão abre)</option></select>
           <p id="minVerInfo" class="hint"></p>
@@ -1797,7 +1839,7 @@
       </div>
       <div class="card">
         <div class="card-head" style="flex-wrap: nowrap">
-          <div><h2>Versões do aplicativo</h2><p class="sub">O que mudou em cada versão, com a data e a hora em que foi publicada.</p></div>
+          <div><h2>Versões do aplicativo</h2><p class="sub">O que mudou em cada versão.</p></div>
           <button id="updReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
         </div>
         <div id="updList" class="upd-list"></div>
@@ -1856,7 +1898,7 @@
       </div>
       <div class="card">
         <div class="card-head" style="align-items:center">
-          <div><h2>Fontes</h2><p class="sub" id="upSub">Testado pelo Supabase a cada 5 minutos: cada addon de conteúdo, cada lista M3U e a fonte CloudPlay. Uptime = vezes que respondeu ÷ vezes que foi testado.</p></div>
+          <div><h2>Fontes</h2><p class="sub" id="upSub">Cada fonte é testada a cada 5 minutos. Uptime = quantas vezes respondeu.</p></div>
           <div id="upDays" class="seg"><button type="button" data-v="1">24 h</button><button type="button" data-v="7">7 dias</button><button type="button" data-v="30" class="on">30 dias</button></div>
         </div>
         <div id="upSetup" class="own-setup hidden"></div>
@@ -1875,7 +1917,7 @@
       </div>
       <div class="card">
         <div class="card-head" style="flex-wrap: nowrap">
-          <div><h2>O que deu errado nos aparelhos</h2><p class="sub">Addons que falharam ou não responderam, erros do app e vezes em que ele fechou sozinho. Chega a cada 10 minutos.</p></div>
+          <div><h2>O que deu errado nos aparelhos</h2><p class="sub">Falhas de addons, erros do app e vezes em que ele fechou sozinho.</p></div>
           <button id="erReload" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
         </div>
         <div class="er-tools">
@@ -1901,7 +1943,7 @@
       <div class="card ai-hero">
         <span class="gen-badge"><svg class="i"><use href="#i-spark"/></svg></span>
         <div><h2>A IA revisa o CloudPlay toda semana</h2>
-          <p class="sub" style="margin:0">Ela olha o código do app, os erros que chegam dos aparelhos e o tempo de carregamento, e deixa aqui o que pode ser melhorado. Nada muda sozinho: para fazer uma melhoria, é só pedir no chat.</p>
+          <p class="sub" style="margin:0">Toda semana a IA revisa o app e deixa aqui o que dá para melhorar. Para fazer uma melhoria, é só pedir no chat.</p>
           <p id="aiWhen" class="ai-when"></p></div>
       </div>
       <div id="aiSummary" class="card hidden"></div>
@@ -3150,7 +3192,7 @@
   seg("hlTab", (v) => {
     $("hlTest").classList.toggle("hidden", v !== "test"); $("hlDev").classList.toggle("hidden", v !== "dev");
     $("aTestAll").classList.toggle("hidden", v !== "test");
-    $("hlSub").textContent = v === "test" ? "Teste na hora: 20 títulos sorteados por fonte (populares, séries e lançamentos), pedidos de novo se falharem; o começo dos vídeos é aberto para ver se tocam de verdade."
+    $("hlSub").textContent = v === "test" ? "Testa 20 títulos de cada fonte e abre o começo dos vídeos para ver se tocam."
       : "Medido nos aparelhos dos clientes a cada busca de fontes: quantas vezes o addon trouxe fontes, em quanto tempo, e quantos filmes foram assistidos por ele.";
   });
 
