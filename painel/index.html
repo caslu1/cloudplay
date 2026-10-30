@@ -3545,7 +3545,9 @@
     ["fantasy", "Fantasia", "/zRKQW58MBEY078AxkHxEJzUskCl.jpg"], ["horror", "Terror", "/AmR3JG1VQVxU8TfAvljUhfSFUOx.jpg"],
     ["science_fiction", "Ficção científica", "/8sNiAPPYU14PUepFNeSNGUTiHW.jpg"], ["thriller", "Suspense", "/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg"],
     ["war", "Guerra", "/gqrnQA6Xppdl8vIb2eJc58VC1tW.jpg"],
-  ].map(([k, name, art]) => ({ id: "collection_genre_" + k, name, art: art.startsWith("http") ? art : TMDB_IMG + art }));
+  ].map(([k, name, art]) => ({ id: "collection_genre_" + k, name, art: art.startsWith("http") ? art : TMDB_IMG + art }))
+    // From A to Z, as in the app.
+    .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
   let gaOpen = null, gaPick = null;
   function renderGenreArt() {
     const custom = settings.collection_art || {};
