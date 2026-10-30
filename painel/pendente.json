@@ -65,10 +65,6 @@
       "added": "2026-10-30"
     },
     {
-      "text": "Mini tutorial: na primeira vez que abrir o app (e para quem atualizar) aparece um guia rápido de como escolher e trocar de fonte, dublado ou legendado e como pedir um filme; na página do título aparece uma dica sobre o botão Fontes.",
-      "added": "2026-10-30"
-    },
-    {
       "text": "Página do filme ou série: quando o título está numa lista M3U, aparece a bandeira do Brasil (conteúdo em português) e ele nunca mostra \"Solicitar conteúdo\" por engano.",
       "added": "2026-10-30"
     },
@@ -78,5 +74,5 @@
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T19:32:36.622420+00:00"
+  "updated_at": "2026-10-30T19:37:21.081400+00:00"
 }
