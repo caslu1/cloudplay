@@ -35,8 +35,12 @@
     {
       "text": "Ordem automática das fontes: as listas M3U também entram na disputa e ficam na frente quando são as mais estáveis (antes iam sempre por último).",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Tela Editar perfil refeita: na TV, o perfil à esquerda e os avatares em abas (Animais, Personagens, Mídia, Natureza) à direita; no celular, tela inteira com Salvar no topo, foto com câmera, nome, avatares, PIN e Excluir perfil no fim.",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T15:11:05.324850+00:00"
+  "updated_at": "2026-10-30T15:42:31.184579+00:00"
 }
