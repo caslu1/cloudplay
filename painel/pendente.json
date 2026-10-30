@@ -79,8 +79,12 @@
     {
       "text": "Página do título na TV: os botões (Fontes, Trailer, Favoritos e Coleção) ficam um pouco menores, para o nome \"Coleção\" caber inteiro.",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Player no celular: a tela de Áudio mostra só Dublado ou Legendado (sem a lista de faixas do arquivo). A legenda continua na fileira de baixo.",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T21:43:06.015192+00:00"
+  "updated_at": "2026-10-30T21:46:21.024331+00:00"
 }
