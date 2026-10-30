@@ -3831,16 +3831,24 @@
   async function rcLoadM3u() {
     if (rcM3uLoading || !(playlists || []).some((p) => p.enabled)) return false;
     rcM3uLoading = true;
-    const r = await sb.functions.invoke("m3u-test", { body: { action: "recent" } }).catch(() => ({ data: null }));
+    const r = await sb.functions.invoke("m3u-test", { body: { action: "recent" } }).catch((e) => ({ data: null, error: e }));
     rcM3uLoading = false;
-    if (!r.data || !r.data.ok) { rcM3u = { at: Date.now(), items: [], skipped: [], diag: [], failed: true }; renderRecent(); return false; }
+    if (!r.data || !r.data.ok) {
+      // Why, for the note: an older function (no "recent"), or one stopped by Supabase's limits.
+      const st = r.error && r.error.context && r.error.context.status;
+      rcM3u = { at: Date.now(), items: [], skipped: [], diag: [], failed: true,
+        why: r.data && !r.data.ok ? "a função m3u-test no Supabase é antiga (cole a versão nova)"
+          : st === 546 || st === 504 ? "a lista é grande demais para o Supabase ler de uma vez"
+          : st ? "a função m3u-test respondeu com erro " + st : "a função m3u-test não respondeu" };
+      renderRecent(); return false;
+    }
     rcM3u = { at: Date.now(), items: r.data.items || [], skipped: r.data.skipped || [], diag: r.data.diag || [] };
     return rcM3u.items.length > 0;
   }
   // What happened with each list, when it brought nothing (to know where it stops).
   function rcM3uNotes() {
     if (rcM3uLoading || !rcM3u.at) return [];
-    if (rcM3u.failed) return [" · as listas M3U não responderam (confira a função m3u-test no Supabase)"];
+    if (rcM3u.failed) return [" · listas M3U: " + (rcM3u.why || "não responderam")];
     const notes = (rcM3u.diag || []).filter((d) => !d.recent).map((d) => d.list + ": " +
       (d.movies || d.series ? "a lista não diz quando os títulos entraram" : d.error === "demorou" ? "a lista demorou demais" : "não respondeu"));
     (rcM3u.skipped || []).forEach((n) => notes.push(n + ": não é Xtream (sem usuário e senha)"));
