@@ -11,6 +11,10 @@
     {
       "text": "Séries: a página da série não troca mais o botão Assistir por \"Solicitar conteúdo\" só porque um episódio (o 1º ou o que estava assistindo) não respondeu na hora.",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Ajustes → Meus pedidos: o cliente vê os conteúdos que pediu em \"Solicitar conteúdo\" e a situação de cada um (Pendente, Conteúdo adicionado ou Não disponível na fonte).",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,

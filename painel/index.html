@@ -542,6 +542,23 @@
   dialog.renew .rn-new { border-color: rgba(255, 255, 255, .35); background: var(--brand-soft); }
   dialog.renew .rn-new b { color: var(--text); }
   dialog.renew .rn-extra { margin-top: 12px; }
+  dialog.renew.wide { width: min(760px, calc(100vw - 32px)); }
+  .us-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0 16px; }
+  .us-t { background: var(--field); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+  .us-t span { font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); font-weight: 600; }
+  .us-t b { display: block; font-size: 21px; margin-top: 3px; } .us-t small { color: var(--muted); font-size: 11.5px; }
+  .us-h { font-size: 12.5px; font-weight: 600; color: var(--muted); margin: 6px 0 6px; }
+  .us-chart { display: flex; align-items: flex-end; gap: 6px; height: 150px; border-bottom: 1px solid var(--line); padding-top: 6px; }
+  .us-bc { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5px; height: 100%; }
+  .us-bc span { font-size: 10.5px; color: var(--faint); white-space: nowrap; }
+  .us-bar { width: 100%; max-width: 44px; background: #3a3a46; border-radius: 5px 5px 2px 2px; display: flex; align-items: flex-end; overflow: hidden; min-height: 2px; }
+  .us-bar i { display: block; width: 100%; background: #ff74a8; border-top: 2px solid var(--panel); }
+  .us-leg { display: flex; gap: 16px; font-size: 12px; color: var(--muted); margin: 10px 0 14px; }
+  .us-leg i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .us-dev { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 13px; }
+  .us-dev .dot { width: 8px; height: 8px; border-radius: 50%; background: #52525b; flex: none; } .us-dev .dot.on { background: var(--ok); }
+  .us-dev div { flex: 1; min-width: 0; } .us-dev b { display: block; } .us-dev small { color: var(--faint); }
+  @media (max-width: 640px) { .us-tiles { grid-template-columns: repeat(2, 1fr); } .us-chart { gap: 3px; } }
   dialog.renew .rn-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
   .nav .pill.count-pill::before { content: none; }
   button.icon.wa { color: #25d366; }
@@ -1912,6 +1929,7 @@
           iconBtn("wa", c.phone ? "Abrir WhatsApp do cliente" : "Cadastrar WhatsApp", () => openWhatsApp(c), c.phone ? "wa" : ""),
           iconBtn("msg", "Copiar mensagem para o cliente", (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada")),
           iconBtn("renew", "Renovar", () => openRenew(c)),
+          iconBtn("clock", "Tempo de uso", () => openUsage(c)),
           iconBtn("edit", "Editar cliente", () => openEdit(c)),
           iconBtn(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
           iconBtn("trash", "Excluir", () => removeCode(c), "bad")))));
@@ -1991,6 +2009,53 @@
   $("edCancel").addEventListener("click", () => $("editDlg").close());
 
   // Phones: the ☰ of a code opens a list of its other options from the bottom of the screen.
+  // CloudPlay: how long this code's devices spent in the app (admin_code_usage; counted from the
+  // reports the app sends every 2 minutes while it is on the screen).
+  const hm = (s) => { const m = Math.round((s || 0) / 60); return m < 60 ? m + " min" : Math.floor(m / 60) + "h" + String(m % 60).padStart(2, "0"); };
+  function openUsage(c) {
+    let days = 7;
+    const body = el("div", {});
+    const seg = el("div", { class: "seg" }, ...[[1, "Hoje"], [7, "7 dias"], [30, "30 dias"]].map(([d, t]) =>
+      el("button", { type: "button", class: d === days ? "on" : "", onclick: (e) => {
+        days = d; seg.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b === e.currentTarget)); load(); } }, t)));
+    const load = async () => {
+      body.replaceChildren(el("p", { class: "rn-who" }, "Carregando…"));
+      const { data, error } = await sb.rpc("admin_code_usage", { p_code_id: c.id, p_days: days });
+      if (error) { body.replaceChildren(el("p", { class: "msg" }, /admin_code_usage|function/i.test(error.message) ? "Rode antes o arquivo cloudplay_functions.sql no Supabase." : "Erro: " + error.message)); return; }
+      const u = data || {};
+      const devs = u.devices || [];
+      const online = devs.find((d) => isOnline(d));
+      const last = devs.map((d) => d.last_seen).filter(Boolean).sort().pop();
+      const avg = (u.seconds || 0) / days;
+      const list = (u.days || []).slice(-Math.max(days, 7));
+      const max = Math.max(60, ...list.map((d) => d.seconds));
+      const label = (d) => { const t = new Date(d + "T12:00:00"); return d === todaySP() ? "hoje" : t.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", ""); };
+      const tile = (k, v, s2) => el("div", { class: "us-t" }, el("span", {}, k), el("b", {}, v), el("small", {}, s2));
+      body.replaceChildren(
+        el("div", { class: "us-tiles" },
+          tile("Tempo no app", hm(u.seconds), days > 1 ? "média " + hm(avg) + " por dia" : "hoje"),
+          tile("Assistindo", hm(u.watch_seconds), u.seconds ? Math.round(u.watch_seconds / u.seconds * 100) + "% do tempo" : "—"),
+          tile("Dias que usou", u.days_used + " de " + days, u.days_used >= days ? "usa todo dia" : u.days_used ? "" : "não usou"),
+          tile("Última vez", online ? "Agora" : last ? ago(last) : "—", online ? "online " + (online.name ? "no " + online.name : "") : "")),
+        el("div", { class: "us-h" }, list.length > 7 ? "Últimos " + list.length + " dias" : "Últimos 7 dias"),
+        el("div", { class: "us-chart" }, ...list.map((d) => el("div", { class: "us-bc", title: hm(d.seconds) + " no app · " + hm(d.watch_seconds) + " assistindo" },
+          el("div", { class: "us-bar", style: "height:" + Math.max(2, Math.round(d.seconds / max * 120)) + "px" },
+            el("i", { style: "height:" + (d.seconds ? Math.round(d.watch_seconds / d.seconds * 100) : 0) + "%" })),
+          el("span", {}, list.length > 14 ? (d.day === todaySP() ? "hoje" : d.day.slice(8, 10)) : label(d.day))))),
+        el("div", { class: "us-leg" }, el("span", {}, el("i", { style: "background:#ff74a8" }), "Assistindo"), el("span", {}, el("i", { style: "background:#3a3a46" }), "Navegando no app")),
+        el("div", { class: "us-h" }, "Por aparelho"),
+        ...(devs.length ? devs.map((d) => el("div", { class: "us-dev" }, el("i", { class: "dot" + (isOnline(d) ? " on" : "") }),
+          el("div", {}, el("b", {}, d.name || "Aparelho"), el("small", {}, (d.ui_mode === "tv" ? "TV" : d.ui_mode === "phone" ? "Celular" : d.ui_mode === "tablet" ? "Tablet" : "Aparelho") + " · " + (isOnline(d) ? "online agora" : d.last_seen ? ago(d.last_seen) : "—"))),
+          el("span", {}, "Hoje " + hm(d.today) + (days > 1 ? " · " + days + " dias " + hm(d.period) : ""))))
+          : [el("p", { class: "rn-who" }, "Nenhum aparelho conectado.")]),
+        el("p", { class: "rn-who", style: "margin-top:10px" }, "Conta o tempo com o app aberto na tela (de 2 em 2 minutos), a partir de quando o SQL foi rodado."));
+    };
+    $("rvDlg").classList.add("wide");
+    $("rvDlg").addEventListener("close", () => $("rvDlg").classList.remove("wide"), { once: true });
+    rvDialog((close) => [el("h2", {}, (c.note || "Sem nome") + " · " + c.code), el("p", { class: "rn-who" }, "Tempo de uso do app neste código (todos os aparelhos)"),
+      seg, body, el("div", { class: "rn-actions" }, el("button", { type: "button", class: "ghost", onclick: close }, "Fechar"))]);
+    load();
+  }
   function openSheet(c) {
     $("shTitle").textContent = c.note || "Sem nome"; $("shSub").textContent = "Código " + c.code;
     const item = (name, label, fn, cls) => el("button", { type: "button", class: "sheet-item" + (cls ? " " + cls : ""),
@@ -1999,6 +2064,7 @@
       item("copy", "Copiar código", (e) => copy(codeLine(c), null, "Código copiado")),
       item("msg", "Copiar mensagem", () => copy(messageFor(c), null, "Mensagem copiada")),
       item("tv", "Telas, nome e WhatsApp", () => openEdit(c)),
+      item("clock", "Tempo de uso", () => openUsage(c)),
       item(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
       item("trash", "Excluir código", () => removeCode(c), "bad"));
     $("actSheet").showModal();
@@ -2258,6 +2324,7 @@
     const side = el("div", { class: "dv-side" },
       session ? el("div", { class: "dv-session" }, el("span", {}, "Sessão"), el("b", {}, mins(session)),
         st === "playing" && d.now_since ? el("span", {}, "neste título há " + mins((Date.now() - new Date(d.now_since)) / 1000)) : "") : "",
+      el("button", { type: "button", class: "fm-btn", title: "Tempo de uso do app neste código", onclick: () => openUsage(c) }, icon("clock"), "Tempo de uso"),
       d.force_mode ? el("span", { class: "fm-wait" }, "Vai abrir em modo " + (d.force_mode === "tv" ? "TV" : "celular"))
         : d.ui_mode === "tv" ? ""
         : el("button", { type: "button", class: "fm-btn", title: "Para TV box que abriu no modo celular", onclick: (ev) => forceMode(c, d, "tv", ev.currentTarget) }, icon("tv"), "Forçar modo TV"));
