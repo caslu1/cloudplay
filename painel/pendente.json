@@ -7,6 +7,10 @@
     {
       "text": "Pesquisa na TV: ao parar em um resultado, o app já carrega a sinopse e as informações e, num filme, procura as fontes por trás; ao abrir, aparece tudo mais rápido.",
       "added": "2026-10-29"
+    },
+    {
+      "text": "Séries: a página da série não troca mais o botão Assistir por \"Solicitar conteúdo\" só porque um episódio (o 1º ou o que estava assistindo) não respondeu na hora.",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
