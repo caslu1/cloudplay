@@ -71,8 +71,12 @@
     {
       "text": "Página do filme ou série: quando o título está numa lista M3U, aparece a bandeira do Brasil (conteúdo em português) e ele nunca mostra \"Solicitar conteúdo\" por engano.",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Listas M3U nas séries: só aparecem episódios da série certa. Antes, uma série como \"Justiça Sem Limites\" mostrava também \"Liga da Justiça Sem Limites\" e outras com nome parecido.",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T18:51:21.559307+00:00"
+  "updated_at": "2026-10-30T19:32:36.622420+00:00"
 }
