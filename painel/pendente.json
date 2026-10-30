@@ -13,7 +13,7 @@
       "added": "2026-10-30"
     },
     {
-      "text": "Ajustes → Meus pedidos: o cliente vê os conteúdos que pediu em \"Solicitar conteúdo\" e a situação de cada um (Pendente, Conteúdo adicionado ou Não disponível na fonte).",
+      "text": "Ajustes → Meus pedidos: o cliente vê os conteúdos que pediu em \"Solicitar conteúdo\" e a situação de cada um (Pendente, Conteúdo adicionado ou Não disponível na fonte). No celular fica em Conta e usuário, acima de Limpar cache, e abre numa tela própria.",
       "added": "2026-10-30"
     },
     {
@@ -50,5 +50,5 @@
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T15:55:55.454571+00:00"
+  "updated_at": "2026-10-30T16:07:57.508294+00:00"
 }
