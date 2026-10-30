@@ -1027,6 +1027,135 @@
     .bottom-nav { background: rgba(13, 13, 18, .96); }
     .bottom-nav a.active svg { color: var(--pink); }
   }
+  /* ── CloudPlay CRM look: calm greys, pink only for the menu item you are on and the charts;
+     a header with search, "Gerar código" and the profile menu; no page title. ── */
+  :root { --bg: #0b0b0f; --side: #0e0e13; --panel: #131318; --panel2: #18181e; --field: #0f0f14; --line: #22222b; --line2: #2c2c36;
+    --muted: #9a9aa6; --faint: #6b6b76; --side-w: 248px; --grad: #26262f; }
+  .content::before { display: none; }
+  .sidebar { padding: 18px 12px; }
+  .brand { padding: 4px 10px 14px; } .brand img { width: 132px; }
+  .nav-label { font-size: 11px; letter-spacing: .6px; padding: 16px 12px 6px; color: var(--faint); }
+  .nav a { height: 36px; padding: 0 12px; gap: 11px; font-size: 13.5px; border-radius: 8px; color: #c9c9d2; margin-bottom: 1px; }
+  .nav a svg.i { width: 17px; height: 17px; color: #8b8b96; stroke-width: 1.8; }
+  .nav a:hover { background: #ffffff07; color: #fff; }
+  .nav a.active { background: #1c1c23; box-shadow: none; color: #fff; }
+  .nav a.active::before { content: none; }
+  .nav a.active svg.i { color: var(--pink); }
+  .nav .pill, .nav .pill.count-pill { margin-left: auto; background: #26262f; color: #d6d6de; min-width: 0; height: 20px; line-height: 20px; padding: 0 7px; font-size: 11px; font-weight: 600; border-radius: 99px; }
+  .nav-sep, .side-foot { display: none; }
+  .avatar { background: #2a2a33; color: #fff; border-radius: 8px; }
+
+  .topbar { position: sticky; top: 0; z-index: 25; height: 60px; padding: 0 28px; gap: 10px; background: rgba(11, 11, 15, .92);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .topbar .crumb { font-size: 13px; text-transform: none; letter-spacing: 0; color: var(--faint); white-space: nowrap; margin-right: auto; }
+  .topbar .crumb b { color: var(--text); font-weight: 600; }
+  .tb-search { width: 340px; }
+  .tb-search input { height: 36px; border-radius: 9px; background: var(--panel); border-color: var(--line); font-size: 13px; padding-right: 34px; }
+  .tb-search svg { top: 10px; }
+  .tb-search kbd { position: absolute; right: 9px; top: 8px; font: 11px Inter, sans-serif; color: var(--faint); border: 1px solid var(--line2); border-radius: 5px; padding: 0 6px; line-height: 18px; }
+  .tb-gen, .gen-open, #genBtn { background: #ececf1 !important; color: #111 !important; border: 0; box-shadow: none !important; }
+  .tb-gen:hover, .gen-open:hover, #genBtn:hover { background: #fff !important; }
+  .tb-gen { height: 36px; padding: 0 14px; border-radius: 9px; font-size: 13px; }
+  .topbar .icon-btn { width: 36px; height: 36px; border-radius: 9px; border: 1px solid var(--line); background: var(--panel); color: #a5a5b0;
+    display: inline-grid; place-items: center; position: relative; text-decoration: none; }
+  .topbar .icon-btn:hover { color: #fff; border-color: var(--line2); }
+  .tb-bell i { position: absolute; top: 6px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--pink); border: 2px solid var(--panel); }
+  .prof { position: relative; }
+  .prof-btn { height: 40px; padding: 0 10px 0 5px; gap: 9px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; color: var(--text); font-weight: 500; }
+  .prof-btn:hover { background: var(--panel2); border-color: var(--line2); }
+  .prof-btn .avatar { width: 28px; height: 28px; font-size: 12px; border-radius: 7px; }
+  .prof-who { display: grid; text-align: left; line-height: 1.25; }
+  .prof-who b { font-size: 12.5px; font-weight: 600; } .prof-who span { font-size: 11.5px; color: var(--faint); font-weight: 400; max-width: 170px; overflow: hidden; text-overflow: ellipsis; }
+  .prof-chev { width: 14px; height: 14px; transform: rotate(90deg); color: var(--faint); }
+  .prof-menu { position: absolute; right: 0; top: 48px; width: 270px; background: #16161c; border: 1px solid var(--line2); border-radius: 12px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .55); padding: 6px; z-index: 40; }
+  .pm-who { display: flex; gap: 10px; align-items: center; padding: 10px 10px 12px; border-bottom: 1px solid var(--line); margin-bottom: 6px; }
+  .pm-who .avatar { width: 36px; height: 36px; font-size: 14px; }
+  .pm-who b { display: block; font-size: 13.5px; } .pm-who div span { display: block; font-size: 12px; color: var(--faint); overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
+  .pm-item { display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%; height: 36px; padding: 0 10px; border-radius: 8px;
+    background: transparent; color: #d6d6de; font-weight: 500; font-size: 13px; text-decoration: none; border: 0; }
+  .pm-item:hover { background: #1f1f27; color: #fff; }
+  .pm-item svg.i { color: #8b8b96; }
+  .pm-info { cursor: default; } .pm-info:hover { background: transparent; color: #d6d6de; }
+  .pm-info small { margin-left: auto; color: var(--faint); font-size: 11.5px; }
+  .pm-out { color: #f39a9a; } .pm-out svg.i { color: #f39a9a; } .pm-out:hover { background: rgba(240, 106, 106, .08); color: #f39a9a; }
+  .pm-sep { height: 1px; background: var(--line); margin: 6px 4px; }
+  .page { padding: 24px 28px 48px; }
+  @media (min-width: 721px) { #genOpen { display: none !important; } }
+
+  .card { background: var(--panel); border-radius: 12px; padding: 18px; }
+  .stat { background: var(--panel); border-radius: 12px; padding: 16px 18px; }
+  .stat span { font-size: 12.5px; color: var(--muted); }
+  .stat b { font-size: 26px; margin-top: 6px; font-weight: 650; }
+  .stat small { display: block; font-size: 12px; color: var(--faint); margin-top: 2px; }
+  .stat small span { display: inline; font-size: inherit; color: inherit; font-weight: inherit; }
+  .stat .st-ic, .hist-ic { display: none; }
+  .quick a svg { color: #8b8b96; }
+  .kpis { display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 14px; }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); display: inline-block; }
+  .dash2 { display: grid; gap: 14px; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); margin-bottom: 14px; }
+  .dash2 .card { margin: 0; }
+  .dc-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .dc-head h2 { font-size: 14.5px; } .dc-head .sub { margin: 2px 0 0; font-size: 12.5px; color: var(--faint); }
+  .dc-link { height: 30px; padding: 0 11px; border-radius: 8px; border: 1px solid var(--line2); color: var(--text); font-size: 12px; font-weight: 600;
+    text-decoration: none; display: inline-flex; align-items: center; white-space: nowrap; }
+  .dc-link:hover { background: var(--panel2); }
+  .dc-empty { display: none; color: var(--faint); font-size: 13px; margin: 6px 0; }
+  .online-list:empty + .dc-empty { display: block; }
+  .dash2 .online-list { grid-template-columns: 1fr; margin-top: 0; }
+  .dash2 .on-item { background: transparent; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 9px 2px; }
+  .dash2 .on-item:last-child { border-bottom: 0; }
+  .hist-head { display: none; }
+  .due-list { display: grid; }
+  .due-row { display: grid; grid-template-columns: minmax(0, 1fr) 90px 100px auto; gap: 12px; align-items: center; padding: 9px 2px; border-bottom: 1px solid var(--line); }
+  .due-row:last-child { border-bottom: 0; }
+  .due-who { min-width: 0; } .due-who b { display: block; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .due-who span { display: block; font-size: 12px; color: var(--faint); }
+  .due-row .code { font-size: 13px; }
+  .due-when { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: #cfcfd6; white-space: nowrap; }
+  .due-when i { width: 6px; height: 6px; border-radius: 50%; background: var(--faint); }
+  .due-when.soon i { background: var(--warn); }
+  .dash-req { display: grid; }
+  .dr-item { display: flex; align-items: center; gap: 12px; padding: 8px 2px; border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none; }
+  .dr-item:last-child { border-bottom: 0; }
+  .dr-item img, .dr-item .noposter { width: 34px; height: 50px; border-radius: 6px; object-fit: cover; background: var(--panel2); flex: none; }
+  .dr-item div { min-width: 0; flex: 1; } .dr-item b { display: block; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dr-item div span { display: block; font-size: 12px; color: var(--faint); }
+
+  .lg-card { padding: 0; overflow: hidden; }
+  .lg-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 14px 18px; }
+  .lg-search { flex: 0 1 300px; } .lg-search input, .lg-tools select { height: 36px; font-size: 13px; }
+  .lg-tools select { width: auto; min-width: 150px; }
+  .lg-tools .seg button { height: 28px; font-size: 12.5px; }
+  .lg-info { margin-left: auto; font-size: 12.5px; color: var(--faint); }
+  .lg-dh { padding: 12px 18px 8px; font-size: 12.5px; font-weight: 600; color: #cfcfd6; border-top: 1px solid var(--line); background: #111116; }
+  .lg-dh em { font-style: normal; font-weight: 500; color: var(--faint); margin-left: 6px; }
+  .lg-row { display: grid; grid-template-columns: 56px 190px 190px minmax(0, 1fr) 110px; gap: 12px; align-items: center; padding: 10px 18px; border-top: 1px solid var(--line); font-size: 13px; }
+  .lg-t { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .lg-who { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lg-who .avatar { width: 22px; height: 22px; font-size: 10.5px; border-radius: 6px; flex: none; }
+  .lg-act { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+  .lg-act svg.i { width: 15px; height: 15px; color: #8b8b96; }
+  .lg-det { color: #d6d6de; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lg-area { justify-self: end; font-size: 11.5px; color: var(--muted); border: 1px solid var(--line2); border-radius: 6px; padding: 1px 8px; }
+  .lg-foot { margin: 0; padding: 12px 18px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--faint); }
+  #lgList .empty { padding: 24px 18px; margin: 0; }
+
+  @media (max-width: 1100px) { .tb-search { width: 240px; } .prof-who { display: none; } }
+  @media (max-width: 1000px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dash2 { grid-template-columns: 1fr; } }
+  @media (max-width: 860px) {
+    .topbar { padding: 0 14px; height: 56px; }
+    .topbar .crumb, .tb-search, .tb-gen, .prof-chev { display: none; }
+    .top-logo { display: block; height: 26px; width: auto; margin-right: auto; }
+    .prof-btn { padding: 0 4px; height: 38px; }
+    .page { padding: 16px 14px 90px; }
+    .kpis { gap: 10px; } .stat b { font-size: 22px; }
+    .due-row { grid-template-columns: minmax(0, 1fr) auto; } .due-row .code, .due-row .due-when { display: none; }
+    .lg-row { grid-template-columns: 48px minmax(0, 1fr); gap: 4px 10px; }
+    .lg-row .lg-who, .lg-row .lg-act, .lg-row .lg-det { grid-column: 2; } .lg-row .lg-area { display: none; }
+    .lg-row .lg-t { grid-row: span 3; align-self: start; }
+    .lg-search { flex-basis: 100%; } .lg-info { margin-left: 0; }
+  }
 </style>
 </head>
 <body>
@@ -1065,6 +1194,7 @@
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
   <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></symbol>
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
   <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11h10.2L20 8H6.2"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></symbol>
   <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></symbol>
@@ -1109,31 +1239,25 @@
   <aside class="sidebar">
     <div class="brand"><img src="logo.png" alt="CloudPlay"></div>
     <nav class="nav">
-      <div class="nav-label">Visão geral</div>
       <a href="#inicio" data-page="inicio"><svg class="i"><use href="#i-grid"/></svg>Dashboard</a>
-      <div class="nav-label">Gestão de clientes</div>
-      <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg>Códigos de acesso</a>
-      <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg>Dispositivos conectados<span id="navOnline" class="pill count-pill hidden">0</span></a>
-      <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-cart"/></svg>Pedidos<span id="navPending" class="pill count-pill hidden">0</span></a>
+      <div class="nav-label">Clientes</div>
+      <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg>Códigos de acesso<span id="navCodes" class="pill hidden">0</span></a>
+      <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg>Dispositivos<span id="navOnline" class="pill count-pill hidden">0</span></a>
+      <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-inbox"/></svg>Pedidos<span id="navPending" class="pill count-pill hidden">0</span></a>
       <a href="#revendedores" data-page="revendedores"><svg class="i"><use href="#i-user"/></svg>Revendedores</a>
-      <div class="nav-label">Conteúdo do aplicativo</div>
+      <div class="nav-label">Conteúdo</div>
       <a href="#addons" data-page="addons"><svg class="i"><use href="#i-tvplay"/></svg>Fontes de conteúdo</a>
       <a href="#meus" data-page="meus"><svg class="i"><use href="#i-new"/></svg>Meus conteúdos</a>
       <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-tag"/></svg>Categorias</a>
       <a href="#catalogo" data-page="catalogo"><svg class="i"><use href="#i-list"/></svg>Catálogo M3U</a>
-      <div class="nav-sep"></div>
       <div class="nav-label">Sistema</div>
-      <a href="#uso" data-page="uso"><svg class="i"><use href="#i-db"/></svg>Banco de dados</a>
       <a href="#atualizacoes" data-page="atualizacoes"><svg class="i"><use href="#i-renew"/></svg>Atualizações</a>
       <a href="#status" data-page="status"><svg class="i"><use href="#i-pulse"/></svg>Status</a>
       <a href="#erros" data-page="erros"><svg class="i"><use href="#i-alert"/></svg>Erros<span id="navErrors" class="pill count-pill hidden">0</span></a>
+      <a href="#uso" data-page="uso"><svg class="i"><use href="#i-db"/></svg>Banco de dados</a>
+      <a href="#logs" data-page="logs"><svg class="i"><use href="#i-clock"/></svg>Logs</a>
       <a href="#melhorias" data-page="melhorias"><svg class="i"><use href="#i-spark"/></svg>Melhorias com IA</a>
     </nav>
-    <div class="side-foot">
-      <div class="who-row"><div id="avatar" class="avatar">A</div>
-        <div class="who"><b>Administrador</b><span id="who"></span></div>
-        <button id="logout" class="icon-btn" title="Sair"><svg class="i"><use href="#i-logout"/></svg></button></div>
-    </div>
   </aside>
   <div id="backdrop" class="backdrop"></div>
   <div id="toast" class="toast"></div>
@@ -1186,52 +1310,62 @@
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg><span>Conectados</span></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-tvplay"/></svg><span>Fontes</span></a>
-    <a href="#mais" id="bnMore" data-page="pedidos revendedores meus categorias catalogo uso atualizacoes status erros melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#mais" id="bnMore" data-page="pedidos revendedores meus categorias catalogo uso atualizacoes status erros logs melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
   </nav>
 
   <div class="content">
     <div class="topbar">
       <button id="menuBtn" class="icon-btn" title="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
       <img class="top-logo" src="logo.png" alt="CloudPlay">
-      <div class="grow">
-        <div class="crumb">CloudPlay · Painel <span style="opacity:.6">v22</span></div>
-        <h1 id="pageTitle">Dashboard</h1>
+      <div class="crumb">Painel / <b id="pageTitle">Dashboard</b></div>
+      <div class="tb-search field-icon"><svg class="i"><use href="#i-search"/></svg><input id="tbSearch" placeholder="Buscar código, cliente ou telefone" autocomplete="off"><kbd>/</kbd></div>
+      <button type="button" id="tbGen" class="tb-gen"><svg class="i"><use href="#i-plus"/></svg>Gerar código</button>
+      <button id="refreshAll" class="icon-btn" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg></button>
+      <a href="#pedidos" id="tbBell" class="icon-btn tb-bell" title="Pedidos de conteúdo"><svg class="i"><use href="#i-inbox"/></svg><i class="hidden"></i></a>
+      <div class="prof">
+        <button type="button" id="profBtn" class="prof-btn" aria-haspopup="menu"><span id="avatar" class="avatar">A</span>
+          <span class="prof-who"><b>Administrador</b><span id="who"></span></span><svg class="i prof-chev"><use href="#i-chev"/></svg></button>
+        <div id="profMenu" class="prof-menu hidden" role="menu">
+          <div class="pm-who"><span id="pmAvatar" class="avatar">A</span><div><b>Administrador</b><span id="pmEmail"></span></div></div>
+          <button type="button" class="pm-item" id="pmProfile"><svg class="i"><use href="#i-user"/></svg>Meu perfil</button>
+          <button type="button" class="pm-item" id="pmPassword"><svg class="i"><use href="#i-lock"/></svg>Trocar senha</button>
+          <a class="pm-item" href="#logs" id="pmLogs"><svg class="i"><use href="#i-clock"/></svg>Logs do painel</a>
+          <div class="pm-sep"></div>
+          <div class="pm-item pm-info"><svg class="i"><use href="#i-key"/></svg>Sessão<small id="pmSince"></small></div>
+          <button type="button" class="pm-item pm-out" id="logout"><svg class="i"><use href="#i-logout"/></svg>Sair da conta</button>
+        </div>
       </div>
-      <button id="refreshAll" class="ghost small" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg><span class="lbl">Atualizar</span></button>
     </div>
 
     <!-- Visão geral -->
     <main class="page" data-section="inicio" data-title="Dashboard">
-      <div class="card online-card">
-        <div class="online-head">
-          <div class="online-num"><span class="live"></span><b id="onNow">0</b><div><strong>online agora</strong><span>aparelhos com o app aberto · atualiza a cada 10 segundos</span></div></div>
-          <div class="online-side"><b id="onToday">0</b><span>aparelhos usaram hoje</span><a href="#conectados" class="see-all">Ver todos</a></div>
-        </div>
-        <div id="onList" class="online-list"></div>
+      <div class="kpis">
+        <div class="stat"><span><i class="live-dot"></i>Online agora</span><b id="onNow">0</b><small><span id="onToday">0</span> aparelhos usaram hoje</small></div>
+        <div class="stat"><span>Clientes ativos</span><b id="sActive">0</b><small><span id="sFree">0</span> códigos livres</small></div>
+        <div class="stat"><span>Vencendo em 7 dias</span><b id="sDue">0</b><small id="sDueSub">nenhum amanhã</small></div>
+        <div class="stat"><span>Pedidos pendentes</span><b id="sPending">0</b><small id="sPendingSub">nenhum aguardando</small></div>
       </div>
-      <div class="stats">
-        <div class="stat"><span>Códigos criados</span><b id="sTotal">0</b></div>
-        <div class="stat"><span>Livres</span><b id="sFree">0</b></div>
-        <div class="stat"><span>Em uso</span><b id="sActive">0</b></div>
-        <div class="stat"><span>Vencidos</span><b id="sExpired">0</b></div>
-        <div class="stat"><span>Pedidos pendentes</span><b id="sPending">0</b></div>
-        <div class="stat"><span>Addons ativos</span><b id="sAddons">0</b></div>
-      </div>
-      <div class="two">
+      <div class="hidden"><b id="sTotal">0</b><b id="sExpired">0</b><b id="sAddons">0</b></div>
+      <div class="dash2">
         <div class="card hist-card">
-        <div class="hist-head"><div class="hist-ic"><svg class="i"><use href="#i-chart"/></svg></div>
-          <div><h2>Clientes ativos</h2><p class="sub" style="margin:0">Últimos 30 dias</p></div></div>
-        <div id="histChart" class="hist-chart"></div>
-        <div id="histTip" class="hist-tip hidden"></div>
-      </div>
+          <div class="dc-head"><div><h2>Clientes ativos</h2><p class="sub">Códigos em uso nos últimos 30 dias</p></div></div>
+          <div id="histChart" class="hist-chart"></div>
+          <div id="histTip" class="hist-tip hidden"></div>
+        </div>
         <div class="card">
-          <h2>Atalhos</h2>
-          <p class="sub">O que você mais faz no painel.</p>
-          <div class="quick">
-            <a href="#codigos" id="quickGen"><svg class="i"><use href="#i-key"/></svg><div>Gerar códigos<small>Para novos clientes</small></div></a>
-            <a href="#addons"><svg class="i"><use href="#i-tvplay"/></svg><div>Fontes de conteúdo<small>Addons e listas M3U de todos os aparelhos</small></div></a>
-            <a href="#categorias"><svg class="i"><use href="#i-tag"/></svg><div>Categorias e streamings<small>O que aparece no app</small></div></a>
-          </div>
+          <div class="dc-head"><div><h2>Online agora</h2><p class="sub">Aparelhos com o app aberto · atualiza a cada 10 segundos</p></div><a href="#conectados" class="dc-link">Ver todos</a></div>
+          <div id="onList" class="online-list"></div>
+          <p class="dc-empty">Nenhum aparelho com o app aberto agora.</p>
+        </div>
+      </div>
+      <div class="dash2">
+        <div class="card">
+          <div class="dc-head"><div><h2>Vencendo em breve</h2><p class="sub">Renove antes que o cliente perca o acesso</p></div><a href="#codigos" id="dueAll" class="dc-link">Ver todos</a></div>
+          <div id="dueList" class="due-list"></div>
+        </div>
+        <div class="card">
+          <div class="dc-head"><div><h2>Pedidos de conteúdo</h2><p id="dashReqSub" class="sub">Nenhum aguardando</p></div><a href="#pedidos" class="dc-link">Abrir</a></div>
+          <div id="dashReq" class="dash-req"></div>
         </div>
       </div>
     </main>
@@ -1331,6 +1465,7 @@
             <button type="button" data-v="free">Livres<span class="n" data-n="free"></span></button>
             <button type="button" data-v="active">Em uso<span class="n" data-n="active"></span></button>
             <button type="button" data-v="trial">Testes<span class="n" data-n="trial"></span></button>
+            <button type="button" data-v="due">Vencendo<span class="n" data-n="due"></span></button>
             <button type="button" data-v="expired">Vencidos<span class="n" data-n="expired"></span></button>
             <button type="button" data-v="revoked">Bloqueados<span class="n" data-n="revoked"></span></button>
           </div>
@@ -1696,6 +1831,21 @@
       </div>
     </main>
 
+    <!-- Logs: everything done in the panel (panel_log, written by the database) -->
+    <main class="page hidden" data-section="logs" data-title="Logs">
+      <div class="card lg-card">
+        <div class="lg-tools">
+          <div class="field-icon lg-search"><svg class="i"><use href="#i-search"/></svg><input id="lgSearch" placeholder="Buscar código, cliente ou ação" autocomplete="off"></div>
+          <div id="lgDays" class="seg"><button type="button" data-v="1" class="on">Hoje</button><button type="button" data-v="7">7 dias</button><button type="button" data-v="30">30 dias</button><button type="button" data-v="90">90 dias</button></div>
+          <select id="lgArea"><option value="">Tipo: todos</option><option>Códigos</option><option>Revenda</option><option>Fontes</option><option>Categorias</option><option>Conteúdo</option><option>Pedidos</option><option>Configurações</option><option value="Acesso">Entradas no painel</option></select>
+          <select id="lgActor"><option value="">Quem: todos</option></select>
+          <span id="lgInfo" class="lg-info"></span>
+        </div>
+        <div id="lgList"></div>
+        <p class="lg-foot">Guardado por 90 dias · mostra o que você e os revendedores fizeram no painel</p>
+      </div>
+    </main>
+
     <!-- Erros -->
     <!-- CloudPlay: uptime of each source, checked by Supabase every 5 minutes (uptime_run) -->
     <main class="page hidden" data-section="status" data-title="Status">
@@ -1891,12 +2041,34 @@
     renderVersions();
   }
 
+  // CloudPlay: codes that end in the next 7 days (the Dashboard's "Vencendo em breve" and the tab).
+  const DUE_MS = 7 * 864e5;
+  const isDueSoon = (c) => !c.revoked && c.expires_at && new Date(c.expires_at) > new Date() && new Date(c.expires_at) - Date.now() <= DUE_MS;
+  function dueWhen(c) {
+    const days = Math.round((new Date(new Date(c.expires_at).toLocaleDateString("sv-SE", TZ)) - new Date(todaySP())) / 864e5);
+    return days <= 0 ? "hoje" : days === 1 ? "amanhã" : "em " + days + " dias";
+  }
+  function renderDue() {
+    const due = codes.filter(isDueSoon).sort((a, b) => new Date(a.expires_at) - new Date(b.expires_at));
+    const tomorrow = due.filter((c) => dueWhen(c) === "amanhã" || dueWhen(c) === "hoje").length;
+    $("sDue").textContent = due.length;
+    $("sDueSub").textContent = tomorrow ? tomorrow + (tomorrow === 1 ? " vence até amanhã" : " vencem até amanhã") : due.length ? "nenhum até amanhã" : "nenhum na semana";
+    $("dueList").replaceChildren(...(due.length ? due.slice(0, 6).map((c) => el("div", { class: "due-row" },
+      el("div", { class: "due-who" }, el("b", {}, c.note || "Sem nome"), el("span", {}, c.phone ? phoneLabel(c.phone) : "criado " + fmt(c.created_at))),
+      el("span", { class: "code" }, c.code),
+      el("span", { class: "due-when" + (dueWhen(c) === "hoje" || dueWhen(c) === "amanhã" ? " soon" : "") }, el("i"), dueWhen(c)),
+      el("div", { class: "actions" },
+        iconBtn("wa", c.phone ? "Abrir WhatsApp do cliente" : "Cadastrar WhatsApp", () => openWhatsApp(c)),
+        el("button", { type: "button", class: "ghost small", onclick: () => openRenew(c) }, "Renovar"))))
+      : [el("p", { class: "dc-empty", style: "display:block" }, "Nenhum código vence nos próximos 7 dias.")]));
+  }
   function render() {
     const q = $("search").value.trim().toLowerCase();
     const f = $("filter").dataset.value || "";
-    const counts = { "": codes.length, free: 0, active: 0, expired: 0, revoked: 0, trial: 0 };
+    const counts = { "": codes.length, free: 0, active: 0, expired: 0, revoked: 0, trial: 0, due: 0 };
     let trialActive = 0;
-    codes.forEach((c) => { const st = statusOf(c); counts[st]++; if (isTrial(c)) { counts.trial++; if (st === "active") trialActive++; } });
+    codes.forEach((c) => { const st = statusOf(c); counts[st]++; if (isTrial(c)) { counts.trial++; if (st === "active") trialActive++; } if (isDueSoon(c)) counts.due++; });
+    renderDue();
     $("sTotal").textContent = codes.length; $("sFree").textContent = counts.free;
     $("sActive").textContent = counts.active; $("sExpired").textContent = counts.expired + counts.revoked;
     $("cFree").textContent = counts.free; $("cActive").textContent = counts.active;
@@ -1908,7 +2080,7 @@
     renderOnline();
     renderConnected();
 
-    const list = codes.filter((c) => (!f || (f === "trial" ? isTrial(c) : statusOf(c) === f)) &&
+    const list = codes.filter((c) => (!f || (f === "trial" ? isTrial(c) : f === "due" ? isDueSoon(c) : statusOf(c) === f)) &&
       (!q || c.code.includes(q) || (c.note || "").toLowerCase().includes(q) || (c.phone || "").includes(q.replace(/\D/g, "") || "~")));
     const tbody = $("rows"); tbody.replaceChildren();
     const cards = $("codeCards"); cards.replaceChildren();
@@ -1935,12 +2107,9 @@
         el("td", { "data-label": "", class: "td-act" }, el("div", { class: "actions" },
           iconBtn("copy", "Copiar código", (e) => copy(codeLine(c), e.currentTarget, "Código copiado")),
           iconBtn("wa", c.phone ? "Abrir WhatsApp do cliente" : "Cadastrar WhatsApp", () => openWhatsApp(c), c.phone ? "wa" : ""),
-          iconBtn("msg", "Copiar mensagem para o cliente", (e) => copy(messageFor(c), e.currentTarget, "Mensagem copiada")),
-          iconBtn("renew", "Renovar", () => openRenew(c)),
-          iconBtn("clock", "Tempo de uso", () => openUsage(c)),
-          iconBtn("edit", "Editar cliente", () => openEdit(c)),
-          iconBtn(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
-          iconBtn("trash", "Excluir", () => removeCode(c), "bad")))));
+          c.revoked ? el("button", { type: "button", class: "ghost small", onclick: () => toggleRevoke(c) }, "Liberar")
+            : el("button", { type: "button", class: "ghost small", onclick: () => openRenew(c) }, "Renovar"),
+          iconBtn("more", "Mais opções: mensagem, editar, tempo de uso, bloquear, excluir", () => openSheet(c))))));
 
       // Phones: one card per code, label on the left and value on the right, actions in a row.
       const dueChip = c.expires_at ? (isTrial(c) ? fmtTime(c.expires_at) : fmt(c.expires_at)) : validityOf(c);
@@ -2071,6 +2240,7 @@
     $("shItems").replaceChildren(
       item("copy", "Copiar código", (e) => copy(codeLine(c), null, "Código copiado")),
       item("msg", "Copiar mensagem", () => copy(messageFor(c), null, "Mensagem copiada")),
+      item("renew", "Renovar", () => openRenew(c)),
       item("tv", "Telas, nome e WhatsApp", () => openEdit(c)),
       item("clock", "Tempo de uso", () => openUsage(c)),
       item(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
@@ -2521,7 +2691,6 @@
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("genCard").classList.contains("open")) setGen(false); });
   $("genOpen").addEventListener("click", () => { $("gDate").min = todaySP(); setGen(true); });
   $("genClose").addEventListener("click", () => setGen(false));
-  $("quickGen").addEventListener("click", () => setTimeout(() => { $("gDate").min = todaySP(); setGen(true); }, 50));
   // The due date: typed as DD/MM/AAAA or picked on the calendar; either one picks "date" as the validity.
   const pickDays = (v) => $("gDays").querySelector('[data-v="' + v + '"]').click();
   $("gDaysSel").addEventListener("change", () => {
@@ -3429,6 +3598,16 @@
     if (error) return;
     const list = data || [];
     $("sPending").textContent = list.length;
+    const oldest = list.map((r) => r.last_requested_at).filter(Boolean).sort()[0];
+    $("sPendingSub").textContent = list.length ? "o mais antigo " + ago(oldest) : "nenhum aguardando";
+    $("dashReqSub").textContent = list.length ? list.length + (list.length === 1 ? " aguardando" : " aguardando") : "Nenhum aguardando";
+    $("tbBell").querySelector("i").classList.toggle("hidden", !list.length);
+    $("dashReq").replaceChildren(...(list.length ? list.slice(0, 4).map((r) => el("a", { class: "dr-item", href: "#pedidos" },
+      posterOf(r) ? el("img", { src: posterOf(r), alt: "" }) : el("span", { class: "noposter" }),
+      el("div", {}, el("b", {}, r.title + (r.year ? " (" + r.year + ")" : "")),
+        el("span", {}, (r.media_type === "movie" ? "Filme" : "Série") + " · " + r.request_count + (r.request_count === 1 ? " pedido" : " pedidos") + " · " + ago(r.last_requested_at))),
+      el("span", { class: "due-when soon" }, el("i"), "pendente")))
+      : [el("p", { class: "dc-empty", style: "display:block" }, "Nenhum pedido aguardando.")]));
     $("navPending").textContent = list.length;
     $("navPending").classList.toggle("hidden", list.length === 0);
     $("bnPending").textContent = list.length;
@@ -4004,7 +4183,7 @@
   seg("aiFilter", renderImprovements);
 
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "revendedores", "meus", "addons", "categorias", "catalogo", "uso", "atualizacoes", "status", "erros", "melhorias"];
+  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "revendedores", "meus", "addons", "categorias", "catalogo", "uso", "atualizacoes", "status", "erros", "logs", "melhorias"];
   // ── CloudPlay: Meus conteúdos ──
   let ownVideos = [], ownPick = null, ownXhr = null, ownCancelFn = null, ownBusy = false;
   const ownXhrs = new Set();
@@ -4475,6 +4654,7 @@
       if (on && page === "atualizacoes" && !$("app").classList.contains("hidden")) setTimeout(() => { loadUpdates(); loadBuild(); loadPending(); }, 0);
       if (on && page === "erros" && !$("app").classList.contains("hidden")) setTimeout(loadErrors, 0);
       if (on && page === "catalogo" && !$("app").classList.contains("hidden")) setTimeout(openCatalog, 0);
+      if (on && page === "logs" && !$("app").classList.contains("hidden")) setTimeout(loadLogs, 0);
       if (on && page === "melhorias" && !$("app").classList.contains("hidden")) setTimeout(loadImprovements, 0);
       if (on && page === "revendedores" && !$("app").classList.contains("hidden")) setTimeout(loadResellers, 0);
       if (on && page === "meus" && !$("app").classList.contains("hidden")) setTimeout(loadOwn, 0);
@@ -4490,18 +4670,123 @@
   $("menuBtn").addEventListener("click", () => document.body.classList.add("nav-open"));
   $("bnMore").addEventListener("click", (e) => { e.preventDefault(); document.body.classList.add("nav-open"); });
   $("backdrop").addEventListener("click", () => document.body.classList.remove("nav-open"));
-  const loadAll = () => { loadResellers(); if (location.hash === "#meus") loadOwn(); load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); loadPending(); } loadErrors(); if (location.hash === "#catalogo") setTimeout(openCatalog, 300); if (location.hash === "#melhorias") loadImprovements(); if (location.hash === "#status") loadUptime(); loadPlaylists(); };
+  const loadAll = () => { loadResellers(); if (location.hash === "#meus") loadOwn(); load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); loadPending(); } loadErrors(); if (location.hash === "#catalogo") setTimeout(openCatalog, 300); if (location.hash === "#logs") loadLogs(); if (location.hash === "#melhorias") loadImprovements(); if (location.hash === "#status") loadUptime(); loadPlaylists(); };
   $("refreshAll").addEventListener("click", loadAll);
 
   $("search").addEventListener("input", render);
   $("reload").addEventListener("click", load);
-  $("logout").addEventListener("click", async () => { await sb.auth.signOut(); show(null); });
+  $("logout").addEventListener("click", async () => { $("profMenu").classList.add("hidden"); await sb.auth.signOut(); show(null); });
+
+  // ── Header: search from any page (goes to the codes), "Gerar código", profile menu ──
+  function browserLabel() {
+    const ua = navigator.userAgent;
+    const os = /Android/.test(ua) ? "Android" : /iPhone|iPad/.test(ua) ? "iPhone" : /Windows/.test(ua) ? "Windows" : /Mac OS/.test(ua) ? "Mac" : /Linux/.test(ua) ? "Linux" : "";
+    const br = /Edg\//.test(ua) ? "Edge" : /OPR\//.test(ua) ? "Opera" : /Chrome\//.test(ua) ? "Chrome" : /Firefox\//.test(ua) ? "Firefox" : /Safari\//.test(ua) ? "Safari" : "";
+    return [os, br].filter(Boolean).join(" · ") || "Navegador";
+  }
+  $("tbSearch").addEventListener("input", () => {
+    $("search").value = $("tbSearch").value;
+    if (location.hash !== "#codigos") location.hash = "#codigos";
+    render();
+  });
+  $("search").addEventListener("input", () => { $("tbSearch").value = $("search").value; });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || "") && !document.querySelector("dialog[open]")) {
+      e.preventDefault(); $("tbSearch").focus();
+    }
+    if (e.key === "Escape") $("profMenu").classList.add("hidden");
+  });
+  $("tbGen").addEventListener("click", () => {
+    if (location.hash !== "#codigos") location.hash = "#codigos";
+    setTimeout(() => { $("gDate").min = todaySP(); setGen(true); }, 60);
+  });
+  $("profBtn").addEventListener("click", (e) => { e.stopPropagation(); $("profMenu").classList.toggle("hidden"); });
+  document.addEventListener("click", (e) => { if (!e.target.closest(".prof")) $("profMenu").classList.add("hidden"); });
+  $("pmLogs").addEventListener("click", () => $("profMenu").classList.add("hidden"));
+  $("pmProfile").addEventListener("click", async () => {
+    $("profMenu").classList.add("hidden");
+    const { data } = await sb.auth.getSession();
+    const u = data?.session?.user || {};
+    const line = (k, v) => el("div", { class: "rn-now" }, el("span", {}, k), el("b", {}, v || "—"));
+    rvDialog((close) => [el("h2", {}, "Meu perfil"), el("p", { class: "rn-who" }, "Sua conta de administrador do painel."),
+      line("E-mail", u.email), line("Tipo de conta", "Administrador"),
+      line("Último acesso", u.last_sign_in_at ? fmtTime(u.last_sign_in_at) : "—"), line("Conta criada em", u.created_at ? fmt(u.created_at) : "—"),
+      el("div", { class: "rn-actions" }, el("button", { type: "button", class: "ghost", onclick: () => { close(); location.hash = "#logs"; } }, "Ver meus logs"),
+        el("button", { type: "button", class: "ghost", onclick: () => { close(); $("pmPassword").click(); } }, "Trocar senha"),
+        el("button", { type: "button", onclick: close }, "Fechar"))]);
+  });
+  $("pmPassword").addEventListener("click", () => {
+    $("profMenu").classList.add("hidden");
+    const p1 = el("input", { type: "password", autocomplete: "new-password", placeholder: "Nova senha (mínimo 8 caracteres)" });
+    const p2 = el("input", { type: "password", autocomplete: "new-password", placeholder: "Repita a nova senha" });
+    const msg = el("p", { class: "msg" });
+    const save = el("button", { type: "button", onclick: async () => {
+      if (p1.value.length < 8) { msg.textContent = "A senha precisa ter pelo menos 8 caracteres."; return; }
+      if (p1.value !== p2.value) { msg.textContent = "As duas senhas não são iguais."; return; }
+      save.disabled = true;
+      const { error } = await sb.auth.updateUser({ password: p1.value });
+      save.disabled = false;
+      if (error) { msg.textContent = "Não deu para trocar: " + error.message; return; }
+      $("rvDlg").close(); toast("Senha trocada");
+    } }, "Salvar senha");
+    rvDialog((close) => [el("h2", {}, "Trocar senha"), el("p", { class: "rn-who" }, "Vale para o próximo login neste e em outros aparelhos."),
+      el("div", { class: "rn-extra" }, el("label", {}, "Nova senha"), p1), el("div", { class: "rn-extra" }, el("label", {}, "Repita a nova senha"), p2), msg,
+      el("div", { class: "rn-actions" }, el("button", { type: "button", class: "ghost", onclick: close }, "Cancelar"), save)]);
+    setTimeout(() => p1.focus(), 50);
+  });
+
+  // ── Logs: everything done in the panel (admin_panel_log; the database writes each change) ──
+  const LOG_ICON = { "Códigos": "key", "Fontes": "tvplay", "Categorias": "tag", "Conteúdo": "list", "Pedidos": "inbox", "Revenda": "user", "Acesso": "logout", "Configurações": "edit" };
+  let lgSeq = 0, lgTimer = 0;
+  async function loadLogs() {
+    const seq = ++lgSeq;
+    $("lgInfo").textContent = "Carregando…";
+    const { data, error } = await sb.rpc("admin_panel_log", { p_days: parseInt($("lgDays").dataset.value || "1", 10),
+      p_area: $("lgArea").value || null, p_actor: $("lgActor").value || null, p_q: $("lgSearch").value.trim() || null, p_limit: 500 });
+    if (seq !== lgSeq) return;
+    if (error) {
+      $("lgInfo").textContent = "";
+      $("lgList").replaceChildren(el("p", { class: "empty" }, /admin_panel_log|function/i.test(error.message) ? "Para ver os logs, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível carregar: " + error.message));
+      return;
+    }
+    const rows = data?.rows || [], actors = data?.actors || [];
+    const sel = $("lgActor");
+    if (sel.dataset.filled !== actors.join("|")) {
+      const v = sel.value;
+      sel.replaceChildren(el("option", { value: "" }, "Quem: todos"), ...actors.map((a) => el("option", { value: a }, a)));
+      sel.value = actors.includes(v) ? v : ""; sel.dataset.filled = actors.join("|");
+    }
+    $("lgInfo").textContent = rows.length >= 500 ? "Mostrando as 500 mais recentes" : rows.length + (rows.length === 1 ? " ação" : " ações");
+    const byDay = new Map();
+    rows.forEach((r) => { const d = daySP(r.at); if (!byDay.has(d)) byDay.set(d, []); byDay.get(d).push(r); });
+    const dayLabel = (d) => {
+      const t = new Date(d + "T12:00:00"), wd0 = t.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+      const wd = wd0.charAt(0).toUpperCase() + wd0.slice(1);
+      const y = new Date(Date.now() - 864e5).toLocaleDateString("sv-SE", TZ);
+      return (d === todaySP() ? "Hoje · " : d === y ? "Ontem · " : "") + wd;
+    };
+    $("lgList").replaceChildren(...(rows.length ? [...byDay].map(([d, list]) => el("div", { class: "lg-day" },
+      el("div", { class: "lg-dh" }, dayLabel(d), el("em", {}, list.length + (list.length === 1 ? " ação" : " ações"))),
+      ...list.map((r) => el("div", { class: "lg-row" },
+        el("span", { class: "lg-t" }, new Date(r.at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", ...TZ })),
+        el("span", { class: "lg-who" }, el("span", { class: "avatar" }, (r.actor || "?").charAt(0).toUpperCase()), r.is_admin ? r.actor : r.actor + " (revenda)"),
+        el("span", { class: "lg-act" }, icon(LOG_ICON[r.area] || "list"), r.action),
+        el("span", { class: "lg-det", title: r.detail || "" }, r.detail || ""),
+        el("span", { class: "lg-area" }, r.area)))))
+      : [el("p", { class: "empty" }, $("lgSearch").value.trim() || $("lgArea").value || $("lgActor").value ? "Nada com esses filtros." : "Nenhuma ação neste período. O que for feito no painel aparece aqui.")]));
+  }
+  seg("lgDays", loadLogs);
+  $("lgArea").addEventListener("change", loadLogs);
+  $("lgActor").addEventListener("change", loadLogs);
+  $("lgSearch").addEventListener("input", () => { clearTimeout(lgTimer); lgTimer = setTimeout(loadLogs, 300); });
 
   $("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     $("loginMsg").textContent = "";
     const { data, error } = await sb.auth.signInWithPassword({ email: $("email").value.trim(), password: $("password").value });
     if (error) { $("loginMsg").textContent = "E-mail ou senha incorretos."; return; }
+    // The "Logs" page: when and from which browser the panel was opened.
+    sb.rpc("panel_log_event", { p_action: "login", p_detail: browserLabel() }).then(() => {}, () => {});
     show(data.session);
   });
 
@@ -4520,6 +4805,9 @@
     if (signedIn) {
       $("who").textContent = session.user.email;
       $("avatar").textContent = (session.user.email || "A").charAt(0).toUpperCase();
+      $("pmEmail").textContent = session.user.email; $("pmAvatar").textContent = $("avatar").textContent;
+      const since = session.user.last_sign_in_at;
+      $("pmSince").textContent = since ? "entrou " + (daySP(since) === todaySP() ? "hoje " : fmt(since) + " ") + new Date(since).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", ...TZ }) : "";
       loadAll();
     }
   }
