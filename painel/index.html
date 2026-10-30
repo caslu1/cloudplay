@@ -3342,7 +3342,7 @@
     const { error } = await sb.from("app_settings").upsert({ key: "source_order", value: mode, updated_at: new Date().toISOString() });
     if (error) { toast("Não foi possível salvar: " + error.message); return; }
     settings.source_order = mode; renderAddons();
-    toast(mode === "auto" ? "Automática: o addon mais estável vira Fonte 1 (as listas M3U vão por último)." : "Manual: o app segue a ordem desta lista.");
+    toast(mode === "auto" ? "Automática: a fonte mais estável vira Fonte 1, addon ou lista M3U." : "Manual: o app segue a ordem desta lista.");
   }
 
   async function moveAddon(i, delta) {

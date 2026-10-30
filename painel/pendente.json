@@ -31,8 +31,12 @@
     {
       "text": "Filmes abrem mais rápido: antes de tocar, o app testa as 3 melhores fontes ao mesmo tempo e começa pela primeira que responde; fontes lentas ou que não abriram (também para outros clientes) vão para o fim da lista.",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Ordem automática das fontes: as listas M3U também entram na disputa e ficam na frente quando são as mais estáveis (antes iam sempre por último).",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T14:40:52.143787+00:00"
+  "updated_at": "2026-10-30T15:11:05.324850+00:00"
 }
