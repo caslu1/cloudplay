@@ -75,8 +75,12 @@
     {
       "text": "Player na TV: as telas de legenda e áudio ficam mais claras (opção escolhida em rosa, botões de ajuste maiores, linhas mais arredondadas).",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Página do título na TV: os botões (Fontes, Trailer, Favoritos e Coleção) ficam um pouco menores, para o nome \"Coleção\" caber inteiro.",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T21:38:27.363776+00:00"
+  "updated_at": "2026-10-30T21:43:06.015192+00:00"
 }
