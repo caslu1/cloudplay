@@ -47,8 +47,16 @@
     {
       "text": "Player: ao escolher \"Legendado\", o áudio muda de verdade para o idioma original (antes alguns arquivos continuavam em português porque também tinham a faixa dublada).",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Fontes começam a carregar mais cedo: o app espera no máximo 0,3 s pela lista compartilhada (antes 0,8 s) antes de perguntar aos addons.",
+      "added": "2026-10-30"
+    },
+    {
+      "text": "Séries: o próximo episódio tenta primeiro a mesma fonte em que o episódio anterior tocou, que quase sempre é a melhor.",
+      "added": "2026-10-30"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T16:33:01.392255+00:00"
+  "updated_at": "2026-10-30T16:53:54.180373+00:00"
 }
