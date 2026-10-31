@@ -81,7 +81,7 @@
       "added": "2026-10-31"
     },
     {
-      "text": "Páginas de filmes e séries abrem mais rápido: a sinopse e as informações ficam guardadas no aparelho por 30 dias (atualizadas sozinhas depois de um dia).",
+      "text": "Páginas de filmes e séries abrem mais rápido: a sinopse, as informações, o elenco e a lista de episódios ficam guardados no aparelho por 30 dias (atualizados sozinhos; os episódios a cada 12 horas, para episódio novo aparecer no mesmo dia).",
       "added": "2026-10-31"
     },
     {
@@ -90,5 +90,5 @@
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-31T12:08:11.377932+00:00"
+  "updated_at": "2026-10-31T12:10:58.760988+00:00"
 }
