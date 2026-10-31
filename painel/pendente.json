@@ -111,6 +111,10 @@
     {
       "text": "Fontes M3U aparecem na hora: ao abrir o app, as listas guardadas no aparelho já vão para a memória, e cada lista tem seu próprio índice de títulos. Antes, com duas ou mais listas, uma apagava o índice da outra e a busca ficava \"procurando\" a cada título.",
       "added": "2026-10-31"
+    },
+    {
+      "text": "Player: trocar entre Dublado e Legendado ficou mais rápido. O app escolhe a melhor fonte da outra versão (não a primeira da lista), testa as 3 melhores ao mesmo tempo e, 15 s depois do filme começar, já deixa a outra versão testada por trás.",
+      "added": "2026-10-31"
     }
   ],
   "sent_at": null,
