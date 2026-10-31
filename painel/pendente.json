@@ -75,8 +75,12 @@
     {
       "text": "Página do título na TV: os botões (Fontes, Trailer, Favoritos e Coleção) ficam um pouco menores, para o nome \"Coleção\" caber inteiro.",
       "added": "2026-10-30"
+    },
+    {
+      "text": "Player: com \"Legendado\" escolhido, quando nenhuma fonte legendada abre, o app passa a tocar o dublado sozinho, sem mostrar a tela de erro.",
+      "added": "2026-10-31"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-30T23:19:00.552982+00:00"
+  "updated_at": "2026-10-31T12:00:11.686810+00:00"
 }
