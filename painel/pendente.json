@@ -99,8 +99,12 @@
     {
       "text": "Listas M3U: o catálogo de filmes e séries fica pronto logo ao abrir o app (no Wi-Fi ou cabo), então a primeira busca na lista não espera mais 15 a 30 segundos.",
       "added": "2026-10-31"
+    },
+    {
+      "text": "Catálogo M3U no aparelho: ao ativar, o app mostra \"Preparando seus filmes e séries\" uma única vez e guarda as listas inteiras. Depois as fontes M3U aparecem na hora, e o catálogo se atualiza sozinho a cada 6 horas (vale por 24 horas).",
+      "added": "2026-10-31"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-31T12:18:25.151259+00:00"
+  "updated_at": "2026-10-31"
 }
