@@ -87,8 +87,20 @@
     {
       "text": "Resumo de cada título guardado por 30 dias para todos os clientes: as bandeiras e o botão certo (Assistir ou Solicitar conteúdo) aparecem na hora, e o player começa pela fonte que já funcionou para outros clientes.",
       "added": "2026-10-31"
+    },
+    {
+      "text": "Primeira vez que abre um título fica mais rápida: as informações, o elenco e o código do título vêm do TMDB num pedido só (antes eram 3).",
+      "added": "2026-10-31"
+    },
+    {
+      "text": "Na TV, ao parar em cima de um título (tela inicial, abas Filmes e Séries e \"Mais como este\"), o app já carrega a página dele por trás; ao abrir, aparece pronta.",
+      "added": "2026-10-31"
+    },
+    {
+      "text": "Listas M3U: o catálogo de filmes e séries fica pronto logo ao abrir o app (no Wi-Fi ou cabo), então a primeira busca na lista não espera mais 15 a 30 segundos.",
+      "added": "2026-10-31"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-31T12:10:58.760988+00:00"
+  "updated_at": "2026-10-31T12:18:25.151259+00:00"
 }
