@@ -103,6 +103,10 @@
     {
       "text": "Catálogo M3U no aparelho: ao ativar, o app mostra \"Preparando seus filmes e séries\" uma única vez e guarda as listas inteiras. Depois as fontes M3U aparecem na hora, e o catálogo se atualiza sozinho a cada 6 horas (vale por 24 horas).",
       "added": "2026-10-31"
+    },
+    {
+      "text": "Na tela \"Preparando seus filmes e séries\", o app também carrega a tela inicial por trás (fileiras, banners com logo, streamings, coleções e capas). Ao entrar, a tela inicial já aparece pronta; o fundo da tela de carregamento mostra capas de verdade.",
+      "added": "2026-10-31"
     }
   ],
   "sent_at": null,
