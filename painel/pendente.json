@@ -79,8 +79,16 @@
     {
       "text": "Player: com \"Legendado\" escolhido, quando nenhuma fonte legendada abre, o app passa a tocar o dublado sozinho, sem mostrar a tela de erro.",
       "added": "2026-10-31"
+    },
+    {
+      "text": "Páginas de filmes e séries abrem mais rápido: a sinopse e as informações ficam guardadas no aparelho por 30 dias (atualizadas sozinhas depois de um dia).",
+      "added": "2026-10-31"
+    },
+    {
+      "text": "Resumo de cada título guardado por 30 dias para todos os clientes: as bandeiras e o botão certo (Assistir ou Solicitar conteúdo) aparecem na hora, e o player começa pela fonte que já funcionou para outros clientes.",
+      "added": "2026-10-31"
     }
   ],
   "sent_at": null,
-  "updated_at": "2026-10-31T12:00:11.686810+00:00"
+  "updated_at": "2026-10-31T12:08:11.377932+00:00"
 }
