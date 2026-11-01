@@ -4061,12 +4061,28 @@
     $("pkCountSeries").textContent = rcPicks.filter((p) => p.media_type === "series").length;
     const type = $("pkType").dataset.value || "movie";
     const list = rcPicks.filter((p) => p.media_type === type);
-    $("pkRow").replaceChildren(...list.map((p) => el("div", { class: "pk", title: p.title || p.item_id },
-      p.poster ? el("img", { src: p.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, p.title || ""),
+    pkFillPosters(list);
+    $("pkRow").replaceChildren(...list.map((p) => el("div", { class: "pk", title: ctShowName(p.title) || p.item_id },
+      p.poster ? el("img", { src: p.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, ctShowName(p.title)),
       el("button", { type: "button", class: "x", title: "Tirar do app", onclick: () => unpick(p) }, "×"),
-      el("b", {}, p.title || p.item_id))),
+      el("b", {}, ctShowName(p.title) || p.item_id))),
       el("div", { class: "pk-add" }, list.length ? "Escolha mais abaixo com \"+ No app\""
         : "Nenhum escolhido: o app mostra os recentes das fontes. Escolha abaixo com \"+ No app\"."));
+  }
+  // CloudPlay: a pick saved without a cover gets the TMDB one, once.
+  const pkTried = new Set();
+  async function pkFillPosters(list) {
+    const todo = list.filter((p) => !p.poster && p.title && !pkTried.has(p.id)).slice(0, 20);
+    if (!todo.length) return;
+    let changed = false;
+    for (const p of todo) {
+      pkTried.add(p.id);
+      const m = await ctFind(p.media_type === "series" ? "series" : "movie", p.title, p.year || ctYearOf({ name: p.title }));
+      if (!m || !m.poster) continue;
+      const { error } = await sb.from("recent_picks").update({ poster: m.poster }).eq("id", p.id);
+      if (!error) { p.poster = m.poster; changed = true; }
+    }
+    if (changed) renderPicks();
   }
   async function pickToggle(r) {
     const had = rcPicked(r);
@@ -4080,7 +4096,9 @@
       if (!m || !m.id) { toast("Não achei \"" + r.name + "\" no TMDB para colocar no app."); return; }
       itemId = m.id;
     }
-    const row = { media_type: rcIsSeries(r) ? "series" : "movie", item_id: itemId, title: r.name || null, poster: r.poster || null, year: r.year || null };
+    let poster = r.poster || null;
+    if (!poster) { const m = await ctFind(rcIsSeries(r) ? "series" : "movie", r.name, ctYearOf(r)); poster = (m && m.poster) || null; }
+    const row = { media_type: rcIsSeries(r) ? "series" : "movie", item_id: itemId, title: ctShowName(r.name) || null, poster, year: r.year || ctYearOf(r) || null };
     const { data, error } = await sb.from("recent_picks").insert(row).select().single();
     if (error) { toast(/recent_picks/i.test(error.message) ? "Rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não deu para salvar: " + error.message); return; }
     rcPicks = [data || { ...row, id: "tmp" + Date.now(), created_at: new Date().toISOString() }, ...rcPicks];
@@ -4134,6 +4152,42 @@
     ctLoaded = !error; ctItems = error ? [] : data || [];
     if (error) { $("ctInfo").textContent = ""; $("ctGrid").replaceChildren(); $("ctEmpty").textContent = /admin_m3u|function/i.test(error.message) ? "Para usar esta página, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível carregar: " + error.message; $("ctEmpty").classList.remove("hidden"); return; }
     renderCatalog();
+    ctRecognize(seq);
+  }
+  // CloudPlay: list names often carry the year (sometimes twice) and tags; this is the bare title.
+  const ctYearOf = (r) => r.year || ((r.name || "").match(/\((19|20)\d{2}\)/) || [""])[0].replace(/\D/g, "");
+  const ctShowName = (n) => (n || "").replace(/(\s*\((?:19|20)\d{2}\))(?:\s*\1)+/g, "$1").trim();
+  const ctBare = (n) => (n || "").replace(/\((?:19|20)\d{2}\)|\[[^\]]*\]|\b(?:4k|uhd|fhd|hd|sd|1080p|720p|dublado|legendado|dual|leg|dub)\b/gi, " ")
+    .replace(/[|_.]+/g, " ").replace(/\s+/g, " ").trim();
+  const ctNorm = (n) => (n || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  // A title without TMDB id or cover: found on TMDB by name (and year) and saved, so it is looked up once.
+  const ctTried = new Set();
+  async function ctFind(type, name, year) {
+    const q = ctBare(name);
+    if (q.length < 2) return null;
+    const { data } = await sb.functions.invoke("media/admin", { body: { action: "search", type, q } }).catch(() => ({ data: null }));
+    const metas = (data && data.metas) || [];
+    return metas.find((m) => year && String(m.releaseInfo || "").startsWith(year) && ctNorm(m.name) === ctNorm(q))
+      || metas.find((m) => year && String(m.releaseInfo || "").startsWith(year))
+      || metas.find((m) => ctNorm(m.name) === ctNorm(q)) || null;
+  }
+  async function ctRecognize(seq) {
+    const todo = ctItems.filter((r) => (!r.tmdb_id || !r.poster) && !ctTried.has(r.key)).slice(0, 60);
+    let changed = false, i = 0;
+    const work = async () => {
+      while (i < todo.length && seq === ctSeq) {
+        const r = todo[i++];
+        ctTried.add(r.key);
+        const m = await ctFind(rcIsSeries(r) ? "series" : "movie", r.name, ctYearOf(r));
+        if (!m) continue;
+        const tmdb = m.tmdb_id || parseInt(String(m.id || "").replace(/\D/g, ""), 10) || null;
+        if (!r.poster && m.poster) { r.poster = m.poster; changed = true; }
+        if (!r.tmdb_id && tmdb && /^tmdb:|^\d+$/.test(String(m.tmdb_id || m.id))) { r.tmdb_id = tmdb; changed = true; }
+        sb.rpc("admin_m3u_recognize", { p_media: r.media_type, p_name: r.name, p_tmdb: r.tmdb_id || null, p_poster: r.poster || null }).then(() => {}, () => {});
+      }
+    };
+    await Promise.all([work(), work(), work(), work()]);
+    if (changed && seq === ctSeq) renderCatalog();
   }
   function renderCatalog() {
     if (!ctLoaded) return;
@@ -4147,11 +4201,11 @@
       : !read ? "Nenhuma lista lida ainda. O app lê cada lista uma vez por dia (num aparelho no Wi-Fi) e os títulos aparecem aqui."
       : q ? "Nenhum título com esse nome." : view === "new" ? "Nada novo nas listas nos últimos 7 dias." : "Nenhum título aqui.";
     $("ctGrid").replaceChildren(...ctItems.map((r) => el("div", { class: "rc" },
-      el("div", { class: "rc-poster" }, r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy", onerror: function () { this.replaceWith(el("span", { class: "np" }, r.name || "")); } }) : el("span", { class: "np" }, r.name || ""),
+      el("div", { class: "rc-poster" }, r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, ctShowName(r.name)),
         el("button", { type: "button", class: "rc-pick" + (rcPicked(r) ? " on" : ""), title: rcPicked(r) ? "Tirar do app" : "Colocar no app",
           onclick: () => pickToggle(r) }, rcPicked(r) ? "✓ No app" : "+ No app")),
-      el("b", { title: r.name || "" }, r.name || ""),
-      el("span", {}, (r.media_type === "series" ? "Série" : "Filme") + (r.year ? " · " + r.year : "") + (r.added ? " · entrou " + ago(r.added) : "")),
+      el("b", { title: ctShowName(r.name) }, ctShowName(r.name)),
+      el("span", {}, (r.media_type === "series" ? "Série" : "Filme") + (r.year && !/\((19|20)\d{2}\)/.test(r.name || "") ? " · " + r.year : "") + (r.added ? " · entrou " + ago(r.added) : "")),
       el("span", { class: "ct-in", title: (r.lists || []).join(" · ") }, (r.lists || []).join(" · ")))));
   }
   function openCatalog() { loadPicks(); loadCatalogLists().then(renderCatalog); loadCatalog(); }
