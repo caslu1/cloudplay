@@ -341,6 +341,11 @@
   .rv-hist div { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
   @media (max-width: 760px) { .rv-table thead { display: none; } .rv-table, .rv-table tbody, .rv-table tr, .rv-table td { display: block; width: 100%; }
     .rv-table tr { border-bottom: 1px solid var(--line); padding: 10px 0; } .rv-table td { border: none; padding: 3px 0; } .rv-acts { justify-content: flex-start; margin-top: 6px; } }
+  /* CloudPlay: Saúde das fontes (phones: the rows use the shared td[data-label] layout). */
+  .sh-table td { font-variant-numeric: tabular-nums; } .sh-table td { vertical-align: middle; } .sh-table .rv-name b { font-weight: 600; margin-right: 6px; }
+  .dash2.sh-two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 1000px) { .dash2.sh-two { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) { .sh-table td.rv-name { justify-content: flex-start; padding-bottom: 6px; } .sh-kpis .stat small { display: none; } }
   .pl-list { display: flex; flex-direction: column; gap: 8px; }
   .pl-row { display: flex; align-items: center; gap: 14px; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
   .pl-row.off { opacity: .6; }
@@ -1293,6 +1298,7 @@
       <a href="#revendedores" data-page="revendedores"><svg class="i"><use href="#i-user"/></svg>Revendedores</a>
       <div class="nav-label">Conteúdo</div>
       <a href="#addons" data-page="addons"><svg class="i"><use href="#i-tvplay"/></svg>Fontes de conteúdo</a>
+      <a href="#saude" data-page="saude"><svg class="i"><use href="#i-pulse"/></svg>Saúde das fontes</a>
       <a href="#meus" data-page="meus"><svg class="i"><use href="#i-new"/></svg>Meus conteúdos</a>
       <a href="#categorias" data-page="categorias"><svg class="i"><use href="#i-tag"/></svg>Categorias</a>
       <a href="#catalogo" data-page="catalogo"><svg class="i"><use href="#i-list"/></svg>Catálogo M3U</a>
@@ -1356,7 +1362,7 @@
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg><span>Conectados</span></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-tvplay"/></svg><span>Fontes</span></a>
-    <a href="#mais" id="bnMore" data-page="pedidos revendedores meus categorias catalogo uso atualizacoes status erros logs melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#mais" id="bnMore" data-page="pedidos revendedores saude meus categorias catalogo uso atualizacoes status erros logs melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
   </nav>
 
   <div class="content">
@@ -1698,6 +1704,39 @@
           <div id="stMsg" class="msg"></div>
           <div id="stList" class="st-list"></div>
           <p id="stEmpty" class="empty hidden">Ainda sem dados. Os números aparecem conforme os clientes usam o app (versão nova).</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- CloudPlay: source health (admin_source_health): numbers from the devices and recent start failures -->
+    <main class="page hidden" data-section="saude" data-title="Saúde das fontes">
+      <div class="stats stats-3 three sh-kpis">
+        <div class="stat"><span>Taxa média de sucesso</span><b id="shRate">—</b><small id="shRateSub">no período</small></div>
+        <div class="stat"><span>Tempo médio para responder</span><b id="shMs">—</b><small>quando trouxe fontes</small></div>
+        <div class="stat"><span>Fontes com problema</span><b id="shBad">—</b><small>sucesso abaixo de 70%</small></div>
+      </div>
+      <div class="card">
+        <div class="card-head" style="align-items:center">
+          <div><h2>Addons e listas M3U</h2><p class="sub">Medido nos aparelhos dos clientes a cada busca de fontes. As piores primeiro.</p></div>
+          <div id="shDays" class="seg"><button type="button" data-v="1">Hoje</button><button type="button" data-v="7" class="on">7 dias</button><button type="button" data-v="30">30 dias</button></div>
+        </div>
+        <div id="shMsg" class="msg"></div>
+        <div class="table-wrap">
+          <table class="sh-table">
+            <thead><tr><th>Fonte</th><th>Pedidos</th><th>Taxa de sucesso</th><th>Tempo médio</th><th>Reproduções</th><th>Por dia</th></tr></thead>
+            <tbody id="shRows"></tbody>
+          </table>
+        </div>
+        <p id="shEmpty" class="empty hidden">Ainda sem números no período. Eles chegam conforme os clientes buscam fontes no app.</p>
+      </div>
+      <div class="dash2 sh-two">
+        <div class="card">
+          <div class="dc-head"><div><h2>Fontes que mais falharam (48h)</h2><p class="sub">Não abriram o vídeo no aparelho do cliente</p></div></div>
+          <div id="shSources" class="dash-req"></div>
+        </div>
+        <div class="card">
+          <div class="dc-head"><div><h2>Títulos com mais erro (48h)</h2><p class="sub">Por número de aparelhos em que alguma fonte falhou</p></div></div>
+          <div id="shTitles" class="dash-req"></div>
         </div>
       </div>
     </main>
@@ -4168,6 +4207,100 @@
   }
   seg("upDays", loadUptime);
 
+  // ── CloudPlay: Saúde das fontes (admin_source_health) ──
+  const shPct = (v) => v == null ? "—" : (Math.round(v * 10) / 10).toString().replace(".", ",") + "%";
+  const shCls = (v) => v == null ? "wait" : v >= 90 ? "good" : v >= 70 ? "mid" : "bad";
+  const shNum = (n) => Number(n || 0).toLocaleString("pt-BR");
+  // A failed source is the app's addon id ("<manifest id>_<link hash>") or "<iptv id>:<list name>".
+  function shSourceName(key, known) {
+    const k = String(key || "");
+    const list = /^iptv_[a-z]+_vod:(.+)$/i.exec(k);
+    if (list) return { name: list[1], m3u: true };
+    if (/^iptv_[a-z]+_vod$/i.test(k)) return { name: "Lista M3U", m3u: true };
+    if (k === "com.cloudplay.own" || k.startsWith("com.cloudplay.own_")) return { name: "Meus conteúdos", m3u: false };
+    const base = k.replace(/_[0-9a-f]{6,}$/i, "");
+    const a = (known || []).find((x) => x.name && base.toLowerCase().includes(x.name.toLowerCase().replace(/\s+/g, "")));
+    return { name: a ? a.name : base || "Fonte", sub: a ? base : "", m3u: false };
+  }
+  function shTitleLabel(key) {
+    const [kind, id, se, ep] = String(key || "").split(":");
+    return { kind, id, tv: kind === "tv", ep: se ? "T" + se + "E" + ep : "", fallback: (kind === "tv" ? "Série #" : "Filme #") + id + (se ? " T" + se + "E" + ep : "") };
+  }
+  const shTmdb = new Map();
+  // Titles the database does not know: asked to TMDB through the media function (when it has the key).
+  async function shLookup(kind, id) {
+    const k = kind + ":" + id;
+    if (!shTmdb.has(k)) shTmdb.set(k, sb.functions.invoke("media/admin", { body: { action: "link", url: "https://www.themoviedb.org/" + (kind === "tv" ? "tv" : "movie") + "/" + id } })
+      .then((r) => r && r.data && !r.data.error && r.data.title ? r.data : null).catch(() => null));
+    return shTmdb.get(k);
+  }
+  const shPoster = (p) => posterOf({ poster: p }) || (/^https:\/\//.test(p || "") ? p : null);
+  function shSpark(st, dayKeys) {
+    const byDay = Object.fromEntries((st.days || []).map((x) => [x.day, x]));
+    const max = Math.max(1, ...(st.days || []).map((x) => x.requests || 0));
+    return el("div", { class: "up-bars", style: "width:" + (dayKeys.length > 7 ? 120 : 84) + "px;height:26px;align-items:flex-end;gap:" + (dayKeys.length > 7 ? 1 : 3) + "px" },
+      ...dayKeys.map((k) => {
+        const x = byDay[k], when = k.split("-").reverse().join("/");
+        if (!x || !x.requests) return el("i", { style: "height:3px", title: when + ": sem pedidos" });
+        const r = Math.min(1, x.ok / x.requests) * 100;
+        return el("i", { class: r >= 90 ? "g" : r >= 70 ? "m" : "x", style: "height:" + Math.max(18, Math.round(x.requests / max * 100)) + "%",
+          title: when + ": " + shPct(r) + " de " + shNum(x.requests) + " pedidos" });
+      }));
+  }
+  let shRun = 0;
+  async function loadSourceHealth() {
+    const run = ++shRun;
+    const days = parseInt($("shDays").dataset.value || "7", 10);
+    const { data, error } = await sb.rpc("admin_source_health", { p_days: days });
+    if (run !== shRun) return;
+    if (error) { $("shMsg").textContent = "Para ver a saúde das fontes, rode antes o arquivo cloudplay_functions.sql no Supabase."; return; }
+    $("shMsg").textContent = "";
+    const d = data || {}, sources = d.sources || [];
+    const used = sources.filter((x) => x.requests > 0);
+    const req = used.reduce((a, x) => a + x.requests, 0), ok = used.reduce((a, x) => a + Math.min(x.ok, x.requests), 0);
+    const okMs = used.filter((x) => x.avg_ms != null).reduce((a, x) => [a[0] + x.avg_ms * x.ok, a[1] + x.ok], [0, 0]);
+    $("shRate").textContent = req ? shPct(ok / req * 100) : "—";
+    $("shRateSub").textContent = req ? shNum(req) + " pedidos no período" : "sem pedidos no período";
+    $("shMs").textContent = okMs[1] ? secs(okMs[0] / okMs[1]) : "—";
+    $("shBad").textContent = used.length ? used.filter((x) => x.success < 70).length + " de " + used.length : "0";
+    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+    const dayKeys = Array.from({ length: days }, (_, i) => { const x = new Date(today); x.setDate(x.getDate() - days + 1 + i); return x.toLocaleDateString("sv-SE"); });
+    $("shEmpty").classList.toggle("hidden", sources.length > 0);
+    $("shRows").replaceChildren(...sources.map((st) => el("tr", {},
+      el("td", { class: "rv-name", "data-label": "" }, el("b", {}, st.name || "Fonte"), st.is_m3u ? el("span", { class: "pill wait" }, "M3U") : ""),
+      el("td", { "data-label": "Pedidos" }, shNum(st.requests)),
+      el("td", { "data-label": "Taxa de sucesso" }, el("span", { class: "pill " + shCls(st.success) }, shPct(st.success))),
+      el("td", { "data-label": "Tempo médio" }, st.avg_ms != null ? secs(st.avg_ms) : "—"),
+      el("td", { "data-label": "Reproduções" }, shNum(st.plays)),
+      el("td", { "data-label": "Por dia" }, shSpark(st, dayKeys)))));
+    const fs = d.failing_sources || [];
+    // The addon list may still be loading when this page opens first.
+    const known = addons.length ? addons : ((await sb.from("default_addons").select("name")).data || []);
+    if (run !== shRun) return;
+    $("shSources").replaceChildren(...(fs.length ? fs.map((f) => {
+      const n = shSourceName(f.source, known);
+      return el("div", { class: "dr-item" },
+        el("div", {}, el("b", {}, n.name), el("span", {}, [n.m3u ? "Lista M3U" : n.sub || "Addon", shNum(f.titles) + (f.titles === 1 ? " título" : " títulos"), f.last_at ? ago(f.last_at) : ""].filter(Boolean).join(" · "))),
+        el("span", { class: "due-when soon" }, el("i"), shNum(f.devices) + (f.devices === 1 ? " aparelho" : " aparelhos")));
+    }) : [el("p", { class: "empty" }, "Nenhuma fonte falhou nas últimas 48 horas.")]));
+    const ft = d.failing_titles || [];
+    $("shTitles").replaceChildren(...(ft.length ? ft.map((t) => {
+      const lb = shTitleLabel(t.title), poster = shPoster(t.poster);
+      const img = poster ? el("img", { src: poster, alt: "" }) : el("span", { class: "noposter" });
+      const name = el("b", {}, t.name ? t.name + (lb.ep ? " · " + lb.ep : "") : lb.fallback);
+      const row = el("div", { class: "dr-item" }, img,
+        el("div", {}, name, el("span", {}, [lb.tv ? "Série" : "Filme", shNum(t.sources) + (t.sources === 1 ? " fonte falhou" : " fontes falharam"), t.last_at ? ago(t.last_at) : ""].filter(Boolean).join(" · "))),
+        el("span", { class: "due-when soon" }, el("i"), shNum(t.devices) + (t.devices === 1 ? " aparelho" : " aparelhos")));
+      if ((!t.name || !poster) && /^\d+$/.test(lb.id || "")) shLookup(lb.kind, lb.id).then((m) => {
+        if (!m || run !== shRun) return;
+        if (!t.name) name.textContent = m.title + (lb.ep ? " · " + lb.ep : "");
+        if (!poster && shPoster(m.poster)) img.replaceWith(el("img", { src: shPoster(m.poster), alt: "" }));
+      });
+      return row;
+    }) : [el("p", { class: "empty" }, "Nenhum título com erro nas últimas 48 horas.")]));
+  }
+  seg("shDays", loadSourceHealth);
+
   // ── Erros: what the customers' devices ran into (report_app_errors) ──
   let errRows = [];
   const ER_KIND = { addon: "Addon", app: "App", crash: "Fechou" };
@@ -4243,7 +4376,7 @@
   seg("aiFilter", renderImprovements);
 
   // ── Sidebar navigation ──
-  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "revendedores", "meus", "addons", "categorias", "catalogo", "uso", "atualizacoes", "status", "erros", "logs", "melhorias"];
+  const PAGES = ["inicio", "codigos", "conectados", "pedidos", "revendedores", "meus", "addons", "saude", "categorias", "catalogo", "uso", "atualizacoes", "status", "erros", "logs", "melhorias"];
   // ── CloudPlay: Meus conteúdos ──
   let ownVideos = [], ownPick = null, ownXhr = null, ownCancelFn = null, ownBusy = false;
   const ownXhrs = new Set();
@@ -4719,6 +4852,7 @@
       if (on && page === "revendedores" && !$("app").classList.contains("hidden")) setTimeout(loadResellers, 0);
       if (on && page === "meus" && !$("app").classList.contains("hidden")) setTimeout(loadOwn, 0);
       if (on && page === "status" && !$("app").classList.contains("hidden")) setTimeout(loadUptime, 0);
+      if (on && page === "saude" && !$("app").classList.contains("hidden")) setTimeout(loadSourceHealth, 0);
     });
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.page === page));
     document.querySelectorAll(".bottom-nav a").forEach((a) => a.classList.toggle("active", a.dataset.page.split(" ").includes(page)));
@@ -4730,7 +4864,7 @@
   $("menuBtn").addEventListener("click", () => document.body.classList.add("nav-open"));
   $("bnMore").addEventListener("click", (e) => { e.preventDefault(); document.body.classList.add("nav-open"); });
   $("backdrop").addEventListener("click", () => document.body.classList.remove("nav-open"));
-  const loadAll = () => { loadResellers(); if (location.hash === "#meus") loadOwn(); load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); loadPending(); } loadErrors(); if (location.hash === "#catalogo") setTimeout(openCatalog, 300); if (location.hash === "#logs") loadLogs(); if (location.hash === "#melhorias") loadImprovements(); if (location.hash === "#status") loadUptime(); loadPlaylists(); };
+  const loadAll = () => { loadResellers(); if (location.hash === "#meus") loadOwn(); load(); loadAddons(); loadSettings().then(loadCategories); loadRequests(); loadPendingSummary(); if (location.hash === "#uso") loadUsage(); if (location.hash === "#conectados") loadPeaks(); if (location.hash === "#atualizacoes") { loadUpdates(); loadBuild(); loadPending(); } loadErrors(); if (location.hash === "#catalogo") setTimeout(openCatalog, 300); if (location.hash === "#logs") loadLogs(); if (location.hash === "#melhorias") loadImprovements(); if (location.hash === "#status") loadUptime(); if (location.hash === "#saude") loadSourceHealth(); loadPlaylists(); };
   $("refreshAll").addEventListener("click", loadAll);
 
   $("search").addEventListener("input", render);

@@ -115,6 +115,22 @@
     {
       "text": "Player: trocar entre Dublado e Legendado ficou mais rápido. O app escolhe a melhor fonte da outra versão (não a primeira da lista), testa as 3 melhores ao mesmo tempo e, 15 s depois do filme começar, já deixa a outra versão testada por trás.",
       "added": "2026-10-31"
+    },
+    {
+      "text": "Aviso de vencimento: faltando 3 dias ou menos, aparece \"Seu acesso vence em N dias\" no topo da tela inicial (TV: abaixo do menu, à direita, sem pegar o foco). Some sozinho em 1 minuto e aparece no máximo uma vez por dia; no celular dá para fechar no ✕.",
+      "added": "2026-10-31"
+    },
+    {
+      "text": "\"Seu pedido chegou!\": quando um pedido é marcado como \"Conteúdo adicionado\" no painel, o cliente vê um aviso com a capa ao abrir o app, com \"Assistir agora\" (abre a página do título) ou \"Depois\". Um aviso por pedido.",
+      "added": "2026-10-31"
+    },
+    {
+      "text": "\"Continuar assistindo\" mais rápido: ao abrir a tela inicial, o app já busca as fontes do primeiro título da fileira e conecta na fonte em que ele estava tocando; ao apertar, começa quase na hora.",
+      "added": "2026-10-31"
+    },
+    {
+      "text": "Próximo episódio engatilhado: 4 minutos antes do episódio acabar, o app já busca as fontes do próximo e conecta na do mesmo addon; o próximo episódio começa sem ficar procurando.",
+      "added": "2026-10-31"
     }
   ],
   "sent_at": null,
