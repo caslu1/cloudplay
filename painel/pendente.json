@@ -131,6 +131,10 @@
     {
       "text": "Próximo episódio engatilhado: 4 minutos antes do episódio acabar, o app já busca as fontes do próximo e conecta na do mesmo addon; o próximo episódio começa sem ficar procurando.",
       "added": "2026-10-31"
+    },
+    {
+      "text": "Primeira abertura: as fileiras carregadas durante \"Preparando seus filmes e séries\" ficam salvas como a tela inicial do aparelho, então depois do carregamento a tela inicial já aparece com tudo, sem ficar carregando.",
+      "added": "2026-11-02"
     }
   ],
   "sent_at": null,
