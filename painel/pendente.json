@@ -3,6 +3,10 @@
     {
       "text": "Listas M3U nos filmes: não toca mais um filme de nome parecido. Antes, \"Obsessão: A Felicidade é Relativa\" podia abrir o filme \"Obsessão\"; agora, quando os nomes diferem em duas ou mais palavras, o ano precisa bater.",
       "added": "2026-11-04"
+    },
+    {
+      "text": "Lista de fontes separada em abas \"Dublado\" e \"Legendado\", cada uma com a quantidade. Abre na última aba escolhida (ou na que tiver fontes); fontes Dual aparecem nas duas e as listas M3U ficam em Dublado. Na TV, aperte para cima na primeira fonte para trocar de aba.",
+      "added": "2026-11-04"
     }
   ],
   "sent_at": null,
