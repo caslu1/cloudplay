@@ -119,6 +119,10 @@
     {
       "text": "Lista de fontes na hora: as fontes que a página do conteúdo já achou (as mesmas que acendem a bandeira) aparecem assim que você toca em Fontes, sem procurar de novo.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Mais fluidez ao passar os conteúdos: capas e banners mais leves (carregam e desenham mais rápido, sem perder nitidez na TV) e, ao parar num filme, o app não carrega mais a lista inteira (isso travava a TV Box por um instante). As fontes da lista de fontes, ao fechar e abrir de novo, aparecem na hora.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
