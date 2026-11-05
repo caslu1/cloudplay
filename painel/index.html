@@ -4386,9 +4386,17 @@
       el("td", { "data-label": "Por dia" }, shSpark(st, dayKeys)))));
     const fs = d.failing_sources || [];
     // The addon list may still be loading when this page opens first.
-    const known = addons.length ? addons : ((await sb.from("default_addons").select("name")).data || []);
+    const known = (addons.length ? addons : ((await sb.from("default_addons").select("name,enabled")).data || [])).filter((a) => a.enabled !== false);
+    const activeLists = new Set((typeof playlists !== "undefined" ? playlists : []).filter((p) => p.enabled !== false).map((p) => (p.name || "").trim().toLowerCase()));
     if (run !== shRun) return;
-    $("shSources").replaceChildren(...(fs.length ? fs.map((f) => {
+    // CloudPlay: only sources switched on in the panel.
+    const fsActive = fs.filter((f) => {
+      const n = shSourceName(f.source, known);
+      if (n.m3u) return !activeLists.size || activeLists.has(String(n.name).trim().toLowerCase()) || n.name === "Lista M3U";
+      if (n.name === "Meus conteúdos") return false;
+      return !!known.find((a) => a.name === n.name);
+    });
+    $("shSources").replaceChildren(...(fsActive.length ? fsActive.map((f) => {
       const n = shSourceName(f.source, known);
       return el("div", { class: "dr-item" },
         el("div", {}, el("b", {}, n.name), el("span", {}, [n.m3u ? "Lista M3U" : n.sub || "Addon", shNum(f.titles) + (f.titles === 1 ? " título" : " títulos"), f.last_at ? ago(f.last_at) : ""].filter(Boolean).join(" · "))),
