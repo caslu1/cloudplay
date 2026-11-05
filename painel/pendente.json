@@ -47,6 +47,10 @@
     {
       "text": "Sair e entrar de novo no mesmo aparelho: o código volta a funcionar nele mesmo depois de reinstalar o app ou limpar os dados (o aparelho é reconhecido e pega a própria vaga de volta). Em outro aparelho continua valendo o limite de aparelhos.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Addons não criam mais categorias na tela inicial: adicionar um addon só traz fontes. O app mostra apenas as categorias padrão (e \"Exclusivos CloudPlay\" quando houver vídeos próprios); as categorias de addons que já apareciam somem.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
