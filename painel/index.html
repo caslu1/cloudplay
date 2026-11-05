@@ -3533,7 +3533,20 @@
     if (own.length) categories.push({ id: "cloudplay_own_movie", title: "Exclusivos CloudPlay", source: "CloudPlay",
       position: Math.min(...own.map((c) => c.position ?? 9999)),
       members: [...new Set(["cloudplay_own_movie", "cloudplay_own_series", ...own.map((c) => c.id)])] });
+    await hideAddonCategories();
     renderCategories();
+  }
+  // CloudPlay: addons bring sources, not rows: their rows (Zeus, Brazuca…) are switched off in the
+  // app, once each (they stay under "Apagadas" and can be brought back there). The app's own
+  // rows (TMDB, MDBList lists, collections) are left as they are.
+  const DEFAULT_CAT_SOURCES = ["app", "preinstalled", "mdblist", "tmdb", "trakt", "simkl", "home_server", "cloudplay"];
+  async function hideAddonCategories() {
+    const ov = Object.assign({}, settings.category_overrides || {});
+    const addonRows = categories.filter((c) => !c.members && c.source && !DEFAULT_CAT_SOURCES.includes(String(c.source).toLowerCase()) && !(c.id in ov));
+    if (!addonRows.length) return;
+    addonRows.forEach((c) => { ov[c.id] = { hidden: true }; });
+    const { error } = await sb.from("app_settings").upsert({ key: "category_overrides", value: ov, updated_at: new Date().toISOString() });
+    if (!error) { settings.category_overrides = ov; toast(addonRows.length + (addonRows.length === 1 ? " categoria de addon saiu" : " categorias de addons saíram") + " do app"); }
   }
   // Where a row shows in the app. Home lists Continuar assistindo first, then the Top 10 rows, then
   // the Streamings rail, then the rest in the app's own order; Filmes and Séries show the same
