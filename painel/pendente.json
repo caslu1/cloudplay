@@ -71,6 +71,10 @@
     {
       "text": "Primeira vez do cliente: agora a ordem é código → perfil → \"Preparando seus filmes e séries\" → tela inicial. Tudo é preparado já no perfil do cliente: a tela inicial abre pronta e os conteúdos não mostram mais \"Solicitar conteúdo\" por engano. Um perfil criado depois também recebe as listas M3U e os addons na hora.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "\"Solicitar conteúdo\" removido do app: o botão Assistir aparece sempre, a lista de fontes não oferece mais pedir, e a página Ajustes › Solicitar conteúdo saiu (TV e celular).",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
