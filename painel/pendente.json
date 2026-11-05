@@ -103,6 +103,10 @@
     {
       "text": "Fileiras e \"Ver tudo\" das categorias mais rápidos: o servidor já entrega capa, nome e data de cada título das listas, então o app não precisa buscar título por título no TMDB.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Listas lidas pelo servidor: o servidor lê as listas M3U (filmes, séries e episódios, com os links) e o app pega as fontes prontas, quase na hora. O aparelho não baixa mais essas listas, então o \"Preparando seus filmes e séries\" fica bem mais curto. Lista que bloquear o servidor continua sendo lida pelos aparelhos.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
