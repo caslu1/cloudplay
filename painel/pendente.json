@@ -127,6 +127,10 @@
     {
       "text": "Várias listas sem perder velocidade: as fontes são procuradas em todas as listas M3U ao mesmo tempo (antes era uma depois da outra). Em TV Box com pouca memória, no máximo 2 listas por vez.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Player no celular: ao trocar de episódio dentro do player, a tela continua deitada (antes virava em pé).",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
