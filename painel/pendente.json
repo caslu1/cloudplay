@@ -99,6 +99,10 @@
     {
       "text": "Elenco: tocar ou apertar OK numa pessoa do elenco não abre mais nada (TV e celular).",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Fileiras e \"Ver tudo\" das categorias mais rápidos: o servidor já entrega capa, nome e data de cada título das listas, então o app não precisa buscar título por título no TMDB.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
