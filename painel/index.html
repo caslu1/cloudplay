@@ -1106,7 +1106,7 @@
   .stat small span { display: inline; font-size: inherit; color: inherit; font-weight: inherit; }
   .stat .st-ic, .hist-ic { display: none; }
   .quick a svg { color: #8b8b96; }
-  .kpis { display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 14px; }
+  .kpis { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 14px; }
   .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); display: inline-block; }
   .dash2 { display: grid; gap: 14px; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); margin-bottom: 14px; }
   .dash2 .card { margin: 0; }
@@ -1157,7 +1157,7 @@
   #lgList .empty { padding: 24px 18px; margin: 0; }
 
   @media (max-width: 1100px) { .tb-search { width: 240px; } .prof-who { display: none; } }
-  @media (max-width: 1000px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dash2 { grid-template-columns: 1fr; } }
+  @media (max-width: 1000px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kpis > .stat:nth-child(3) { grid-column: 1 / -1; } .dash2 { grid-template-columns: 1fr; } }
   @media (max-width: 860px) {
     .topbar { padding: 0 14px; height: 56px; }
     .topbar .crumb, .tb-search, .tb-gen, .prof-chev { display: none; }
@@ -1314,7 +1314,7 @@
       <div class="nav-label">Clientes</div>
       <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg>Códigos de acesso<span id="navCodes" class="pill hidden">0</span></a>
       <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg>Dispositivos<span id="navOnline" class="pill count-pill hidden">0</span></a>
-      <a href="#pedidos" data-page="pedidos"><svg class="i"><use href="#i-inbox"/></svg>Pedidos<span id="navPending" class="pill count-pill hidden">0</span></a>
+      <a href="#pedidos" data-page="pedidos" style="display:none"><svg class="i"><use href="#i-inbox"/></svg>Pedidos<span id="navPending" class="pill count-pill hidden">0</span></a>
       <a href="#revendedores" data-page="revendedores"><svg class="i"><use href="#i-user"/></svg>Revendedores</a>
       <div class="nav-label">Conteúdo</div>
       <a href="#addons" data-page="addons"><svg class="i"><use href="#i-tvplay"/></svg>Fontes de conteúdo</a>
@@ -1382,7 +1382,7 @@
     <a href="#codigos" data-page="codigos"><svg class="i"><use href="#i-key"/></svg><span>Códigos</span></a>
     <a href="#conectados" data-page="conectados"><svg class="i"><use href="#i-tv"/></svg><span>Conectados</span></a>
     <a href="#addons" data-page="addons"><svg class="i"><use href="#i-tvplay"/></svg><span>Fontes</span></a>
-    <a href="#mais" id="bnMore" data-page="pedidos revendedores saude meus categorias catalogo uso atualizacoes status erros logs melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden">0</b></a>
+    <a href="#mais" id="bnMore" data-page="revendedores saude meus categorias catalogo uso atualizacoes status erros logs melhorias"><svg class="i"><use href="#i-menu"/></svg><span>Mais</span><b id="bnPending" class="hidden" style="display:none">0</b></a>
   </nav>
 
   <div class="content">
@@ -1393,7 +1393,7 @@
       <div class="tb-search field-icon"><svg class="i"><use href="#i-search"/></svg><input id="tbSearch" placeholder="Buscar código, cliente ou telefone" autocomplete="off"><kbd>/</kbd></div>
       <button type="button" id="tbGen" class="tb-gen"><svg class="i"><use href="#i-plus"/></svg>Gerar código</button>
       <button id="refreshAll" class="icon-btn" title="Atualizar"><svg class="i"><use href="#i-refresh"/></svg></button>
-      <a href="#pedidos" id="tbBell" class="icon-btn tb-bell" title="Pedidos de conteúdo"><svg class="i"><use href="#i-inbox"/></svg><i class="hidden"></i></a>
+      <a href="#pedidos" id="tbBell" class="icon-btn tb-bell" style="display:none" title="Pedidos de conteúdo"><svg class="i"><use href="#i-inbox"/></svg><i class="hidden"></i></a>
       <div class="prof">
         <button type="button" id="profBtn" class="prof-btn" aria-haspopup="menu"><span id="avatar" class="avatar">A</span>
           <span class="prof-who"><b>Administrador</b><span id="who"></span></span><svg class="i prof-chev"><use href="#i-chev"/></svg></button>
@@ -1415,7 +1415,7 @@
         <div class="stat"><span><i class="live-dot"></i>Online agora</span><b id="onNow">0</b><small><span id="onToday">0</span> aparelhos usaram hoje</small></div>
         <div class="stat"><span>Clientes ativos</span><b id="sActive">0</b><small><span id="sFree">0</span> códigos livres</small></div>
         <div class="stat"><span>Vencendo em 7 dias</span><b id="sDue">0</b><small id="sDueSub">nenhum amanhã</small></div>
-        <div class="stat"><span>Pedidos pendentes</span><b id="sPending">0</b><small id="sPendingSub">nenhum aguardando</small></div>
+        <div class="stat" style="display:none"><span>Pedidos pendentes</span><b id="sPending">0</b><small id="sPendingSub">nenhum aguardando</small></div>
       </div>
       <div class="hidden"><b id="sTotal">0</b><b id="sExpired">0</b><b id="sAddons">0</b></div>
       <div class="dash2">
@@ -1431,11 +1431,11 @@
         </div>
       </div>
       <div class="dash2">
-        <div class="card">
+        <div class="card" style="grid-column:1/-1">
           <div class="dc-head"><div><h2>Vencendo em breve</h2><p class="sub">Renove antes que o cliente perca o acesso</p></div><a href="#codigos" id="dueAll" class="dc-link">Ver todos</a></div>
           <div id="dueList" class="due-list"></div>
         </div>
-        <div class="card">
+        <div class="card" style="display:none">
           <div class="dc-head"><div><h2>Pedidos de conteúdo</h2><p id="dashReqSub" class="sub">Nenhum aguardando</p></div><a href="#pedidos" class="dc-link">Abrir</a></div>
           <div id="dashReq" class="dash-req"></div>
         </div>
