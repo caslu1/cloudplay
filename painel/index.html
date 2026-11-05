@@ -1683,7 +1683,7 @@
     <!-- Addons -->
     <main class="page hidden" data-section="addons" data-title="Fontes de conteúdo">
       <div id="addonCard" class="card hidden">
-        <div class="card-head"><div><h2 id="addonFormTitle">Nova fonte</h2><p id="addonFormSub" class="sub">Um addon (link manifest.json) ou uma lista M3U.</p></div>
+        <div class="card-head"><div><h2 id="addonFormTitle">Nova lista M3U</h2><p id="addonFormSub" class="sub">O link da lista (só filmes e séries viram fontes).</p></div>
           <div id="aSrc" class="seg"><button type="button" data-v="addon" class="on">Addon</button><button type="button" data-v="m3u">Lista M3U</button></div></div>
         <form id="addonForm" class="addon-form">
           <div><label for="aName">Nome</label><input id="aName" placeholder="Ex.: Torrentio" maxlength="60" required>
@@ -1704,14 +1704,14 @@
       </div>
       <div class="card">
         <div class="card-head">
-          <div><h2>Fontes instaladas</h2><p class="sub">Valem para todos os aparelhos. Toque no olho para ver o link.</p></div>
+          <div><h2>Listas M3U</h2><p class="sub">Valem para todos os aparelhos. Toque no olho para ver o link.</p></div>
           <div class="head-btns">
-            <button type="button" id="aNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Adicionar addon ou M3U</button>
+            <button type="button" id="aNew" class="small"><svg class="i"><use href="#i-plus"/></svg>Adicionar lista M3U</button>
           </div>
         </div>
         <div class="src-bar"><div id="srcSummary" class="src-sum"></div><div id="srcOrder"></div></div>
         <div id="addonList" class="addon-list"></div>
-        <p id="addonEmpty" class="empty hidden">Nenhum addon padrão. Os aparelhos ficam só com os addons que cada cliente adicionar.</p>
+        <p id="addonEmpty" class="empty hidden">Nenhuma lista M3U ainda. Toque em "Adicionar lista M3U".</p>
       </div>
       <div class="card" id="hlCard">
         <div class="card-head">
@@ -2991,22 +2991,22 @@
   }
   function renderAddons() {
     const list = $("addonList"); list.replaceChildren();
-    $("addonEmpty").classList.toggle("hidden", addons.length > 0);
+    $("addonEmpty").classList.toggle("hidden", playlists.length > 0);
     $("sAddons").textContent = addons.filter((a) => a.enabled).length;
     // CloudPlay: the M3U lists go among the content addons, in one order the app follows.
-    const contents = contentOrder(), infos = addons.filter((a) => kindOf(a) === "info");
+    // CloudPlay: the app uses only the M3U lists now (addons no longer bring sources): only they show.
+    const contents = contentOrder().filter((x) => x.__m3u), infos = [];
     const enabled = contents.filter((x) => x.enabled);
     // Same numbers as the app (2.14 on): each M3U list has its own, in this list's order.
     const fonteNum = new Map(); let n = 0;
     enabled.forEach((x) => fonteNum.set(x, ++n));
     const nAddons = contents.filter((x) => !x.__m3u && x.enabled).length, nLists = contents.filter((x) => x.__m3u && x.enabled).length;
     const chip = (n, label) => el("span", { class: "src-chip" }, el("b", {}, String(n)), label);
-    $("srcSummary").replaceChildren(chip(nAddons, nAddons === 1 ? "addon ativo" : "addons ativos"), chip(nLists, nLists === 1 ? "lista M3U" : "listas M3U"),
-      chip(infos.filter((x) => x.enabled).length, "de informação"));
+    $("srcSummary").replaceChildren(chip(nLists, nLists === 1 ? "lista M3U ativa" : "listas M3U ativas"));
     $("srcOrder").replaceChildren(addons.length || playlists.length ? orderToggle() : "");
     const section = (title, sub, n) => el("div", { class: "addon-sec" }, el("b", {}, title + " "), el("span", { class: "n" }, String(n)), el("span", {}, sub));
     if (addons.length || playlists.length) {
-      list.append(section("Fontes de conteúdo", "Trazem os vídeos para assistir, na ordem desta lista (Fonte 1, Fonte 2…). Suba ou desça para mudar a ordem.", contents.length));
+      list.append(section("Listas M3U", "Trazem os filmes e séries para assistir, na ordem desta lista. Suba ou desça para mudar a ordem.", contents.length));
     }
     [...contents, ...(infos.length ? [null] : []), ...infos].forEach((a) => {
       if (a === null) { list.append(section("Addons de informação", "Só catálogos e detalhes dos títulos (capas, sinopse, elenco). Não trazem fontes, então não são testados.", infos.length)); return; }
@@ -3146,7 +3146,8 @@
   const agoShort = (iso) => { const m = Math.round((Date.now() - new Date(iso)) / 60e3); return m < 1 ? "agora" : m < 60 ? "há " + m + " min" : m < 1440 ? "há " + Math.round(m / 60) + " h" : "há " + Math.round(m / 1440) + " d"; };
   function renderTests() {
     const box = $("tstList"); if (!box) return;
-    const list = contentOrder();
+    // CloudPlay: only the M3U lists bring sources now.
+    const list = contentOrder().filter((x) => x.__m3u);
     const enabled = list.filter((x) => x.enabled);
     if (!list.length) { box.replaceChildren(el("p", { class: "empty" }, "Nenhuma fonte de conteúdo para testar.")); return; }
     box.replaceChildren(...list.map((x) => {
@@ -3357,9 +3358,9 @@
   function resetAddonForm() {
     editingAddon = null;
     $("aName").value = ""; $("aUrl").value = ""; $("aColor").value = "#ff74a8"; $("aKind").value = ""; $("aAudio").value = "";
-    editingPlaylist = null; $("aSrc").classList.remove("hidden"); setSrcMode("addon");
+    editingPlaylist = null; $("aSrc").classList.add("hidden"); setSrcMode("m3u");
     $("aSubmit").textContent = "Adicionar";
-    $("addonFormTitle").textContent = "Nova fonte";
+    $("addonFormTitle").textContent = "Nova lista M3U";
     $("addonCard").classList.add("hidden");
   }
 
@@ -4530,8 +4531,8 @@
     const fsActive = fs.filter((f) => {
       const n = shSourceName(f.source, known);
       if (n.m3u) return !activeLists.size || activeLists.has(String(n.name).trim().toLowerCase()) || n.name === "Lista M3U";
-      if (n.name === "Meus conteúdos") return false;
-      return !!known.find((a) => a.name === n.name);
+      // CloudPlay: addons no longer bring sources in the app.
+      return false;
     });
     $("shSources").replaceChildren(...(fsActive.length ? fsActive.map((f) => {
       const n = shSourceName(f.source, known);
