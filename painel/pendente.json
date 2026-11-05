@@ -89,7 +89,7 @@
       "added": "2026-11-05"
     },
     {
-      "text": "Só listas M3U: os addons não buscam mais fontes no app (fica só o de legendas e \"Meus conteúdos\"). A busca de fontes fica só nas listas, bem mais rápida.",
+      "text": "Só listas M3U: o app não usa mais nenhum addon (nem o de legendas; os arquivos M3U já trazem as legendas). Os addons que vinham do painel são removidos dos aparelhos. \"Meus conteúdos\" continua. A busca de fontes fica só nas listas, bem mais rápida.",
       "added": "2026-11-05"
     }
   ],
