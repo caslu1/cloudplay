@@ -103,6 +103,18 @@
     {
       "text": "Fileiras e \"Ver tudo\" das categorias mais rápidos: o servidor já entrega capa, nome e data de cada título das listas, então o app não precisa buscar título por título no TMDB.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Episódios mais rápidos: ao abrir a página de uma série, o app já lê os episódios dela nas listas M3U, e as fontes do episódio aparecem na hora.",
+      "added": "2026-11-05"
+    },
+    {
+      "text": "Fontes de filme sem abrir a lista: o app monta o link do filme com o que o servidor já sabe (tipo de arquivo e categoria), sem carregar a lista inteira na memória; mais rápido também em TV Box fraca.",
+      "added": "2026-11-05"
+    },
+    {
+      "text": "Adianta o título em que o cliente para em cima (TV e celular): a página e as fontes dele já ficam prontas antes de abrir.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
