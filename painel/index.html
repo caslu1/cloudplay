@@ -3097,7 +3097,7 @@
       const hkey = x.__m3u ? m3uTestKey(x) : testKeys[x.id];
       const hist = (hkey && testHistory[hkey]) || [];
       const last = st.run || hist[0] || null;
-      const [cls, word] = st.running ? ["wait", "Testando…"] : st.error ? ["bad", st.errorWord || "Erro"] : last ? gradeRun(last) : ["none", "Nunca testado"];
+      const [cls, word] = st.running ? ["wait", "Testando…"] : st.error ? [st.errorCls || "bad", st.errorWord || "Erro"] : last ? gradeRun(last) : ["none", "Nunca testado"];
       const num = enabled.indexOf(x);
       const color = x.color || (x.__m3u ? "#ffb08c" : "transparent");
       const btn = el("button", { type: "button", class: "ghost small", onclick: (e) => { e.stopPropagation(); x.__m3u ? testPlaylist(x) : testAddon(x); } }, icon("bolt"), st.running ? "Testando" : "Testar");
@@ -3237,12 +3237,15 @@
       if (!err || (err.context && err.context.status && err.context.status !== 404)) break;
     }
     clearInterval(tick);
-    const fail = (word, text) => { Object.assign(st, { running: false, error: text, errorWord: word, results: null }); renderTests(); return "bad"; };
+    const fail = (word, text, cls) => { Object.assign(st, { running: false, error: text, errorWord: word, errorCls: cls || "bad", results: null }); renderTests(); return cls || "bad"; };
     if (err || !data) {
       const status = err?.context?.status;
       if (status === 403) return fail("Sem permissão", "Entre no painel com a conta de administrador.");
       return fail("Falta a função", "O teste das listas M3U precisa da função \"m3u-test\" no Supabase. Crie em Supabase › Edge Functions › Deploy a new function, com o nome m3u-test, colando o arquivo que o Claude mandou.");
     }
+    // CloudPlay: the server answered a web page: it blocks tests from servers, not the app.
+    if (data.error === "list_unreachable" && /página da web|DOCTYPE|Unexpected token '<'/i.test(data.detail || ""))
+      return fail("Teste bloqueado", "O servidor da lista não deixa o teste do painel entrar (respondeu com uma página da web). Isso costuma acontecer só com o teste: se a lista toca no app, está tudo certo. Os números reais estão em \"Nos aparelhos\" e na página Saúde das fontes.", "mid");
     if (data.error === "list_unreachable") return fail("Fora do ar", "A lista não abriu agora (" + (data.detail || "sem resposta") + "). Confira se o link e o login da lista ainda valem.");
     if (data.error === "no_vod") return fail("Sem filmes", "A lista abriu, mas não achei filmes nem séries nela (só canais).");
     if (data.error) return fail("Erro", "O teste não terminou: " + (data.detail || data.error));
