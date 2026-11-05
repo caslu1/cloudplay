@@ -115,6 +115,10 @@
     {
       "text": "Adianta o título em que o cliente para em cima (TV e celular): a página e as fontes dele já ficam prontas antes de abrir.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Lista de fontes na hora: as fontes que a página do conteúdo já achou (as mesmas que acendem a bandeira) aparecem assim que você toca em Fontes, sem procurar de novo.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
