@@ -91,6 +91,10 @@
     {
       "text": "Só listas M3U: o app não usa mais nenhum addon (nem o de legendas; os arquivos M3U já trazem as legendas). Os addons que vinham do painel são removidos dos aparelhos. \"Meus conteúdos\" continua. A busca de fontes fica só nas listas, bem mais rápida.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Sem opções de legenda: o botão de legenda saiu do player (celular e TV; na TV o botão vira só \"Áudio\", com Dublado/Legendado e as faixas de áudio), o ajuste de legenda saiu e a seção Legendas saiu dos Ajustes. Os arquivos M3U já trazem a legenda.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
