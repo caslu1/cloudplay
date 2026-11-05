@@ -1214,6 +1214,19 @@
     td { padding-top: 10px; padding-bottom: 10px; }
   }
   @media (max-width: 760px) { .sm-two { grid-template-columns: 1fr !important; } }
+  .ct-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 16px; overflow-x: auto; }
+  .ct-tabs button { background: none; border: 0; border-bottom: 2px solid transparent; border-radius: 0; color: var(--muted); padding: 10px 16px; font-size: 14px; font-weight: 500; white-space: nowrap; }
+  .ct-tabs button.on { color: var(--text); font-weight: 600; border-bottom-color: #FF74A8; }
+  .ct-pane > .card + .card { margin-top: 14px; }
+  .ct-switch .msg:empty { display: none; }
+  .ct-pane .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 760px) { .ct-pane .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .ct-sw { position: relative; width: 46px; height: 26px; flex: none; cursor: pointer; }
+  .ct-sw input { opacity: 0; position: absolute; inset: 0; margin: 0; cursor: pointer; }
+  .ct-sw i { position: absolute; inset: 0; border-radius: 13px; background: #2a2633; transition: background .15s; pointer-events: none; }
+  .ct-sw i::after { content: ""; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #8d8796; transition: transform .15s, background .15s; }
+  .ct-sw input:checked + i { background: linear-gradient(90deg, #FF74A8, #FFB08C); }
+  .ct-sw input:checked + i::after { transform: translateX(20px); background: #fff; }
 </style>
 </head>
 <body>
@@ -1903,11 +1916,18 @@
 
     <!-- Catálogo M3U: what the panel's lists have, read by the app once a day (m3u_catalog) -->
     <main class="page hidden" data-section="catalogo" data-title="Catálogo M3U">
-      <div class="card">
-        <div class="card-head"><div><h2>Mostrar no app só o que tem nas listas</h2>
-          <p class="sub">Ligado, a tela inicial, as abas, a pesquisa, as coleções e o "Mais como este" mostram só os filmes e séries reconhecidos nas listas M3U (veja "reconhecidos" abaixo). Títulos não reconhecidos ficam de fora.</p></div></div>
-        <label class="own-toggle"><input type="checkbox" id="onlyM3u"> Só o que tem nas listas M3U</label>
+      <!-- CloudPlay: the page in three tabs -->
+      <div id="ctTabs" class="ct-tabs"><button type="button" data-v="resumo" class="on">Resumo</button><button type="button" data-v="titulos">Títulos das listas</button><button type="button" data-v="noapp">No app agora</button></div>
+      <div class="ct-pane" data-pane="resumo">
+      <div class="card ct-switch">
+        <div class="card-head" style="display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:nowrap;margin-bottom:0"><div style="flex:1;min-width:0"><h2>Mostrar no app só o que tem nas listas</h2>
+          <p class="sub">Ligado, a tela inicial, as abas, a pesquisa, as coleções e o "Mais como este" mostram só os filmes e séries reconhecidos nas listas M3U (veja "reconhecidos" abaixo). Títulos não reconhecidos ficam de fora.</p></div>
+        <label class="ct-sw" title="Só o que tem nas listas M3U"><input type="checkbox" id="onlyM3u"><i></i></label></div>
         <div id="onlyM3uMsg" class="msg"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>Suas listas</h2><p class="sub">Lidas pelo app uma vez por dia, num aparelho no Wi-Fi.</p></div></div>
+        <div id="ctLists" class="ct-lists"></div>
       </div>
       <!-- CloudPlay: distinct titles across the lists, repeats and dubbed / subtitled (admin_m3u_summary) -->
       <div class="card">
@@ -1929,7 +1949,8 @@
           <div id="smSide"></div>
         </div>
       </div>
-      <div id="ctLists" class="ct-lists"></div>
+      </div>
+      <div class="ct-pane hidden" data-pane="noapp">
       <div class="card">
         <div class="card-head">
           <div><h2>No app agora</h2><p class="sub">O que aparece em "Filmes / Séries adicionados recentemente" no app. Escolha abaixo com "+ No app".</p></div>
@@ -1937,9 +1958,11 @@
         </div>
         <div id="pkRow" class="pk-row"></div>
       </div>
+      </div>
+      <div class="ct-pane hidden" data-pane="titulos">
       <div class="card">
         <div class="card-head">
-          <div><h2>Conteúdo das listas</h2><p class="sub">Lido pelo app uma vez por dia. Novidades primeiro.</p></div>
+          <div><h2>Títulos das listas</h2><p class="sub">Lido pelo app uma vez por dia. Novidades primeiro.</p></div>
         </div>
         <div class="rc-tools">
           <div class="field-icon rc-search"><svg class="i"><use href="#i-search"/></svg><input id="ctSearch" placeholder="Buscar título em todas as listas" autocomplete="off"></div>
@@ -1950,6 +1973,7 @@
         <p id="ctInfo" class="rc-info"></p>
         <div id="ctGrid" class="rc-grid"></div>
         <p id="ctEmpty" class="empty hidden"></p>
+      </div>
       </div>
     </main>
 
@@ -4229,12 +4253,13 @@
     $("ctLists").replaceChildren(...ctLists.map((l) => {
       const total = l.movies + l.series;
       return el("div", { class: "ct-list" },
-        el("h3", { title: l.name }, el("i", { style: "background:" + (l.color || "#ff74a8") }), l.name),
+        el("h3", { title: l.name, style: "display:flex;align-items:center;gap:8px" }, el("i", { style: "background:" + (l.color || "#ff74a8") }), el("span", { style: "flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" }, l.name),
+          el("span", { class: "pill " + (l.read_at ? "good" : "mid"), style: "font-size:11px;white-space:nowrap" }, l.read_at ? "Lida " + ago(l.read_at) : "Ainda não lida")),
         el("div", { class: "ct-nums" },
           el("div", {}, el("b", {}, ctNum(l.movies)), el("span", {}, "filmes")),
           el("div", {}, el("b", {}, ctNum(l.series)), el("span", {}, "séries")),
           el("div", {}, el("b", {}, total ? (l.recognized && l.recognized * 100 < total ? "<1" : Math.round(100 * l.recognized / total)) + "%" : "—"), el("span", {}, "reconhecidos"))),
-        el("p", {}, ctReadAt(l.read_at) + (l.read_at ? " · " + ctNum(l.new7) + (l.new7 === 1 ? " novo" : " novos") + " nos últimos 7 dias" : " · o app lê a lista uma vez por dia")));
+        el("p", {}, l.read_at ? ctNum(l.new7) + (l.new7 === 1 ? " novo" : " novos") + " nos últimos 7 dias" : "Abra o app num aparelho no Wi-Fi para ela ser lida."));
     }));
     const sel = $("ctList"), names = ctLists.map((l) => l.name);
     if (sel.dataset.filled !== names.join("|")) {
@@ -4362,6 +4387,14 @@
         el("span", {}, el("b", { style: "color:#7d8cff" }, "só legendado "), ctNum(onlySub))));
   }
   seg("smType", loadM3uSummary);
+  // CloudPlay: the Catálogo M3U tabs (the last one opened is kept in this browser).
+  function ctShowTab(v) {
+    document.querySelectorAll("#ctTabs button").forEach((b) => b.classList.toggle("on", b.dataset.v === v));
+    document.querySelectorAll(".ct-pane").forEach((p) => p.classList.toggle("hidden", p.dataset.pane !== v));
+    try { localStorage.setItem("ctTab", v); } catch (_) {}
+  }
+  $("ctTabs").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) ctShowTab(b.dataset.v); });
+  try { const t = localStorage.getItem("ctTab"); if (t && document.querySelector('.ct-pane[data-pane="' + t + '"]')) ctShowTab(t); } catch (_) {}
   // CloudPlay: the app's "só o que tem nas listas M3U" switch (app_settings only_m3u_titles).
   $("onlyM3u").addEventListener("change", async (e) => {
     const on = e.target.checked;
