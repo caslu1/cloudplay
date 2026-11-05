@@ -39,6 +39,10 @@
     {
       "text": "Fileiras \"Filmes Populares\", \"Séries Populares\", \"Filmes Adicionados recentemente\" e \"Séries Adicionadas recentemente\" passam a ser do próprio app: não somem mais ao remover um addon. Populares vêm do TMDB (somados aos populares dos addons); Adicionados recentemente usam os títulos escolhidos no painel (\"+ No app\") ou, sem escolha, as novidades das listas M3U.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Listas M3U: um título com \"L\" depois do nome (\"Duna L\", \"Duna L (2024)\") é reconhecido como Legendado (bandeira, aba Legendado e o player sem ligar legenda por cima, porque a legenda já vem na imagem). Sem o L, continua Dublado.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
