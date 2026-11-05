@@ -3540,9 +3540,13 @@
   // app, once each (they stay under "Apagadas" and can be brought back there). The app's own
   // rows (TMDB, MDBList lists, collections) are left as they are.
   const DEFAULT_CAT_SOURCES = ["app", "preinstalled", "mdblist", "tmdb", "trakt", "simkl", "home_server", "cloudplay"];
+  // The app's own "Populares" and "Adicionados recentemente" rows: on the current app they still
+  // come through an addon's catalogs (e.g. Fenix), but they are default rows.
+  const isAppRow = (c) => /^cloudplay_(popular|recent)_/.test(c.id) ||
+    /^(filmes|séries|series)\s+(populares|adicionad[oa]s\s+recentemente|recentes)$/i.test((c.title || "").trim());
   async function hideAddonCategories() {
     const ov = Object.assign({}, settings.category_overrides || {});
-    const addonRows = categories.filter((c) => !c.members && c.source && !DEFAULT_CAT_SOURCES.includes(String(c.source).toLowerCase()) && !(c.id in ov));
+    const addonRows = categories.filter((c) => !c.members && !isAppRow(c) && c.source && !DEFAULT_CAT_SOURCES.includes(String(c.source).toLowerCase()) && !(c.id in ov));
     if (!addonRows.length) return;
     addonRows.forEach((c) => { ov[c.id] = { hidden: true }; });
     const { error } = await sb.from("app_settings").upsert({ key: "category_overrides", value: ov, updated_at: new Date().toISOString() });
@@ -3598,7 +3602,7 @@
       return el("div", { class: "cat2" },
         el("span", { class: "cat2-n" }, String(placeOf.get(c.id) || "")),
         el("div", { class: "cat2-main" },
-          el("b", {}, name, el("span", { class: "cat2-src" }, sourceLabel(c.source))),
+          el("b", {}, name, el("span", { class: "cat2-src" }, isAppRow(c) ? "Padrão do app" : sourceLabel(c.source))),
           el("span", { class: "cat2-where" }, icon("home"), whereIs(c, placeOf.get(c.id) || "?")),
           o.name ? el("span", { class: "cat2-orig" }, "Nome original: " + c.title) : ""),
         el("div", { class: "cat2-acts" },
