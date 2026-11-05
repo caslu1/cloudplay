@@ -211,11 +211,16 @@
   .ga-prev { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 12px; align-items: center; }
   .ga-prev img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; background: var(--field); }
   @media (max-width: 720px) { .ga-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ga-prev { grid-template-columns: 1fr; } }
-  .cat2 { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel2); }
+  .cat2 { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 4px 14px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel2); }
+  .cat-grp { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin: 16px 2px 2px; }
+  .cat-grp:first-child { margin-top: 0; }
+  .cat2-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cat2-chips i { font-style: normal; font-size: 12px; color: var(--muted); background: rgba(255, 255, 255, .05); border-radius: 6px; padding: 2px 7px; }
+  .cat2-src.app { background: rgba(255, 116, 168, .13); color: #FF9A9C; }
   .cat2.off { grid-template-columns: minmax(0, 1fr) auto; opacity: .7; }
-  .cat2-n { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: var(--field); border: 1px solid var(--line2); color: var(--muted); font-size: 13px; font-weight: 600; }
+  .cat2-n { width: 34px; height: 34px; border-radius: 9px; font-size: 14px !important; font-weight: 700 !important; color: var(--text) !important; display: grid; place-items: center; background: var(--field); border: 1px solid var(--line2); color: var(--muted); font-size: 13px; font-weight: 600; }
   .cat2-main { min-width: 0; display: grid; gap: 3px; }
-  .cat2-main b { font-weight: 600; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cat2-main b { font-weight: 700; font-size: 16.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 0; }
   .cat2-src { margin-left: 8px; padding: 1px 7px; border-radius: 6px; background: rgba(255, 255, 255, .06); color: var(--faint); font-size: 11px; font-weight: 600; vertical-align: 1px; }
   .cat2-where { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px; min-width: 0; }
   .cat2-where svg { width: 13px; height: 13px; color: var(--faint); flex: none; }
@@ -667,9 +672,10 @@
   @media (max-width: 720px) {
     .stats.stats-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .stats.stats-4 { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .cat2 { grid-template-columns: 30px minmax(0, 1fr) auto; padding: 12px; gap: 4px 10px; }
-    .cat2-main b { white-space: normal; }
-    .cat2-src { display: inline-block; margin: 2px 0 0 6px; }
+    .cat2 { grid-template-columns: 34px minmax(0, 1fr); padding: 12px; gap: 6px 10px; }
+    .cat2-main b { white-space: normal; flex-wrap: wrap; gap: 6px; font-size: 16px; }
+    .cat2-src { display: inline-block; margin: 0 !important; }
+    .cat2-acts { grid-column: 2; }
     .svc-list { grid-template-columns: 1fr; }
     .stats.stats-4 .stat { padding: 11px 14px; }
     .stats.stats-4 .stat b { font-size: 22px; }
@@ -3611,7 +3617,7 @@
     });
     $("catEmpty").textContent = categories.length ? (f === "on" ? "Nenhuma categoria encontrada." : "Nenhuma categoria apagada.") : "Nenhuma categoria ainda. Abra o app em um aparelho para a lista aparecer aqui.";
     $("catEmpty").classList.toggle("hidden", list.length > 0);
-    $("catList").replaceChildren(...list.map((c) => {
+    const rows = list.map((c) => {
       const o = ov[c.id] || {};
       const name = o.name || c.title;
       if (o.hidden) {
@@ -3626,17 +3632,45 @@
       const edit = el("div", { class: "cat2-edit hidden" }, input,
         el("button", { class: "small", onclick: save }, "Salvar"),
         o.name ? el("button", { class: "ghost small", onclick: () => { input.value = ""; saveCategory(c, { name: "" }); } }, "Usar o original") : "");
+      const tag = catTag(c);
       return el("div", { class: "cat2" },
         el("span", { class: "cat2-n" }, String(placeOf.get(c.id) || "")),
         el("div", { class: "cat2-main" },
-          el("b", {}, name, el("span", { class: "cat2-src" }, isAppRow(c) ? "Padrão do app" : sourceLabel(c.source))),
-          el("span", { class: "cat2-where" }, icon("home"), whereIs(c, placeOf.get(c.id) || "?")),
+          el("b", {}, name, el("span", { class: "cat2-src" + (tag.app ? " app" : "") }, tag.text)),
+          el("div", { class: "cat2-chips" }, ...catPlaces(c).map((p) => el("i", {}, p))),
           o.name ? el("span", { class: "cat2-orig" }, "Nome original: " + c.title) : ""),
         el("div", { class: "cat2-acts" },
-          iconBtn("edit", "Renomear", () => { edit.classList.toggle("hidden"); if (!edit.classList.contains("hidden")) input.focus(); }),
+          el("button", { type: "button", class: "ghost small", onclick: () => { edit.classList.toggle("hidden"); if (!edit.classList.contains("hidden")) input.focus(); } }, "✎ Renomear"),
           iconBtn("trash", "Apagar do app", () => { if (confirm("Apagar \"" + name + "\" do app? Dá para voltar em Apagadas.")) saveCategory(c, { hidden: true }); }, "bad")),
         edit);
-    }));
+    });
+    // CloudPlay: the rows in groups (top, banners, title rows), each with its count; a search keeps one list.
+    if (f !== "on" || q) { $("catList").replaceChildren(...rows); return; }
+    const groupOf = (c) => c.id === "continue_watching" || TOP10_IDS.includes(c.id) ? 0 : /^collection_(row|rail)_/.test(c.id) ? 1 : 2;
+    const names = ["Topo da tela inicial", "Coleções (banners)", "Fileiras de títulos"];
+    const out = [];
+    [0, 1, 2].forEach((g) => {
+      const idx = list.map((c, i) => groupOf(c) === g ? i : -1).filter((i) => i >= 0);
+      if (!idx.length) return;
+      out.push(el("div", { class: "cat-grp" }, el("span", {}, names[g]), el("span", {}, String(idx.length))));
+      idx.forEach((i) => out.push(rows[i]));
+    });
+    $("catList").replaceChildren(...out);
+  }
+  function catTag(c) {
+    if (isAppRow(c) || c.id === "continue_watching") return { text: "Padrão do app", app: true };
+    if (c.members || String(c.source || "").toLowerCase() === "cloudplay") return { text: "Vídeos próprios", app: true };
+    if (/^collection_(row|rail)_/.test(c.id)) return { text: "Coleção" };
+    const src = String(c.source || "app").toLowerCase();
+    if (src === "mdblist") return { text: "Lista pronta" };
+    if (src === "app" || src === "preinstalled" || src === "tmdb") return { text: "Padrão do app", app: true };
+    return { text: sourceLabel(c.source) };
+  }
+  function catPlaces(c) {
+    if (c.id === "continue_watching") return ["Início", "no topo"];
+    const tab = /movie|filme/i.test(c.id + " " + c.title) && !/show|serie|série/i.test(c.id) ? "Aba Filmes"
+      : /show|series|serie|série|tv_/i.test(c.id + " " + c.title) ? "Aba Séries" : "Filmes e Séries";
+    return ["Início", tab];
   }
   async function saveCategory(c, change) {
     const ov = Object.assign({}, settings.category_overrides || {});
