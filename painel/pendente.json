@@ -95,6 +95,10 @@
     {
       "text": "Sem opções de legenda: o botão de legenda saiu do player (celular e TV; na TV o botão vira só \"Áudio\", com Dublado/Legendado e as faixas de áudio), o ajuste de legenda saiu e a seção Legendas saiu dos Ajustes. Os arquivos M3U já trazem a legenda.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Elenco: tocar ou apertar OK numa pessoa do elenco não abre mais nada (TV e celular).",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
