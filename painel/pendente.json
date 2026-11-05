@@ -51,6 +51,10 @@
     {
       "text": "Addons não criam mais categorias na tela inicial: adicionar um addon só traz fontes. O app mostra apenas as categorias padrão (e \"Exclusivos CloudPlay\" quando houver vídeos próprios); as categorias de addons que já apareciam somem.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Lista de fontes mais limpa: cada fonte (addon ou M3U) mostra só o nome do conteúdo (filme com o ano, ou série com temporada e episódio: \"A Lista Terminal · T1 E1\"), a fonte (Fonte 1, 2…) e a qualidade (4K, 1080p, HD). Dublado e Legendado ficam nas abas do topo.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
