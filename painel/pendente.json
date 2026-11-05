@@ -75,6 +75,10 @@
     {
       "text": "\"Solicitar conteúdo\" removido do app: o botão Assistir aparece sempre, a lista de fontes não oferece mais pedir, e a página Ajustes › Solicitar conteúdo saiu (TV e celular).",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Com \"só o que tem nas listas M3U\" ligado, as fileiras \"Exclusivo do …\" e as de gênero são montadas a partir dos títulos das suas listas (mais populares primeiro), em vez de esconder o que falta numa lista do TMDB. As fileiras ficam cheias e tudo tem fonte.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
