@@ -43,6 +43,10 @@
     {
       "text": "Listas M3U: um título com \"L\" depois do nome (\"Duna L\", \"Duna L (2024)\") é reconhecido como Legendado (bandeira, aba Legendado e o player sem ligar legenda por cima, porque a legenda já vem na imagem). Sem o L, continua Dublado.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Sair e entrar de novo no mesmo aparelho: o código volta a funcionar nele mesmo depois de reinstalar o app ou limpar os dados (o aparelho é reconhecido e pega a própria vaga de volta). Em outro aparelho continua valendo o limite de aparelhos.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
