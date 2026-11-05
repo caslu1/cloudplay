@@ -35,6 +35,10 @@
     {
       "text": "Correções: próximo episódio engatilhado passa a funcionar; troca Dublado/Legendado não passa por cima da escolha do cliente; ao trocar de código os addons novos carregam; \"Seu pedido chegou!\" não mostra pedidos antigos em fila.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Fileiras \"Filmes Populares\", \"Séries Populares\", \"Filmes Adicionados recentemente\" e \"Séries Adicionadas recentemente\" passam a ser do próprio app: não somem mais ao remover um addon. Populares vêm do TMDB (somados aos populares dos addons); Adicionados recentemente usam os títulos escolhidos no painel (\"+ No app\") ou, sem escolha, as novidades das listas M3U.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
