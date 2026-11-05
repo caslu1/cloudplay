@@ -15,6 +15,26 @@
     {
       "text": "Addons nos aparelhos: o app manda ao painel a situação de cada addon em cada aparelho (ligado, desligado, precisa configurar ou não instalou e por quê). Veja em Códigos › ⋯ › Addons nos aparelhos.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Addons: uma busca em que algum addon não respondeu não fica mais guardada nem é repassada aos outros clientes como se estivesse completa; cada addon tem 10 s para responder (antes 6 s). Era o motivo de aparecerem só 3 ou 4 dos addons ativos.",
+      "added": "2026-11-05"
+    },
+    {
+      "text": "Addons do painel: o app reconhece o link mesmo escrito de outro jeito (stremio://, sem https), guarda cada instalação na hora e tenta de novo os que falharam sem esperar o app reiniciar.",
+      "added": "2026-11-05"
+    },
+    {
+      "text": "Bandeiras e abas Dublado/Legendado seguem a mesma regra; um dublado com áudio marcado como \"eng\" continua dublado; o resumo de cada título passa a mostrar só os idiomas da última busca (os errados guardados foram apagados).",
+      "added": "2026-11-05"
+    },
+    {
+      "text": "Listas M3U: nome igual com ano diferente, portais Stalker e códigos TMDB errados na lista não abrem mais o título errado; listas de provedores diferentes não se misturam; menos memória em TV Box.",
+      "added": "2026-11-05"
+    },
+    {
+      "text": "Correções: próximo episódio engatilhado passa a funcionar; troca Dublado/Legendado não passa por cima da escolha do cliente; ao trocar de código os addons novos carregam; \"Seu pedido chegou!\" não mostra pedidos antigos em fila.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
