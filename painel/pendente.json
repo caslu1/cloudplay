@@ -7,6 +7,14 @@
     {
       "text": "Lista de fontes separada em abas \"Dublado\" e \"Legendado\", cada uma com a quantidade. Abre na última aba escolhida (ou na que tiver fontes); fontes Dual aparecem nas duas e as listas M3U ficam em Dublado. Na TV, aperte para cima na primeira fonte para trocar de aba.",
       "added": "2026-11-04"
+    },
+    {
+      "text": "Idioma das fontes por addon: em Fontes de conteúdo cada addon pode ser \"Sempre dublado\", \"Sempre legendado\" ou \"Pelo nome da fonte\". Addons brasileiros marcados como Sempre dublado deixam de mostrar a bandeira de legendado e vão para a aba Dublado.",
+      "added": "2026-11-05"
+    },
+    {
+      "text": "Addons nos aparelhos: o app manda ao painel a situação de cada addon em cada aparelho (ligado, desligado, precisa configurar ou não instalou e por quê). Veja em Códigos › ⋯ › Addons nos aparelhos.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,

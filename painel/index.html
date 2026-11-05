@@ -1675,6 +1675,9 @@
           <div id="aKindBox"><label for="aKind">Tipo</label><select id="aKind">
             <option value="">Automático</option><option value="content">Conteúdo (traz fontes)</option><option value="info">Informação (capas e catálogos)</option>
           </select><span class="hint">Deixe em Automático: o painel descobre pelo manifest.</span></div>
+          <div id="aAudioBox"><label for="aAudio">Idioma das fontes</label><select id="aAudio">
+            <option value="">Pelo nome da fonte</option><option value="dub">Sempre dublado</option><option value="sub">Sempre legendado</option>
+          </select><span class="hint">Para addons brasileiros que não escrevem "Dublado" no nome, escolha Sempre dublado: a bandeira e a aba Dublado/Legendado do app ficam certas.</span></div>
           <div class="btns"><button type="button" id="aCancel" class="ghost">Cancelar</button><button type="submit" id="aSubmit">Adicionar</button></div>
         </form>
         <div id="addonMsg" class="msg"></div>
@@ -2329,9 +2332,27 @@
       item("renew", "Renovar", () => openRenew(c)),
       item("tv", "Telas, nome e WhatsApp", () => openEdit(c)),
       item("clock", "Tempo de uso", () => openUsage(c)),
+      item("tvplay", "Addons nos aparelhos", () => openAddonStatus(c)),
       item(c.revoked ? "unlock" : "lock", c.revoked ? "Desbloquear" : "Bloquear", () => toggleRevoke(c)),
       item("trash", "Excluir código", () => removeCode(c), "bad"));
     $("actSheet").showModal();
+  }
+  // CloudPlay: how each panel addon is on each device of this code (report_addon_status).
+  async function openAddonStatus(c) {
+    $("shTitle").textContent = "Addons nos aparelhos"; $("shSub").textContent = (c.note || "Sem nome") + " · código " + c.code;
+    $("shItems").replaceChildren(el("p", { class: "sub", style: "padding:8px 4px" }, "Carregando…"));
+    $("actSheet").showModal();
+    const { data, error } = await sb.rpc("admin_code_addon_status", { p_code_id: c.id });
+    if (error) { $("shItems").replaceChildren(el("p", { class: "sub", style: "padding:8px 4px" }, /admin_code_addon_status|function/i.test(error.message) ? "Rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível carregar: " + error.message)); return; }
+    const devs = data || [];
+    const label = { ok: "✓ Ligado", off: "Desligado no aparelho", config: "Precisa configurar", error: "Não instalou" };
+    const color = { ok: "#3ecf8e", off: "#f5a524", config: "#f5a524", error: "#ff5c5c" };
+    $("shItems").replaceChildren(...(devs.length ? devs.map((d) => el("div", { style: "padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.06)" },
+      el("b", { style: "display:block;margin-bottom:6px" }, (d.device_name || "Aparelho") + (d.updated_at ? " · " + ago(d.updated_at) : "")),
+      ...(d.items || []).map((it) => el("div", { style: "display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0" },
+        el("span", {}, it.n || "Addon"),
+        el("span", { style: "color:" + (color[it.s] || "#aaa") + ";text-align:right" }, (label[it.s] || it.s) + (it.e ? " · " + it.e : ""))))))
+      : [el("p", { class: "sub", style: "padding:8px 4px" }, "Nenhum aparelho mandou a situação ainda. Ela chega quando o cliente abre o app (versão nova).")]));
   }
   $("shCancel").addEventListener("click", () => $("actSheet").close());
   $("actSheet").addEventListener("click", (e) => { if (e.target === $("actSheet")) $("actSheet").close(); });
@@ -3275,7 +3296,7 @@
 
   function resetAddonForm() {
     editingAddon = null;
-    $("aName").value = ""; $("aUrl").value = ""; $("aColor").value = "#ff74a8"; $("aKind").value = "";
+    $("aName").value = ""; $("aUrl").value = ""; $("aColor").value = "#ff74a8"; $("aKind").value = ""; $("aAudio").value = "";
     editingPlaylist = null; $("aSrc").classList.remove("hidden"); setSrcMode("addon");
     $("aSubmit").textContent = "Adicionar";
     $("addonFormTitle").textContent = "Nova fonte";
@@ -3290,6 +3311,7 @@
     $("aSrc").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.v === mode));
     $("addonForm").classList.toggle("m3u-mode", m3u);
     $("aKindBox").classList.toggle("hidden", m3u);
+    $("aAudioBox").classList.toggle("hidden", m3u);
     $("aUrlLabel").textContent = m3u ? "Link M3U" : "Link do manifest";
     $("aUrl").placeholder = m3u ? "http://servidor/get.php?username=...&password=...&type=m3u_plus" : "https://.../manifest.json";
     $("aUrlHint").textContent = m3u ? "Só filmes e séries viram fontes (canais ficam de fora). A senha fica escondida no painel. Até 5 listas."
@@ -3308,7 +3330,7 @@
   function startEdit(a) {
     editingAddon = a;
     editingPlaylist = null; setSrcMode("addon"); $("aSrc").classList.add("hidden");
-    $("aName").value = a.name; $("aUrl").value = a.manifest_url; $("aColor").value = a.color || "#ff74a8"; $("aKind").value = a.kind || "";
+    $("aName").value = a.name; $("aUrl").value = a.manifest_url; $("aColor").value = a.color || "#ff74a8"; $("aKind").value = a.kind || ""; $("aAudio").value = a.audio || "";
     $("aSubmit").textContent = "Salvar";
     $("addonFormTitle").textContent = "Editar addon";
     $("addonCard").classList.remove("hidden");
@@ -3342,11 +3364,12 @@
     }
     const row = { name, manifest_url: url, color };
     if ($("aKind").value || editingAddon?.kind) row.kind = $("aKind").value || null;
+    if ($("aAudio").value || editingAddon?.audio) row.audio = $("aAudio").value || null;
     const { error } = editingAddon
       ? await sb.from("default_addons").update(row).eq("id", editingAddon.id)
       : await sb.from("default_addons").insert({ ...row, position: addons.length });
     if (error) {
-      $("addonMsg").textContent = /kind/i.test(error.message)
+      $("addonMsg").textContent = /kind|audio/i.test(error.message)
         ? "Para salvar o tipo, rode antes o arquivo cloudplay_functions.sql no Supabase."
         : /color/i.test(error.message)
         ? "Para salvar a cor, rode antes o arquivo code_library.sql no Supabase."
