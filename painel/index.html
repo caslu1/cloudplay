@@ -1207,6 +1207,7 @@
     .card { padding: 18px; } .stat { padding: 14px 16px; } .stat b { font-size: 24px; }
     td { padding-top: 10px; padding-bottom: 10px; }
   }
+  @media (max-width: 760px) { .sm-two { grid-template-columns: 1fr !important; } }
 </style>
 </head>
 <body>
@@ -1901,6 +1902,26 @@
           <p class="sub">Ligado, a tela inicial, as abas, a pesquisa, as coleções e o "Mais como este" mostram só os filmes e séries reconhecidos nas listas M3U (veja "reconhecidos" abaixo). Títulos não reconhecidos ficam de fora.</p></div></div>
         <label class="own-toggle"><input type="checkbox" id="onlyM3u"> Só o que tem nas listas M3U</label>
         <div id="onlyM3uMsg" class="msg"></div>
+      </div>
+      <!-- CloudPlay: distinct titles across the lists, repeats and dubbed / subtitled (admin_m3u_summary) -->
+      <div class="card">
+        <div class="card-head" style="align-items:center">
+          <div><h2>Resumo das listas</h2><p class="sub">Quantos títulos diferentes existem somando as listas (o mesmo filme em várias listas conta uma vez).</p></div>
+          <div id="smType" class="seg"><button type="button" data-v="" class="on">Tudo</button><button type="button" data-v="movie">Filmes</button><button type="button" data-v="series">Séries</button></div>
+        </div>
+        <div id="smMsg" class="msg"></div>
+        <div class="stats">
+          <div class="stat"><span>Títulos diferentes</span><b id="smTotal">—</b><small>filmes e séries</small></div>
+          <div class="stat"><span>Repetidos entre listas</span><b id="smRep">—</b><small>em 2 listas ou mais</small></div>
+          <div class="stat"><span>🇧🇷 Dublados</span><b id="smDub">—</b><small id="smDubSub">—</small></div>
+          <div class="stat"><span>🇺🇸 Legendados</span><b id="smSub">—</b><small id="smSubSub">—</small></div>
+        </div>
+        <div class="sm-two" style="display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;margin-top:16px">
+          <div class="table-wrap"><table class="sh-table">
+            <thead><tr><th>Lista</th><th>Títulos</th><th>Só nela</th><th>Dublado</th><th>Legendado</th></tr></thead>
+            <tbody id="smRows"></tbody></table></div>
+          <div id="smSide"></div>
+        </div>
       </div>
       <div id="ctLists" class="ct-lists"></div>
       <div class="card">
@@ -4271,7 +4292,42 @@
       el("span", {}, (r.media_type === "series" ? "Série" : "Filme") + (r.year && !/\((19|20)\d{2}\)/.test(r.name || "") ? " · " + r.year : "") + (r.added ? " · entrou " + ago(r.added) : "")),
       el("span", { class: "ct-in", title: (r.lists || []).join(" · ") }, (r.lists || []).join(" · ")))));
   }
-  function openCatalog() { loadPicks(); loadCatalogLists().then(renderCatalog); loadCatalog(); $("onlyM3u").checked = settings.only_m3u_titles === true; }
+  function openCatalog() { loadPicks(); loadCatalogLists().then(renderCatalog); loadCatalog(); loadM3uSummary(); $("onlyM3u").checked = settings.only_m3u_titles === true; }
+  let smRun = 0;
+  async function loadM3uSummary() {
+    const run = ++smRun;
+    const { data, error } = await sb.rpc("admin_m3u_summary", { p_type: $("smType").dataset.value || null });
+    if (run !== smRun) return;
+    if (error) { $("smMsg").textContent = /admin_m3u_summary|function/i.test(error.message) ? "Para ver o resumo, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível carregar: " + error.message; return; }
+    $("smMsg").textContent = "";
+    const d = data || {}, total = d.total || 0, pct = (n) => total ? Math.round(n * 100 / total) + "%" : "—";
+    $("smTotal").textContent = ctNum(total);
+    $("smRep").textContent = pct(d.repeated || 0);
+    $("smDub").textContent = ctNum(d.dub); $("smDubSub").textContent = pct(d.dub || 0) + " dos títulos";
+    $("smSub").textContent = ctNum(d.sub); $("smSubSub").textContent = pct(d.sub || 0) + " · " + ctNum(d.both) + " têm os dois";
+    $("smRows").replaceChildren(...(d.lists || []).map((l) => el("tr", {},
+      el("td", { "data-label": "" }, el("span", { class: "dot", style: "display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;background:" + (l.color || "#ffb08c") }), el("b", {}, l.name)),
+      el("td", { "data-label": "Títulos" }, ctNum(l.titles)),
+      el("td", { "data-label": "Só nela" }, ctNum(l.only)),
+      el("td", { "data-label": "Dublado" }, ctNum(l.dub)),
+      el("td", { "data-label": "Legendado" }, ctNum(l.sub)))));
+    const onlyDub = Math.max(0, (d.dub || 0) - (d.both || 0)), onlySub = Math.max(0, (d.sub || 0) - (d.both || 0));
+    const w = (n) => total ? (n * 100 / total).toFixed(1) + "%" : "0";
+    const line = (label, n) => el("div", { style: "display:flex;justify-content:space-between;font-size:13.5px;background:rgba(255,255,255,.04);border-radius:10px;padding:10px 12px" }, el("span", {}, label), el("b", {}, ctNum(n)));
+    $("smSide").replaceChildren(
+      el("b", { style: "display:block;font-size:14px;margin-bottom:10px" }, "Quantas listas têm cada título"),
+      el("div", { style: "display:flex;flex-direction:column;gap:8px" }, line("Só em 1 lista", d.in1 || 0), line("Em 2 listas", d.in2 || 0), line("Em 3 listas ou mais", d.in3 || 0)),
+      el("b", { style: "display:block;font-size:14px;margin:16px 0 8px" }, "Dublado × Legendado"),
+      el("div", { style: "height:10px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;display:flex" },
+        el("i", { style: "display:block;height:100%;background:#3ecf8e;width:" + w(onlyDub) }),
+        el("i", { style: "display:block;height:100%;background:#FFB08C;width:" + w(d.both || 0) }),
+        el("i", { style: "display:block;height:100%;background:#5b7bff;width:" + w(onlySub) })),
+      el("div", { style: "display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;margin-top:8px;color:#cfc8d2" },
+        el("span", {}, el("b", { style: "color:#3ecf8e" }, "só dublado "), ctNum(onlyDub)),
+        el("span", {}, el("b", { style: "color:#FFB08C" }, "os dois "), ctNum(d.both || 0)),
+        el("span", {}, el("b", { style: "color:#7d8cff" }, "só legendado "), ctNum(onlySub))));
+  }
+  seg("smType", loadM3uSummary);
   // CloudPlay: the app's "só o que tem nas listas M3U" switch (app_settings only_m3u_titles).
   $("onlyM3u").addEventListener("change", async (e) => {
     const on = e.target.checked;
