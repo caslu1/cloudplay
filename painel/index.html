@@ -4086,7 +4086,7 @@
     const list = rcPicks.filter((p) => p.media_type === type);
     pkFillPosters(list);
     $("pkRow").replaceChildren(...list.map((p) => el("div", { class: "pk", title: ctShowName(p.title) || p.item_id },
-      p.poster ? el("img", { src: p.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, ctShowName(p.title)),
+      p.poster ? ctImg(p.poster, p.title, p.media_type === "series" ? "series" : "movie", p.year || ctYearOf({ name: p.title }), (url) => { p.poster = url; sb.from("recent_picks").update({ poster: url }).eq("id", p.id).then(() => {}, () => {}); }) : el("span", { class: "np" }, ctShowName(p.title)),
       el("button", { type: "button", class: "x", title: "Tirar do app", onclick: () => unpick(p) }, "×"),
       el("b", {}, ctShowName(p.title) || p.item_id))),
       el("div", { class: "pk-add" }, list.length ? "Escolha mais abaixo com \"+ No app\""
@@ -4183,6 +4183,20 @@
   const ctBare = (n) => (n || "").replace(/\((?:19|20)\d{2}\)|\[[^\]]*\]|\b(?:4k|uhd|fhd|hd|sd|1080p|720p|dublado|legendado|dual|leg|dub)\b/gi, " ")
     .replace(/[|_.]+/g, " ").replace(/\s+/g, " ").trim();
   const ctNorm = (n) => (n || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  // CloudPlay: a list cover that does not load (dead link, or "http://" that the https panel blocks)
+  // is replaced by the TMDB one, saved through [onFound]; with none, the title's name shows.
+  function ctImg(src, name, type, year, onFound) {
+    const img = el("img", { src: String(src).replace(/^http:\/\//i, "https://"), alt: "", loading: "lazy" });
+    let retried = false;
+    img.addEventListener("error", async () => {
+      if (retried) { img.replaceWith(el("span", { class: "np" }, ctShowName(name))); return; }
+      retried = true;
+      const m = await ctFind(type, name, year).catch(() => null);
+      if (m && m.poster) { img.src = m.poster; if (onFound) onFound(m.poster); }
+      else img.replaceWith(el("span", { class: "np" }, ctShowName(name)));
+    });
+    return img;
+  }
   // A title without TMDB id or cover: found on TMDB by name (and year) and saved, so it is looked up once.
   const ctTried = new Set();
   async function ctFind(type, name, year) {
@@ -4224,7 +4238,7 @@
       : !read ? "Nenhuma lista lida ainda. O app lê cada lista uma vez por dia (num aparelho no Wi-Fi) e os títulos aparecem aqui."
       : q ? "Nenhum título com esse nome." : view === "new" ? "Nada novo nas listas nos últimos 7 dias." : "Nenhum título aqui.";
     $("ctGrid").replaceChildren(...ctItems.map((r) => el("div", { class: "rc" },
-      el("div", { class: "rc-poster" }, r.poster ? el("img", { src: r.poster, alt: "", loading: "lazy" }) : el("span", { class: "np" }, ctShowName(r.name)),
+      el("div", { class: "rc-poster" }, r.poster ? ctImg(r.poster, r.name, rcIsSeries(r) ? "series" : "movie", ctYearOf(r), (url) => { r.poster = url; sb.rpc("admin_m3u_recognize", { p_media: r.media_type, p_name: r.name, p_tmdb: r.tmdb_id || null, p_poster: url }).then(() => {}, () => {}); }) : el("span", { class: "np" }, ctShowName(r.name)),
         el("button", { type: "button", class: "rc-pick" + (rcPicked(r) ? " on" : ""), title: rcPicked(r) ? "Tirar do app" : "Colocar no app",
           onclick: () => pickToggle(r) }, rcPicked(r) ? "✓ No app" : "+ No app")),
       el("b", { title: ctShowName(r.name) }, ctShowName(r.name)),
