@@ -103,6 +103,10 @@
     {
       "text": "Player no celular: ao trocar de episódio dentro do player, a tela continua deitada (antes virava em pé).",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Vídeo travado em 0%: o app abre só uma conexão por vez com os links das listas M3U (antes \"aquecia\" várias fontes e abria uma segunda conexão para ler o áudio, e muitas contas IPTV de 1 conexão derrubavam o vídeo).",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
