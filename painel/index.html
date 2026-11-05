@@ -1926,7 +1926,7 @@
         <div id="onlyM3uMsg" class="msg"></div>
       </div>
       <div class="card">
-        <div class="card-head"><div><h2>Suas listas</h2><p class="sub">Lidas pelo servidor todo dia de madrugada (e na hora, ao adicionar uma lista).</p></div></div>
+        <div class="card-head"><div><h2>Suas listas</h2><p class="sub">Lidas pelo app uma vez por dia, num aparelho no Wi-Fi.</p></div></div>
         <div id="ctLists" class="ct-lists"></div>
       </div>
       <!-- CloudPlay: distinct titles across the lists, repeats and dubbed / subtitled (admin_m3u_summary) -->
@@ -3420,8 +3420,6 @@
         : await sb.from("default_playlists").insert({ ...prow, position: 1000 + playlists.length });
       if (error) { $("addonMsg").textContent = /color/i.test(error.message) ? "Para salvar a cor, rode antes o arquivo cloudplay_functions.sql no Supabase." : "Não foi possível salvar: " + error.message; return; }
       toast(editingPlaylist ? "Lista salva" : "Lista adicionada");
-      // CloudPlay: the server starts reading the list right away (else in the daily run).
-      startServerRead(name);
       resetAddonForm(); await loadPlaylists(); loadAddons();
       return;
     }
@@ -4250,27 +4248,6 @@
     const days = Math.round((new Date().setHours(0, 0, 0, 0) - new Date(iso).setHours(0, 0, 0, 0)) / 864e5);
     return "Lido " + (days === 0 ? "hoje " + t : days === 1 ? "ontem " + t : d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }) + " " + t);
   }
-  // CloudPlay: starts the server's reading of a list (m3u-recognize workflow) with the GitHub token
-  // saved in this browser for "Enviar atualização"; without it the daily run reads it.
-  async function startServerRead(list) {
-    const token = lsGet("cloudplay_gh_token");
-    if (!token) { toast("A lista será lida pelo servidor na próxima leitura diária (madrugada)."); return; }
-    try {
-      const res = await fetch("https://api.github.com/repos/caslu1/cloudflix/actions/workflows/m3u-recognize.yml/dispatches", {
-        method: "POST", headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
-        body: JSON.stringify({ ref: "main", inputs: { list: list || "" } }) });
-      toast(res.status === 204 ? "O servidor começou a ler a lista" : "A lista será lida pelo servidor na próxima leitura diária.");
-    } catch (_) { toast("A lista será lida pelo servidor na próxima leitura diária."); }
-  }
-  // The server's reading of a list: [pill class, text, line under the numbers].
-  function ctServer(l) {
-    const st = l.server_state, tot = l.series_total || 0, done = l.series_done || 0;
-    if (st === "reading") return ["wait", "Lendo a lista…", "O servidor está lendo os filmes e séries desta lista."];
-    if (st === "blocked") return ["mid", "Lida pelos aparelhos", "O servidor da lista não deixou o nosso servidor ler" + (l.server_note ? " (" + l.server_note.replace(/^o servidor da lista não respondeu \(|\)$/g, "") + ")" : "") + ". Os aparelhos continuam lendo esta lista."];
-    if (st === "ok" && tot && done < tot) return ["wait", "Lendo episódios " + Math.floor(100 * done / tot) + "%", "Episódios lidos de " + ctNum(done) + " de " + ctNum(tot) + " séries. Continua sozinho até terminar."];
-    if (st === "ok") return ["good", "Pronta no servidor", "Lida pelo servidor " + (l.server_read_at ? ago(l.server_read_at) : "") + ": as fontes chegam prontas no app."];
-    return null;
-  }
   async function loadCatalogLists() {
     const { data, error } = await sb.rpc("admin_m3u_lists");
     ctLists = error ? [] : data || [];
@@ -4278,13 +4255,12 @@
       const total = l.movies + l.series;
       return el("div", { class: "ct-list" },
         el("h3", { title: l.name, style: "display:flex;align-items:center;gap:8px" }, el("i", { style: "background:" + (l.color || "#ff74a8") }), el("span", { style: "flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" }, l.name),
-          (() => { const sv = ctServer(l); return el("span", { class: "pill " + (sv ? sv[0] : l.read_at ? "good" : "mid"), style: "font-size:11px;white-space:nowrap" }, sv ? sv[1] : l.read_at ? "Lida " + ago(l.read_at) : "Ainda não lida"); })()),
+          el("span", { class: "pill " + (l.read_at ? "good" : "mid"), style: "font-size:11px;white-space:nowrap" }, l.read_at ? "Lida " + ago(l.read_at) : "Ainda não lida")),
         el("div", { class: "ct-nums" },
           el("div", {}, el("b", {}, ctNum(l.movies)), el("span", {}, "filmes")),
           el("div", {}, el("b", {}, ctNum(l.series)), el("span", {}, "séries")),
           el("div", {}, el("b", {}, total ? (l.recognized && l.recognized * 100 < total ? "<1" : Math.round(100 * l.recognized / total)) + "%" : "—"), el("span", {}, "reconhecidos"))),
-        el("p", {}, (ctServer(l) || [])[2] ? ctServer(l)[2] + (l.read_at ? " " + ctNum(l.new7) + (l.new7 === 1 ? " novo" : " novos") + " nos últimos 7 dias." : "")
-          : l.read_at ? ctNum(l.new7) + (l.new7 === 1 ? " novo" : " novos") + " nos últimos 7 dias" : "O servidor lê esta lista na próxima leitura diária."));
+        el("p", {}, l.read_at ? ctNum(l.new7) + (l.new7 === 1 ? " novo" : " novos") + " nos últimos 7 dias" : "Abra o app num aparelho no Wi-Fi para ela ser lida."));
     }));
     const sel = $("ctList"), names = ctLists.map((l) => l.name);
     if (sel.dataset.filled !== names.join("|")) {
