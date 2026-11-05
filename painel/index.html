@@ -4152,7 +4152,7 @@
         el("div", { class: "ct-nums" },
           el("div", {}, el("b", {}, ctNum(l.movies)), el("span", {}, "filmes")),
           el("div", {}, el("b", {}, ctNum(l.series)), el("span", {}, "séries")),
-          el("div", {}, el("b", {}, total ? Math.round(100 * l.recognized / total) + "%" : "—"), el("span", {}, "reconhecidos"))),
+          el("div", {}, el("b", {}, total ? (l.recognized && l.recognized * 100 < total ? "<1" : Math.round(100 * l.recognized / total)) + "%" : "—"), el("span", {}, "reconhecidos"))),
         el("p", {}, ctReadAt(l.read_at) + (l.read_at ? " · " + ctNum(l.new7) + (l.new7 === 1 ? " novo" : " novos") + " nos últimos 7 dias" : " · o app lê a lista uma vez por dia")));
     }));
     const sel = $("ctList"), names = ctLists.map((l) => l.name);
