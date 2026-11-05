@@ -123,6 +123,10 @@
     {
       "text": "Mais fluidez ao passar os conteúdos: capas e banners mais leves (carregam e desenham mais rápido, sem perder nitidez na TV) e, ao parar num filme, o app não carrega mais a lista inteira (isso travava a TV Box por um instante). As fontes da lista de fontes, ao fechar e abrir de novo, aparecem na hora.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Várias listas sem perder velocidade: as fontes são procuradas em todas as listas M3U ao mesmo tempo (antes era uma depois da outra). Em TV Box com pouca memória, no máximo 2 listas por vez.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
