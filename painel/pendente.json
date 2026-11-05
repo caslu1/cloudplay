@@ -55,6 +55,10 @@
     {
       "text": "Ajustes › \"Solicitar conteúdo\" (no lugar de \"Meus pedidos\"): o cliente digita o nome, vê os filmes e séries do TMDB e toca em \"Solicitar\"; o pedido vai para Pedidos no painel. Cada resultado mostra \"Solicitado\" ou \"✓ Já tem\" quando for o caso. O aviso \"Seu pedido chegou!\" saiu.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Chave \"Mostrar no app só o que tem nas listas\" (Catálogo M3U): ligada, a tela inicial, as abas, a pesquisa, as coleções, o \"Ver tudo\" e o \"Mais como este\" mostram só os filmes e séries reconhecidos nas listas M3U.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,

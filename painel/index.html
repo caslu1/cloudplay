@@ -1896,6 +1896,12 @@
 
     <!-- Catálogo M3U: what the panel's lists have, read by the app once a day (m3u_catalog) -->
     <main class="page hidden" data-section="catalogo" data-title="Catálogo M3U">
+      <div class="card">
+        <div class="card-head"><div><h2>Mostrar no app só o que tem nas listas</h2>
+          <p class="sub">Ligado, a tela inicial, as abas, a pesquisa, as coleções e o "Mais como este" mostram só os filmes e séries reconhecidos nas listas M3U (veja "reconhecidos" abaixo). Títulos não reconhecidos ficam de fora.</p></div></div>
+        <label class="own-toggle"><input type="checkbox" id="onlyM3u"> Só o que tem nas listas M3U</label>
+        <div id="onlyM3uMsg" class="msg"></div>
+      </div>
       <div id="ctLists" class="ct-lists"></div>
       <div class="card">
         <div class="card-head">
@@ -3477,7 +3483,7 @@
     const { data, error } = await sb.from("app_settings").select("key,value");
     if (error) { $("serviceToggles").textContent = "Rode o arquivo app_settings.sql no Supabase para usar esta seção."; return; }
     (data || []).forEach((r) => {
-      settings[r.key] = r.key === "min_version" || r.key === "source_order" ? (typeof r.value === "string" ? r.value : null) : r.key === "category_overrides" || r.key === "collection_art"
+      settings[r.key] = r.key === "only_m3u_titles" ? r.value === true : r.key === "min_version" || r.key === "source_order" ? (typeof r.value === "string" ? r.value : null) : r.key === "category_overrides" || r.key === "collection_art"
         ? (r.value && typeof r.value === "object" && !Array.isArray(r.value) ? r.value : {})
         : (Array.isArray(r.value) ? r.value : []);
     });
@@ -4265,7 +4271,15 @@
       el("span", {}, (r.media_type === "series" ? "Série" : "Filme") + (r.year && !/\((19|20)\d{2}\)/.test(r.name || "") ? " · " + r.year : "") + (r.added ? " · entrou " + ago(r.added) : "")),
       el("span", { class: "ct-in", title: (r.lists || []).join(" · ") }, (r.lists || []).join(" · ")))));
   }
-  function openCatalog() { loadPicks(); loadCatalogLists().then(renderCatalog); loadCatalog(); }
+  function openCatalog() { loadPicks(); loadCatalogLists().then(renderCatalog); loadCatalog(); $("onlyM3u").checked = settings.only_m3u_titles === true; }
+  // CloudPlay: the app's "só o que tem nas listas M3U" switch (app_settings only_m3u_titles).
+  $("onlyM3u").addEventListener("change", async (e) => {
+    const on = e.target.checked;
+    const { error } = await sb.from("app_settings").upsert({ key: "only_m3u_titles", value: on, updated_at: new Date().toISOString() });
+    if (error) { e.target.checked = !on; $("onlyM3uMsg").textContent = "Não foi possível salvar: " + error.message; return; }
+    settings.only_m3u_titles = on; $("onlyM3uMsg").textContent = "";
+    toast(on ? "O app passa a mostrar só o que tem nas listas (na próxima vez que abrir)" : "O app volta a mostrar todo o catálogo");
+  });
   seg("ctView", loadCatalog); seg("ctType", loadCatalog); seg("pkType", renderPicks);
   $("ctList").addEventListener("change", loadCatalog);
   let ctTimer = 0;
