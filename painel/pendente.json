@@ -67,6 +67,10 @@
     {
       "text": "Player: o menu de áudio não marca mais como \"Legendado\" um arquivo dublado. Ele segue o áudio real do arquivo (só português = dublado) e a mesma leitura das abas da lista de fontes; sem fonte legendada, a opção Legendado nem aparece.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Primeira vez do cliente: a tela inicial abre pronta (sem ficar carregando os banners) e os conteúdos não mostram mais \"Solicitar conteúdo\" até fechar e abrir o app. O perfil novo recebe as listas M3U e os addons na hora.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
