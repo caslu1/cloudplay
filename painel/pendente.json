@@ -79,6 +79,10 @@
     {
       "text": "Com \"só o que tem nas listas M3U\" ligado, as fileiras \"Exclusivo do …\" e as de gênero são montadas a partir dos títulos das suas listas (mais populares primeiro), em vez de esconder o que falta numa lista do TMDB. As fileiras ficam cheias e tudo tem fonte.",
       "added": "2026-11-05"
+    },
+    {
+      "text": "Fontes mais rápidas: uma lista M3U que ainda não foi salva no aparelho (lenta ou fora do ar) não segura mais a busca de cada conteúdo por 8 segundos. Ela é baixada em segundo plano, e as outras listas respondem na hora.",
+      "added": "2026-11-05"
     }
   ],
   "sent_at": null,
