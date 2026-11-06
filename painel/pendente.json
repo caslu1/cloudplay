@@ -1,5 +1,10 @@
 {
-  "items": [],
+  "items": [
+    {
+      "text": "Pesquisa só com o que tem nas listas M3U: as fileiras da pesquisa (Em alta, Populares do ano, Lançamentos…) e a busca por gênero, ano e nota agora também mostram só os títulos das listas.",
+      "added": "2026-11-06"
+    }
+  ],
   "sent_at": null,
   "updated_at": null
 }
