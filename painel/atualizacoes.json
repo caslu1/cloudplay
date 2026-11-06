@@ -1,5 +1,38 @@
 [
   {
+    "version": "2.36",
+    "date": null,
+    "items": [
+      "Listas M3U nos filmes: não toca mais um filme de nome parecido. Antes, \"Obsessão: A Felicidade é Relativa\" podia abrir o filme \"Obsessão\"; agora, quando os nomes diferem em duas ou mais palavras, o ano precisa bater.",
+      "Lista de fontes separada em abas \"Dublado\" e \"Legendado\", cada uma com a quantidade. Abre na última aba escolhida (ou na que tiver fontes); fontes Dual aparecem nas duas e as listas M3U ficam em Dublado. Na TV, aperte para cima na primeira fonte para trocar de aba.",
+      "Bandeiras e abas Dublado/Legendado seguem a mesma regra; um dublado com áudio marcado como \"eng\" continua dublado; o resumo de cada título passa a mostrar só os idiomas da última busca (os errados guardados foram apagados).",
+      "Listas M3U: nome igual com ano diferente, portais Stalker e códigos TMDB errados na lista não abrem mais o título errado; listas de provedores diferentes não se misturam; menos memória em TV Box.",
+      "Fileiras \"Filmes Populares\", \"Séries Populares\", \"Filmes Adicionados recentemente\" e \"Séries Adicionadas recentemente\" passam a ser do próprio app: não somem mais ao remover um addon. Populares vêm do TMDB (somados aos populares dos addons); Adicionados recentemente usam os títulos escolhidos no painel (\"+ No app\") ou, sem escolha, as novidades das listas M3U.",
+      "Listas M3U: um título com \"L\" depois do nome (\"Duna L\", \"Duna L (2024)\") é reconhecido como Legendado (bandeira, aba Legendado e o player sem ligar legenda por cima, porque a legenda já vem na imagem). Sem o L, continua Dublado.",
+      "Sair e entrar de novo no mesmo aparelho: o código volta a funcionar nele mesmo depois de reinstalar o app ou limpar os dados (o aparelho é reconhecido e pega a própria vaga de volta). Em outro aparelho continua valendo o limite de aparelhos.",
+      "Lista de fontes mais limpa: cada fonte (lista M3U) mostra só o nome do conteúdo (filme com o ano, ou série com temporada e episódio: \"A Lista Terminal · T1 E1\"), a fonte (Fonte 1, 2…) e a qualidade (4K, 1080p, HD). Dublado e Legendado ficam nas abas do topo.",
+      "Chave \"Mostrar no app só o que tem nas listas\" (Catálogo M3U): ligada, a tela inicial, as abas, a pesquisa, as coleções, o \"Ver tudo\" e o \"Mais como este\" mostram só os filmes e séries reconhecidos nas listas M3U.",
+      "Player: o menu de áudio não marca mais como \"Legendado\" um arquivo dublado. Ele segue o áudio real do arquivo (só português = dublado) e a mesma leitura das abas da lista de fontes; sem fonte legendada, a opção Legendado nem aparece.",
+      "Primeira vez do cliente: agora a ordem é código → perfil → \"Preparando seus filmes e séries\" → tela inicial. Tudo é preparado já no perfil do cliente: a tela inicial abre pronta e os conteúdos não mostram mais \"Solicitar conteúdo\" por engano. Um perfil criado depois também recebe as listas M3U e os addons na hora.",
+      "\"Solicitar conteúdo\" removido do app: o botão Assistir aparece sempre, a lista de fontes não oferece mais pedir, e a página Ajustes › Solicitar conteúdo saiu (TV e celular).",
+      "Com \"só o que tem nas listas M3U\" ligado, as fileiras \"Exclusivo do …\" e as de gênero são montadas a partir dos títulos das suas listas (mais populares primeiro), em vez de esconder o que falta numa lista do TMDB. As fileiras ficam cheias e tudo tem fonte.",
+      "Fontes mais rápidas: uma lista M3U que ainda não foi salva no aparelho (lenta ou fora do ar) não segura mais a busca de cada conteúdo por 8 segundos. Ela é baixada em segundo plano, e as outras listas respondem na hora.",
+      "Fontes M3U achadas pelo código: o app usa o reconhecimento diário do servidor para saber qual item de cada lista é o filme ou a série aberta, então acha as fontes mesmo quando o nome na lista é diferente (ex.: \"Os 100\" / \"The 100\"). A mensagem sem fonte não fala mais em \"Solicitar conteúdo\".",
+      "Só listas M3U: o app não usa mais nenhum addon (nem o de legendas; os arquivos M3U já trazem as legendas). Os addons que vinham do painel são removidos dos aparelhos. \"Meus conteúdos\" continua. A busca de fontes fica só nas listas, bem mais rápida.",
+      "Sem opções de legenda: o botão de legenda saiu do player (celular e TV; na TV o botão vira só \"Áudio\", com Dublado/Legendado e as faixas de áudio), o ajuste de legenda saiu e a seção Legendas saiu dos Ajustes. Os arquivos M3U já trazem a legenda.",
+      "Elenco: tocar ou apertar OK numa pessoa do elenco não abre mais nada (TV e celular).",
+      "Fileiras e \"Ver tudo\" das categorias mais rápidos: o servidor já entrega capa, nome e data de cada título das listas, então o app não precisa buscar título por título no TMDB.",
+      "Episódios mais rápidos: ao abrir a página de uma série, o app já lê os episódios dela nas listas M3U, e as fontes do episódio aparecem na hora.",
+      "Fontes de filme sem abrir a lista: o app monta o link do filme com o que o servidor já sabe (tipo de arquivo e categoria), sem carregar a lista inteira na memória; mais rápido também em TV Box fraca.",
+      "Adianta o título em que o cliente para em cima (TV e celular): a página e as fontes dele já ficam prontas antes de abrir.",
+      "Lista de fontes na hora: as fontes que a página do conteúdo já achou (as mesmas que acendem a bandeira) aparecem assim que você toca em Fontes, sem procurar de novo.",
+      "Mais fluidez ao passar os conteúdos: capas e banners mais leves (carregam e desenham mais rápido, sem perder nitidez na TV) e, ao parar num filme, o app não carrega mais a lista inteira (isso travava a TV Box por um instante). As fontes da lista de fontes, ao fechar e abrir de novo, aparecem na hora.",
+      "Várias listas sem perder velocidade: as fontes são procuradas em todas as listas M3U ao mesmo tempo (antes era uma depois da outra). Em TV Box com pouca memória, no máximo 2 listas por vez.",
+      "Player no celular: ao trocar de episódio dentro do player, a tela continua deitada (antes virava em pé).",
+      "Vídeo travado em 0%: o app abre só uma conexão por vez com os links das listas M3U (antes \"aquecia\" várias fontes e abria uma segunda conexão para ler o áudio, e muitas contas IPTV de 1 conexão derrubavam o vídeo)."
+    ]
+  },
+  {
     "version": "2.35",
     "date": null,
     "items": [
