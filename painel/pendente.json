@@ -3,6 +3,10 @@
     {
       "text": "Pesquisa só com o que tem nas listas M3U: as fileiras da pesquisa (Em alta, Populares do ano, Lançamentos…) e a busca por gênero, ano e nota agora também mostram só os títulos das listas.",
       "added": "2026-11-06"
+    },
+    {
+      "text": "Tela inicial e pesquisa montadas com as listas M3U (etapa 1): \"Populares\" e \"Adicionados recentemente\" passam a ser os títulos das próprias listas (todas as listas, mais populares / mais novos primeiro); o \"Top 10 Hoje\" mostra os 10 mais em alta do dia entre os títulos das listas; a pesquisa procura também pelo nome que está na lista. O TMDB só completa capa, sinopse e elenco.",
+      "added": "2026-11-06"
     }
   ],
   "sent_at": null,
