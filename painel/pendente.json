@@ -7,6 +7,10 @@
     {
       "text": "Tela inicial e pesquisa montadas com as listas M3U (etapa 1): \"Populares\" e \"Adicionados recentemente\" passam a ser os títulos das próprias listas (todas as listas, mais populares / mais novos primeiro); o \"Top 10 Hoje\" mostra os 10 mais em alta do dia entre os títulos das listas; a pesquisa procura também pelo nome que está na lista. O TMDB só completa capa, sinopse e elenco.",
       "added": "2026-11-06"
+    },
+    {
+      "text": "App mais leve para mexer: em TV Box fraca as listas são procuradas uma por vez (duas ao mesmo tempo tiravam o processador da tela), o app espera um pouco mais antes de preparar o título em que você parou, não lê episódios enquanto você passa pelos conteúdos e faz menos buscas ao TMDB ao mesmo tempo.",
+      "added": "2026-11-07"
     }
   ],
   "sent_at": null,
