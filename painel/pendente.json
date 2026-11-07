@@ -11,6 +11,10 @@
     {
       "text": "App mais leve para mexer: em TV Box fraca as listas são procuradas uma por vez (duas ao mesmo tempo tiravam o processador da tela), o app espera um pouco mais antes de preparar o título em que você parou, não lê episódios enquanto você passa pelos conteúdos e faz menos buscas ao TMDB ao mesmo tempo.",
       "added": "2026-11-07"
+    },
+    {
+      "text": "Tela inicial mais leve em TV Box fraca (Mi Box e parecidas): o banner grande do fundo é carregado em resolução menor (fica igual atrás do degradê) e só troca quando você para num título, não a cada passo.",
+      "added": "2026-11-07"
     }
   ],
   "sent_at": null,
