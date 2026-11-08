@@ -15,6 +15,10 @@
     {
       "text": "Tela inicial mais leve em TV Box fraca (Mi Box e parecidas): o banner grande do fundo é carregado em resolução menor (fica igual atrás do degradê) e só troca quando você para num título, não a cada passo.",
       "added": "2026-11-07"
+    },
+    {
+      "text": "Fonte na hora para todo título das listas: quando o servidor sabe em qual lista o título está, o app monta o link direto (sem abrir a lista inteira no aparelho, que no Mi Box levava uns 20 s e às vezes não achava). Séries vão direto nos episódios da série certa.",
+      "added": "2026-11-08"
     }
   ],
   "sent_at": null,
