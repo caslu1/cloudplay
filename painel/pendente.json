@@ -27,6 +27,10 @@
     {
       "text": "Tudo das listas aparece (etapa 2): os títulos que o TMDB não reconheceu também aparecem, com o nome e a capa da própria lista, em \"Adicionados recentemente\" e na pesquisa. Filme toca o link da lista; série mostra as temporadas e episódios da própria lista.",
       "added": "2026-11-08"
+    },
+    {
+      "text": "Nada fora das listas, nem por um instante: com a chave ligada, logo depois de instalar ou limpar os dados o app não mostra título nenhum do TMDB até saber o que tem nas listas (antes mostrava tudo nesse intervalo). A mensagem \"Configuração de add-on necessária\" virou \"Conteúdo indisponível\".",
+      "added": "2026-11-08"
     }
   ],
   "sent_at": null,
