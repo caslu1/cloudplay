@@ -19,6 +19,10 @@
     {
       "text": "Fonte na hora para todo título das listas: quando o servidor sabe em qual lista o título está, o app monta o link direto (sem abrir a lista inteira no aparelho, que no Mi Box levava uns 20 s e às vezes não achava). Séries vão direto nos episódios da série certa.",
       "added": "2026-11-08"
+    },
+    {
+      "text": "Funciona como player IPTV: ao abrir um título, o app usa só os itens das suas listas que o servidor ligou a ele (não procura mais pelo nome dentro das listas). As fontes chegam numa única resposta, rápido, inclusive no Mi Box.",
+      "added": "2026-11-08"
     }
   ],
   "sent_at": null,
