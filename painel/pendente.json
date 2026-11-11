@@ -31,6 +31,10 @@
     {
       "text": "Nada fora das listas, nem por um instante: com a chave ligada, logo depois de instalar ou limpar os dados o app não mostra título nenhum do TMDB até saber o que tem nas listas (antes mostrava tudo nesse intervalo). A mensagem \"Configuração de add-on necessária\" virou \"Conteúdo indisponível\".",
       "added": "2026-11-08"
+    },
+    {
+      "text": "Abas Filmes e Séries mais limpas: sem uma fileira aberta para cada gênero; os gêneros ficam nos quadrinhos da fileira \"Gêneros\".",
+      "added": "2026-11-11"
     }
   ],
   "sent_at": null,
