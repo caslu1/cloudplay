@@ -39,8 +39,12 @@
     {
       "text": "Total de conteúdos em cada categoria: nas páginas de gênero e de serviço aparece, ao lado de Filmes e Séries, quantos títulos das suas listas a aba escolhida tem (filmes na aba Filmes, séries na aba Séries), em branco.",
       "added": "2026-11-11"
+    },
+    {
+      "text": "Páginas dos serviços (Netflix, Prime Video...) mostram só o que está no catálogo brasileiro de cada serviço, carregam mais rápido e o total aparece; quando o servidor não responde, o painel registra em Erros.",
+      "added": "2026-11-12"
     }
   ],
   "sent_at": null,
-  "updated_at": null
+  "updated_at": "2026-11-12"
 }
