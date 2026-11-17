@@ -1,5 +1,22 @@
 [
   {
+    "version": "2.37",
+    "date": null,
+    "items": [
+      "Pesquisa só com o que tem nas listas M3U: as fileiras da pesquisa (Em alta, Populares do ano, Lançamentos…) e a busca por gênero, ano e nota agora também mostram só os títulos das listas.",
+      "Tela inicial e pesquisa montadas com as listas M3U (etapa 1): \"Populares\" e \"Adicionados recentemente\" passam a ser os títulos das próprias listas (todas as listas, mais populares / mais novos primeiro); o \"Top 10 Hoje\" mostra os 10 mais em alta do dia entre os títulos das listas; a pesquisa procura também pelo nome que está na lista. O TMDB só completa capa, sinopse e elenco.",
+      "App mais leve para mexer: em TV Box fraca as listas são procuradas uma por vez (duas ao mesmo tempo tiravam o processador da tela), o app espera um pouco mais antes de preparar o título em que você parou, não lê episódios enquanto você passa pelos conteúdos e faz menos buscas ao TMDB ao mesmo tempo.",
+      "Tela inicial mais leve em TV Box fraca (Mi Box e parecidas): o banner grande do fundo é carregado em resolução menor (fica igual atrás do degradê) e só troca quando você para num título, não a cada passo.",
+      "Fonte na hora para todo título das listas: quando o servidor sabe em qual lista o título está, o app monta o link direto (sem abrir a lista inteira no aparelho, que no Mi Box levava uns 20 s e às vezes não achava). Séries vão direto nos episódios da série certa.",
+      "Funciona como player IPTV: ao abrir um título, o app usa só os itens das suas listas que o servidor ligou a ele (não procura mais pelo nome dentro das listas). As fontes chegam numa única resposta, rápido, inclusive no Mi Box.",
+      "Tudo das listas aparece (etapa 2): os títulos que o TMDB não reconheceu também aparecem, com o nome e a capa da própria lista, em \"Adicionados recentemente\" e na pesquisa. Filme toca o link da lista; série mostra as temporadas e episódios da própria lista.",
+      "Nada fora das listas, nem por um instante: com a chave ligada, logo depois de instalar ou limpar os dados o app não mostra título nenhum do TMDB até saber o que tem nas listas (antes mostrava tudo nesse intervalo). A mensagem \"Configuração de add-on necessária\" virou \"Conteúdo indisponível\".",
+      "Abas Filmes e Séries mais limpas: sem uma fileira aberta para cada gênero; os gêneros ficam nos quadrinhos da fileira \"Gêneros\".",
+      "Total de conteúdos em cada categoria: nas páginas de gênero e de serviço aparece, ao lado de Filmes e Séries, quantos títulos das suas listas a aba escolhida tem (filmes na aba Filmes, séries na aba Séries), em branco.",
+      "Páginas dos serviços (Netflix, Prime Video...) mostram só o que está no catálogo brasileiro de cada serviço, carregam mais rápido e o total aparece; quando o servidor não responde, o painel registra em Erros."
+    ]
+  },
+  {
     "version": "2.36",
     "date": null,
     "items": [
